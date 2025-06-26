@@ -2867,9 +2867,13 @@ const WildflowerDatabase = () => {
   const { data: rawSchoolsData, loading, error } = useSchools();
 
 
+  const schoolsData = useMemo(() => 
+    transformSchoolsData(rawSchoolsData || []), 
+    [rawSchoolsData]
+  );
 
   const mainTabs = [
-    { id: 'schools', label: 'Schools', count: sampleSchools.length },
+    { id: 'schools', label: 'Schools', count: schoolsData.length }, // ← Changed to real data
     { id: 'educators', label: 'Educators', count: sampleEducators.length },
     { id: 'charters', label: 'Charters', count: sampleCharters.length }
   ];
@@ -2900,7 +2904,7 @@ const WildflowerDatabase = () => {
 
   const getCurrentData = () => {
     switch (mainTab) {
-      case 'schools': return sampleSchools;
+      case 'schools': return schoolsData;
       case 'educators': return sampleEducators;
       case 'charters': return sampleCharters;
       default: return [];
@@ -2909,10 +2913,19 @@ const WildflowerDatabase = () => {
 
   const getCurrentColumns = () => {
     switch (mainTab) {
-      case 'schools': return schoolColumns;
+      case 'schools': return loading;
       case 'educators': return educatorColumns;
       case 'charters': return charterColumns;
       default: return [];
+    }
+  };
+
+  const getCurrentError = () => {
+    switch (mainTab) {
+      case 'schools': return error; // ← Add this
+      case 'educators': return null;
+      case 'charters': return null;
+      default: return null;
     }
   };
 
@@ -3006,12 +3019,15 @@ const WildflowerDatabase = () => {
             </div>
             
             <div className="flex-1 overflow-auto">
-              <DataTable 
-                data={getCurrentData()}
-                columns={getCurrentColumns()}
-                onRowClick={handleRowClick}
-                searchTerm={searchTerm}
-              />
+	    <DataTable 
+              data={getCurrentData()}
+              columns={getCurrentColumns()}
+              onRowClick={handleRowClick}
+              searchTerm={searchTerm}
+              loading={getCurrentLoading()} // ← Add this
+              error={getCurrentError()}     // ← Add this
+              onRetry={() => {}}           // ← Add this (we'll implement refetch later)
+            />
             </div>
           </div>
         </div>
