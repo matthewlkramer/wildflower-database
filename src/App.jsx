@@ -222,6 +222,62 @@
               <h3 className="text-lg font-semibold">Montessori Certifications</h3>
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
                 <Plus className="w-4 h-4 mr-2" />
+                Add Note
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {educatorNotes.map(note => (
+                <div key={note.id} className="bg-white border rounded-lg p-4 hover:shadow-sm transition-shadow">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-900">
+                        {note.createdBy}
+                      </span>
+                      {note.private && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                          Private
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-500">{note.date}</span>
+                      <button className="text-blue-600 hover:text-blue-900 text-sm">
+                        Edit
+                      </button>
+                      <button className="text-red-600 hover:text-red-900 text-sm">
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700">{note.notes}</p>
+                </div>
+              ))}
+              
+              {educatorNotes.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No notes for this educator yet.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'linked-emails' && (
+          <div className="text-center py-8 text-gray-500">
+            <h3 className="text-lg font-semibold mb-2">Linked Emails/Meetings</h3>
+            <p>This section will be implemented later</p>
+          </div>
+        )}
+
+        {activeTab !== 'summary' && activeTab !== 'schools' && activeTab !== 'demographics' && 
+         activeTab !== 'contact-info' && activeTab !== 'online-forms' && activeTab !== 'early-cultivation' && 
+         activeTab !== 'events' && activeTab !== 'guides' && activeTab !== 'certs' && 
+         activeTab !== 'notes' && activeTab !== 'linked-emails' && (
+          <div className="text-center py-8 text-gray-500">
+            {tabs.find(t => t.id === activeTab)?.label} content would go here
+          </div>
+        )}" />
                 Add Certification
               </button>
             </div>
