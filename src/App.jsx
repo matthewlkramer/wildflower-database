@@ -1,8 +1,989 @@
-import { useSchools, useEducators, useAirtableMutations, useEducatorsXSchools, useSchoolLocations } from './hooks/useAirtableData';
+};
+
+// Educator details view component
+const EducatorDetails = ({ educator, onBack }) => {
+  const [activeTab, setActiveTab] = useState('summary');
+  const [selectedSSJForm, setSelectedSSJForm] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedEducator, setEditedEducator] = useState(educator);
+
+  const tabs = [
+    { id: 'summary', label: 'Summary' },
+    { id: 'schools', label: 'Schools' },
+    { id: 'demographics', label: 'Demographics' },
+    { id: 'contact-info', label: 'Contact Info' },
+    { id: 'online-forms', label: 'Online Forms' },
+    { id: 'early-cultivation', label: 'Early Cultivation' },
+    { id: 'events', label: 'Events' },
+    { id: 'guides', label: 'Guides' },
+    { id: 'certs', label: 'Certs' },
+    { id: 'notes', label: 'Notes' },
+    { id: 'linked-emails', label: 'Linked emails/meetings' }
+  ];
+
+  // Editing functions
+  const handleEditSave = () => {
+    console.log('Saving educator data:', editedEducator);
+    setIsEditing(false);
+  };
+
+  const handleEditCancel = () => {
+    setEditedEducator(educator);
+    setIsEditing(false);
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditedEducator(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Field editing components
+  const EditableField = ({ label, field, value, type = 'text', options = null }) => {
+    if (type === 'boolean') {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={value || false}
+              onChange={(e) => handleInputChange(field, e.target.checked)}
+              className="mr-2"
+            />
+            <span className="text-sm">{value ? 'Yes' : 'No'}</span>
+          </label>
+        </div>
+      );
+    }
+
+    if (type === 'select' && options) {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <select
+            value={value || ''}
+            onChange={(e) => handleInputChange(field, e.target.value)}
+            className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+          >
+            <option value="">Select...</option>
+            {options.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    if (type === 'array') {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <input
+            type="text"
+            value={Array.isArray(value) ? value.join(', ') : (value || '')}
+            onChange={(e) => handleInputChange(field, e.target.value.split(', ').filter(v => v.trim()))}
+            className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+            placeholder="Separate multiple values with commas"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="py-2">
+        <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+        <input
+          type={type}
+          value={value || ''}
+          onChange={(e) => handleInputChange(field, e.target.value)}
+          className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+        />
+      </div>
+    );
+  };
+
+  // Get SSJ forms for this educator
+  const educatorSSJForms = sampleSSJFilloutForms.filter(form => form.educatorId === educator.id);
+  
+  // Get the selected form details
+  const selectedForm = selectedSSJForm ? 
+    educatorSSJForms.find(form => form.id === selectedSSJForm) : 
+    null;
+
+  const DetailRow = ({ label, value, span = false }) => (
+    <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
+      <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+      <div className="text-sm text-gray-900">
+        {value === true ? <CheckCircle className="w-4 h-4 text-green-600" /> : 
+         value === false ? <XCircle className="w-4 h-4 text-red-600" /> :
+         Array.isArray(value) ? value.join(', ') :
+         value || '-'}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="h-full flex flex-col bg-white">
+      <div className="border-b bg-gray-50 px-6 py-4">
+        <div className="flex items-center mb-4">
+          <button 
+            onClick={onBack}
+            className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">{educator.firstName} {educator.lastName}</h1>
+        </div>
+        
+        <div className="flex space-x-8 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6">
+        {activeTab === 'summary' && (
+          <div className="space-y-8">
+            {/* Edit Button */}
+            <div className="flex justify-end">
+              {!isEditing ? (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                >
+                  Edit
+                </button>
+              ) : (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleEditSave}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={handleEditCancel}
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-start space-x-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                <span className="text-xl font-medium text-gray-600">
+                  {editedEducator.firstName[0]}{editedEducator.lastName[0]}
+                </span>
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-gray-900">{editedEducator.firstName} {editedEducator.lastName}</h2>
+                <div className="mt-1 space-y-1">
+                  <div className="text-blue-600">{editedEducator.email}</div>
+                  <div className="text-gray-600">{editedEducator.role}</div>
+                  <div className="text-gray-600">{editedEducator.pronouns}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t pt-6">
+              {isEditing ? (
+                <>
+                  <EditableField label="First Name" field="firstName" value={editedEducator.firstName} />
+                  <EditableField label="Last Name" field="lastName" value={editedEducator.lastName} />
+                  <EditableField label="Email" field="email" value={editedEducator.email} type="email" />
+                  <EditableField label="Current School" field="currentSchool" value={editedEducator.currentSchool} />
+                  <EditableField label="Role" field="role" value={editedEducator.role} />
+                  <EditableField 
+                    label="Discovery Status" 
+                    field="discoveryStatus" 
+                    value={editedEducator.discoveryStatus}
+                    type="select"
+                    options={['Complete', 'In Progress', 'Not Started']}
+                  />
+                  <EditableField label="Montessori Certified" field="montessoriCertified" value={editedEducator.montessoriCertified} type="boolean" />
+                  <EditableField label="Pronouns" field="pronouns" value={editedEducator.pronouns} />
+                  <EditableField label="Phone" field="phone" value={editedEducator.phone} type="tel" />
+                </>
+              ) : (
+                <>
+                  <DetailRow label="First Name" value={editedEducator.firstName} />
+                  <DetailRow label="Last Name" value={editedEducator.lastName} />
+                  <DetailRow label="Email" value={editedEducator.email} />
+                  <DetailRow label="Current School" value={editedEducator.currentSchool} />
+                  <DetailRow label="Role" value={editedEducator.role} />
+                  <DetailRow label="Discovery Status" value={<StatusBadge status={editedEducator.discoveryStatus} />} />
+                  <DetailRow label="Montessori Certified" value={editedEducator.montessoriCertified} />
+                  <DetailRow label="Pronouns" value={editedEducator.pronouns} />
+                  <DetailRow label="Phone" value={editedEducator.phone} />
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'schools' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">School Affiliations</h3>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      School
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role(s)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Start Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Currently Active
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleEducatorsXSchools
+                    .filter(exs => exs.educatorId === educator.id)
+                    .map(relationship => (
+                      <tr key={relationship.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {sampleSchools.find(s => s.id === relationship.schoolId)?.name || 'Unknown School'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-wrap gap-1">
+                            {relationship.roles.map((role, index) => (
+                              <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {role}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {relationship.startDate}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {relationship.endDate || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {relationship.currentlyActive ? (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-600" />
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              
+              {sampleEducatorsXSchools.filter(exs => exs.educatorId === educator.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No school affiliations found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'demographics' && (
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Demographics</h3>
+              <div className="bg-white border rounded-lg p-6">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <DetailRow label="Race & Ethnicity" value={educator.raceEthnicity} />
+                  <DetailRow label="Gender" value={educator.gender} />
+                  <DetailRow label="Pronouns" value={educator.pronouns} />
+                  <DetailRow label="LGBTQIA+" value={educator.lgbtqia} />
+                  <DetailRow label="Household Income" value={educator.householdIncome} />
+                  <DetailRow label="Primary Language" value={educator.primaryLanguage} />
+                  <DetailRow label="Other Languages" value={educator.otherLanguages} span />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'contact-info' && (
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
+              <div className="bg-white border rounded-lg p-6">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <DetailRow label="Personal Email" value={educator.personalEmail} />
+                  <DetailRow label="Wildflower Email" value={educator.wildflowerEmail} />
+                  <DetailRow label="Work Email" value={educator.workEmail} />
+                  <DetailRow label="Primary Phone" value={educator.primaryPhone} />
+                  <DetailRow label="Secondary Phone" value={educator.secondaryPhone} />
+                  <DetailRow label="Home Address" value={educator.homeAddress} span />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'online-forms' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">SSJ Fillout Forms</h3>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Entry Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Assigned Partner
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {educatorSSJForms.map(form => (
+                    <tr key={form.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {form.entryDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {form.location}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {form.assignedPartner}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <StatusBadge status={form.oneOnOneStatus} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {educatorSSJForms.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No SSJ forms found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'early-cultivation' && (
+          <div className="grid grid-cols-12 gap-8">
+            {/* Left Column - Form Selection */}
+            <div className="col-span-3">
+              <h3 className="text-lg font-semibold mb-4">SSJ Forms</h3>
+              <div className="space-y-2">
+                {educatorSSJForms.map(form => (
+                  <button
+                    key={form.id}
+                    onClick={() => setSelectedSSJForm(form.id)}
+                    className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                      selectedSSJForm === form.id
+                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                        : 'bg-white border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    {form.entryDate}
+                  </button>
+                ))}
+                {educatorSSJForms.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No SSJ forms found
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column - Form Details */}
+            <div className="col-span-9">
+              {selectedForm ? (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Form Details - {selectedForm.entryDate}
+                  </h3>
+                  <div className="bg-white border rounded-lg p-6">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                      <DetailRow label="Entry Date" value={selectedForm.entryDate} />
+                      <DetailRow label="Location" value={selectedForm.location} />
+                      <DetailRow label="Routed To" value={selectedForm.routedTo} />
+                      <DetailRow label="SendGrid Sent Data" value={selectedForm.sendGridSentData} />
+                      <DetailRow label="Assigned Partner" value={selectedForm.assignedPartner} />
+                      <DetailRow label="Assigned Partner Override" value={selectedForm.assignedPartnerOverride} />
+                      <DetailRow label="One on One Status" value={selectedForm.oneOnOneStatus} />
+                      <DetailRow label="Person Responsible for Follow Up" value={selectedForm.personResponsibleForFollowUp} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <h3 className="text-lg font-semibold mb-2">Select an SSJ Form</h3>
+                  <p>Choose a form from the left to view cultivation details</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'events' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Event Attendance</h3>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Event Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Registration Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Attendance Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleEventAttendance
+                    .filter(event => event.educatorId === educator.id)
+                    .map(event => (
+                      <tr key={event.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {event.eventName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {event.eventDate}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {event.location}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <StatusBadge status={event.registrationStatus} />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <StatusBadge status={event.attendanceStatus} />
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              
+              {sampleEventAttendance.filter(event => event.educatorId === educator.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No event attendance records found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'guides' && (
+          <div className="text-center py-8 text-gray-500">
+            <h3 className="text-lg font-semibold mb-2">Guides</h3>
+            <p>This section will be implemented later</p>
+          </div>
+        )}
+
+        {activeTab === 'certs' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Montessori Certifications</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Certification
+              </button>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Certification Level
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Certifier
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Year
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleMontessoriCerts
+                    .filter(cert => cert.educatorId === educator.id)
+                    .map(cert => (
+                      <tr key={cert.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {cert.certificationLevel}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {cert.certifier}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {cert.year}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <StatusBadge status={cert.status} />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button 
+                            onClick={() => alert(`Edit certification ${cert.id}`)}
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => alert(`Delete certification ${cert.id}`)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              
+              {sampleMontessoriCerts.filter(cert => cert.educatorId === educator.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No certifications found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'notes' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Educator Notes</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Note
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {sampleEducatorNotes
+                .filter(note => note.educatorId === educator.id)
+                .map(note => (
+                  <div key={note.id} className="bg-white border rounded-lg p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0 h-8 w-8">
+                          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-sm font-medium text-gray-600">
+                              {note.createdBy.split(' ').map(n => n[0]).join('')}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {note.createdBy}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {note.createdDate}
+                          </div>
+                        </div>
+                        {note.isPrivate && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Private
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          onClick={() => alert(`Edit note ${note.id}`)}
+                          className="text-blue-600 hover:text-blue-900 text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => alert(`Delete note ${note.id}`)}
+                          className="text-red-600 hover:text-red-900 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-900">
+                      {note.noteText}
+                    </div>
+                  </div>
+                ))}
+              
+              {sampleEducatorNotes.filter(note => note.educatorId === educator.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No notes found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'linked-emails' && (
+          <div className="text-center py-8 text-gray-500">
+            <h3 className="text-lg font-semibold mb-2">Linked Emails/Meetings</h3>
+            <p>This section will be implemented later</p>
+          </div>
+        )}
+
+        {/* Default tab content */}
+        {!['summary', 'schools', 'demographics', 'contact-info', 'online-forms', 'early-cultivation', 'events', 'guides', 'certs', 'notes', 'linked-emails'].includes(activeTab) && (
+          <div className="text-center py-8 text-gray-500">
+            {tabs.find(t => t.id === activeTab)?.label} content would go here
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Charter details view component
+const CharterDetails = ({ charter, onBack }) => {
+  return (
+    <div className="h-full flex flex-col bg-white">
+      <div className="border-b bg-gray-50 px-6 py-4">
+        <div className="flex items-center mb-4">
+          <button 
+            onClick={onBack}
+            className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">{charter.name}</h1>
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto p-6">
+        <h2 className="text-xl font-bold">{charter.name}</h2>
+        <p className="text-gray-600">{charter.initialTargetCommunity}</p>
+      </div>
+    </div>
+  );
+};
+
+// Main application component
+const WildflowerDatabase = () => {
+  const [mainTab, setMainTab] = useState('schools');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [includeInactiveSchools, setIncludeInactiveSchools] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [columnFilters, setColumnFilters] = useState({});
+
+  // Data hooks and processing
+  const schoolsHookResult = useSchools(includeInactiveSchools);
+  
+  // Extract data safely
+  const rawSchoolsData = schoolsHookResult?.schools || schoolsHookResult?.data || schoolsHookResult || [];
+  const schoolsLoading = schoolsHookResult?.loading || false;
+  const schoolsError = schoolsHookResult?.error || null;
+
+  const schoolsData = useMemo(() => {
+    // Only transform if we have valid data
+    if (!rawSchoolsData || !Array.isArray(rawSchoolsData)) {
+      return [];
+    }
+    return transformSchoolsData(rawSchoolsData);
+  }, [rawSchoolsData]);
+
+  const mainTabs = [
+    { 
+      id: 'schools', 
+      label: 'Schools', 
+      count: schoolsLoading ? '...' : `${schoolsData.length}${includeInactiveSchools ? '' : ' active'}` 
+    },
+    { id: 'educators', label: 'Educators', count: sampleEducators.length },
+    { id: 'charters', label: 'Charters', count: sampleCharters.length }
+  ];
+
+  // Column definitions for data tables
+  const schoolColumns = [
+    { key: 'shortName', label: 'Short Name' },
+    { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
+    { key: 'governanceModel', label: 'Governance' },
+    { key: 'agesServed', label: 'Ages Served', render: (value) => Array.isArray(value) ? value.join(', ') : value },
+    { 
+      key: 'location', 
+      label: 'Location',
+      render: (value, item) => {
+        // Priority 1: Active location (city, state)
+        if (item.activeLocationCity && item.activeLocationState) {
+          return `${item.activeLocationCity}, ${item.activeLocationState}`;
+        }
+        // Priority 2: Target geo combined
+        if (item.targetCity && item.targetState) {
+          return `${item.targetCity}, ${item.targetState}`;
+        }
+        // Priority 3: Just target city if available
+        if (item.targetCity) {
+          return item.targetCity;
+        }
+        // Priority 4: Blank
+        return '-';
+      }
+    },
+    { key: 'membershipStatus', label: 'Membership', render: (value) => <StatusBadge status={value} /> }
+  ];
+
+  const educatorColumns = [
+    { key: 'fullName', label: 'Full Name', render: (value, item) => `${item.firstName} ${item.lastName}` },
+    { key: 'currentSchool', label: 'Current School' },
+    { key: 'role', label: 'Role' },
+    { key: 'email', label: 'Email' },
+    { key: 'raceEthnicity', label: 'Race & Ethnicity', render: (value) => Array.isArray(value) ? value.join(', ') : value || '-' },
+    { key: 'discoveryStatus', label: 'Discovery Status', render: (value) => <StatusBadge status={value} /> }
+  ];
+
+  const charterColumns = [
+    { key: 'name', label: 'Charter Name' },
+    { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
+    { key: 'initialTargetCommunity', label: 'Target Community' }
+  ];
+
+  // Data and column getters
+  const getCurrentData = () => {
+    switch (mainTab) {
+      case 'schools': 
+        // Use real data if available, otherwise fallback to sample
+        if (!schoolsLoading && !schoolsError && Array.isArray(schoolsData) && schoolsData.length > 0) {
+          return schoolsData;
+        } else {
+          return sampleSchools;
+        }
+      case 'educators': 
+        return sampleEducators;
+      case 'charters': 
+        return sampleCharters;
+      default: 
+        return [];
+    }
+  };
+
+  const getCurrentColumns = () => {
+    switch (mainTab) {
+      case 'schools': return schoolColumns;
+      case 'educators': return educatorColumns;
+      case 'charters': return charterColumns;
+      default: return [];
+    }
+  };
+
+  // Filter management
+  const handleColumnFilterChange = (columnKey, value) => {
+    setColumnFilters(prev => ({
+      ...prev,
+      [columnKey]: value
+    }));
+  };
+
+  const clearAllFilters = () => {
+    setColumnFilters({});
+    setSearchTerm('');
+  };
+
+  const getCurrentError = () => {
+    switch (mainTab) {
+      case 'schools': return schoolsError;
+      case 'educators': return null;
+      case 'charters': return null;
+      default: return null;
+    }
+  };
+
+  // Event handlers
+  const handleRowClick = (item) => {
+    setSelectedItem({ type: mainTab, data: item });
+  };
+
+  const handleEducatorOpen = (educatorId) => {
+    const educator = sampleEducators.find(ed => ed.id === educatorId);
+    if (educator) {
+      setSelectedItem({ type: 'educators', data: educator });
+    }
+  };
+
+  const handleBack = () => {
+    setSelectedItem(null);
+  };
+
+  // Render detail views when item is selected
+  if (selectedItem) {
+    switch (selectedItem.type) {
+      case 'schools':
+        return <SchoolDetails school={selectedItem.data} onBack={handleBack} onEducatorOpen={handleEducatorOpen} />;
+      case 'educators':
+        return <EducatorDetails educator={selectedItem.data} onBack={handleBack} />;
+      case 'charters':
+        return <CharterDetails charter={selectedItem.data} onBack={handleBack} />;
+      default:
+        return null;
+    }
+  }
+
+  return (
+    <div className="h-screen flex flex-col bg-gray-50">
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
+              <p className="text-gray-600">Manage schools, educators, and network data</p>
+            </div>
+            
+            {/* Main tabs in header */}
+            <div className="flex space-x-8">
+              {mainTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setMainTab(tab.id)}
+                  className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
+                    mainTab === tab.id
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {tab.label} ({tab.count})
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
+          <div className="bg-white rounded-lg shadow h-full flex flex-col">
+            <div className="p-6 border-b">
+              <div className="flex items-center justify-between">
+                <div></div>
+                <div className="flex items-center space-x-4">
+                  {/* Status Filter Toggle - only show for schools tab */}
+                  {mainTab === 'schools' && (
+                    <label className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={includeInactiveSchools}
+                        onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-gray-700">Include inactive schools</span>
+                    </label>
+                  )}
+                  
+                  <div className="flex items-center space-x-2">
+                    <button 
+                      onClick={() => setShowFilters(!showFilters)}
+                      className={`p-2 transition-colors ${
+                        showFilters 
+                          ? 'text-blue-600 bg-blue-50' 
+                          : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                    >
+                      <Filter className="w-4 h-4" />
+                    </button>
+                    
+                    {(showFilters && (searchTerm.trim() || Object.keys(columnFilters).some(key => {
+                      const filter = columnFilters[key];
+                      if (Array.isArray(filter)) return filter.length > 0;
+                      return filter && filter.trim();
+                    }))) && (
+                      <button
+                        onClick={clearAllFilters}
+                        className="text-xs text-gray-500 hover:text-gray-700 underline"
+                      >
+                        Clear filters
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-auto">
+              <DataTable 
+                data={getCurrentData()}
+                columns={getCurrentColumns()}
+                onRowClick={handleRowClick}
+                searchTerm={searchTerm}
+                showFilters={showFilters}
+                columnFilters={columnFilters}
+                onColumnFilterChange={handleColumnFilterChange}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WildflowerDatabase;import { useSchools, useEducators, useAirtableMutations, useEducatorsXSchools, useSchoolLocations } from './hooks/useAirtableData';
 import { transformSchoolsData } from './utils/dataTransformers';
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText, ChevronDown, X } from 'lucide-react';
-// Add these imports at the top of your file
 import AddEducatorStintModal from './AddEducatorStintModal.jsx';
 import CreateEducatorModal from './CreateEducatorModal.jsx';
 import LocationEditModal from './LocationEditModal.jsx';
@@ -90,7 +1071,7 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
   );
 };
 
-// Sample data
+// Sample data for development/testing
 const sampleSchools = [
   {
     id: 'rec1',
@@ -237,7 +1218,7 @@ const sampleSchools = [
   }
 ];
 
-// SSJ Fillout Forms data
+// Sample SSJ Fillout Forms data
 const sampleSSJFilloutForms = [
   {
     id: 'ssj1',
@@ -669,7 +1650,7 @@ const sampleGuideAssignments = [
 const sampleGrants = [
   {
     id: 'gr1',
-    schoolId: 'rec1', // Yellow Rose
+    schoolId: 'rec1',
     amount: 25000,
     issueDate: '2023-05-15',
     issuedBy: 'Rachel Kelley-Cohen',
@@ -679,7 +1660,7 @@ const sampleGrants = [
   },
   {
     id: 'gr2',
-    schoolId: 'rec1', // Yellow Rose
+    schoolId: 'rec1',
     amount: 15000,
     issueDate: '2023-08-01',
     issuedBy: 'Daniela Vasan',
@@ -689,7 +1670,7 @@ const sampleGrants = [
   },
   {
     id: 'gr3',
-    schoolId: 'rec2', // WF Boston
+    schoolId: 'rec2',
     amount: 30000,
     issueDate: '2023-01-10',
     issuedBy: 'Sara Hernandez',
@@ -699,7 +1680,7 @@ const sampleGrants = [
   },
   {
     id: 'gr4',
-    schoolId: 'rec2', // WF Boston
+    schoolId: 'rec2',
     amount: 12000,
     issueDate: '2023-03-22',
     issuedBy: 'Erika McDowell',
@@ -713,7 +1694,7 @@ const sampleGrants = [
 const sampleLoans = [
   {
     id: 'ln1',
-    schoolId: 'rec1', // Yellow Rose
+    schoolId: 'rec1',
     amount: 75000,
     issueDate: '2023-09-01',
     maturityDate: '2026-09-01',
@@ -723,7 +1704,7 @@ const sampleLoans = [
   },
   {
     id: 'ln2',
-    schoolId: 'rec2', // WF Boston
+    schoolId: 'rec2',
     amount: 100000,
     issueDate: '2018-08-15',
     maturityDate: '2023-08-15',
@@ -733,7 +1714,7 @@ const sampleLoans = [
   },
   {
     id: 'ln3',
-    schoolId: 'rec2', // WF Boston
+    schoolId: 'rec2',
     amount: 50000,
     issueDate: '2021-06-01',
     maturityDate: '2026-06-01',
@@ -743,6 +1724,7 @@ const sampleLoans = [
   }
 ];
 
+// Status badge component for consistent status display
 const StatusBadge = ({ status }) => {
   const getStatusColor = () => {
     switch (status) {
@@ -762,6 +1744,7 @@ const StatusBadge = ({ status }) => {
   );
 };
 
+// Generic data table component with filtering capabilities
 const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnFilters, onColumnFilterChange }) => {
   // Get unique values for multi-select columns
   const getUniqueValues = (columnKey) => {
@@ -777,7 +1760,7 @@ const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnF
     return Array.from(values).sort();
   };
 
-  // Define which columns should use multi-select
+  // Define which columns should use multi-select filtering
   const multiSelectColumns = {
     'status': true,
     'agesServed': true,
@@ -809,10 +1792,8 @@ const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnF
           result = result.filter(item => {
             const itemValue = item[columnKey];
             if (Array.isArray(itemValue)) {
-              // Check if any of the item's values match any selected filter values
               return itemValue.some(val => filterValue.includes(val));
             } else {
-              // Check if the item's value matches any selected filter values
               return filterValue.includes(itemValue);
             }
           });
@@ -915,8 +1896,9 @@ const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnF
     </div>
   );
 };
+
+// School details view component
 const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
-  console.log('SchoolDetails received school:', school); // Add this debug line
   const [activeTab, setActiveTab] = useState('summary');
   const [selectedSchoolYear, setSelectedSchoolYear] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -925,12 +1907,14 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   const [showCreateEducatorModal, setShowCreateEducatorModal] = useState(false);
   const [showLocationEditModal, setShowLocationEditModal] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null);
+
+  // Data mutations and hooks
   const { createRecord, updateRecord, deleteRecord, loading: mutationLoading } = useAirtableMutations();
   const { data: allEducators, refetch: refetchEducators } = useEducators();
   const { data: educatorsXSchools, refetch: refetchEducatorsXSchools } = useEducatorsXSchools();
   const { data: schoolLocations, refetch: refetchLocations } = useSchoolLocations(school.id);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [recordToDelete, setRecordToDelete] = useState(null);
 
   const tabs = [
     { id: 'summary', label: 'Summary' },
@@ -959,16 +1943,14 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
       update.schoolId === school.id && update.schoolYear === selectedSchoolYear
     ) : [];
 
+  // Editing functions
   const handleEditSave = () => {
-    // Here you would typically save to your backend/database
+    // Save to backend/database here
     console.log('Saving school data:', editedSchool);
-    // For now, we'll just exit edit mode
     setIsEditing(false);
-    // You could also update the parent component's school data here
   };
 
   const handleEditCancel = () => {
-    // Reset to original data and exit edit mode
     setEditedSchool(school);
     setIsEditing(false);
   };
@@ -980,6 +1962,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     }));
   };
 
+  // Field editing components
   const EditableField = ({ label, field, value, type = 'text', options = null }) => {
     if (type === 'boolean') {
       return (
@@ -1031,7 +2014,6 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
       );
     }
 
-    // Handle URL, email, tel, date, number, and text inputs
     return (
       <div className="py-2">
         <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
@@ -1058,197 +2040,181 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     </div>
   );
 
-// Handler functions for membership fees - add these to SchoolDetails component
-const handleViewSchoolYear = (record) => {
-  // Set the selected school year to filter the middle and right sections
-  setSelectedSchoolYear(record.schoolYear);
-  
-  // Optional: Add visual feedback that the record is now being viewed
-  console.log(`Viewing school year ${record.schoolYear} for school ${school.id}`);
-};
+  // Membership fee handlers
+  const handleViewSchoolYear = (record) => {
+    setSelectedSchoolYear(record.schoolYear);
+    console.log(`Viewing school year ${record.schoolYear} for school ${school.id}`);
+  };
 
-const handleDeleteSchoolYear = (record) => {
-  setRecordToDelete(record);
-  setShowDeleteConfirm(true);
-};
+  const handleDeleteSchoolYear = (record) => {
+    setRecordToDelete(record);
+    setShowDeleteConfirm(true);
+  };
 
-const confirmDeleteSchoolYear = async () => {
-  if (!recordToDelete) return;
-  
-  try {
-    await deleteRecord('Membership Fee Records', recordToDelete.id);
+  const confirmDeleteSchoolYear = async () => {
+    if (!recordToDelete) return;
     
-    // Also delete any associated fee updates
-    const relatedUpdates = sampleMembershipFeeUpdates.filter(
-      update => update.schoolId === school.id && update.schoolYear === recordToDelete.schoolYear
-    );
-    
-    for (const update of relatedUpdates) {
-      await deleteRecord('Membership Fee Updates', update.id);
-    }
-    
-    // Clear selection if we deleted the currently selected record
-    if (selectedSchoolYear === recordToDelete.schoolYear) {
-      setSelectedSchoolYear(null);
-    }
-    
-    // Close modal and clear state
-    setShowDeleteConfirm(false);
-    setRecordToDelete(null);
-    
-    // You would typically refetch the data here
-    // refetchMembershipFees();
-    
-    alert('School year record deleted successfully');
-  } catch (error) {
-    console.error('Error deleting school year record:', error);
-    alert('Failed to delete school year record. Please try again.');
-  }
-};
-
-const handleEndStint = async (stintId) => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    await updateRecord('Educators x Schools', stintId, {
-      'End Date': today,
-      'Currently Active': false
-    });
-    
-    // Refetch the data to update the UI
-    refetchEducatorsXSchools();
-    
-    alert('Stint ended successfully');
-  } catch (error) {
-    console.error('Error ending stint:', error);
-    alert('Failed to end stint. Please try again.');
-  }
-};
-
-const handleDeleteStint = async (stintId, educatorName) => {
-  if (window.confirm(`Are you sure you want to delete the connection between ${educatorName} and this school? This action cannot be undone.`)) {
     try {
-      await deleteRecord('Educators x Schools', stintId);
+      await deleteRecord('Membership Fee Records', recordToDelete.id);
       
-      // Refetch the data to update the UI
+      // Also delete any associated fee updates
+      const relatedUpdates = sampleMembershipFeeUpdates.filter(
+        update => update.schoolId === school.id && update.schoolYear === recordToDelete.schoolYear
+      );
+      
+      for (const update of relatedUpdates) {
+        await deleteRecord('Membership Fee Updates', update.id);
+      }
+      
+      // Clear selection if we deleted the currently selected record
+      if (selectedSchoolYear === recordToDelete.schoolYear) {
+        setSelectedSchoolYear(null);
+      }
+      
+      setShowDeleteConfirm(false);
+      setRecordToDelete(null);
+      
+      alert('School year record deleted successfully');
+    } catch (error) {
+      console.error('Error deleting school year record:', error);
+      alert('Failed to delete school year record. Please try again.');
+    }
+  };
+
+  // Stint management handlers
+  const handleEndStint = async (stintId) => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await updateRecord('Educators x Schools', stintId, {
+        'End Date': today,
+        'Currently Active': false
+      });
+      
       refetchEducatorsXSchools();
-      
-      alert('Stint deleted successfully');
+      alert('Stint ended successfully');
     } catch (error) {
-      console.error('Error deleting stint:', error);
-      alert('Failed to delete stint. Please try again.');
+      console.error('Error ending stint:', error);
+      alert('Failed to end stint. Please try again.');
     }
-  }
-};
+  };
 
-const handleAddStint = async (newStint) => {
-  try {
-    // Create the educator x school relationship
-    await createRecord('Educators x Schools', {
-      'Educator': [newStint.educatorId],
-      'School': [newStint.schoolId],
-      'Start Date': newStint.startDate,
-      'Currently Active': newStint.currentlyActive,
-      'Roles': newStint.roles
-    });
-    
-    // Refetch the data to update the UI
-    refetchEducatorsXSchools();
-    
-    alert('Educator stint added successfully');
-  } catch (error) {
-    console.error('Error adding stint:', error);
-    alert('Failed to add stint. Please try again.');
-  }
-};
+  const handleDeleteStint = async (stintId, educatorName) => {
+    if (window.confirm(`Are you sure you want to delete the connection between ${educatorName} and this school? This action cannot be undone.`)) {
+      try {
+        await deleteRecord('Educators x Schools', stintId);
+        refetchEducatorsXSchools();
+        alert('Stint deleted successfully');
+      } catch (error) {
+        console.error('Error deleting stint:', error);
+        alert('Failed to delete stint. Please try again.');
+      }
+    }
+  };
 
-const handleCreateEducator = async ({ educator, stint }) => {
-  try {
-    // First create the educator
-    const newEducatorRecord = await createRecord('Educators', {
-      'First Name': educator.firstName,
-      'Last Name': educator.lastName,
-      'Contact Email': educator.email,
-      'Primary phone': educator.phone,
-      'Pronouns': educator.pronouns,
-      'Discovery status': educator.discoveryStatus,
-      'Montessori Certified': educator.montessoriCertified
-    });
-    
-    // Then create the educator x school relationship
-    await createRecord('Educators x Schools', {
-      'Educator': [newEducatorRecord.id],
-      'School': [stint.schoolId],
-      'Start Date': stint.startDate,
-      'Currently Active': stint.currentlyActive,
-      'Roles': stint.roles
-    });
-    
-    // Refetch the data to update the UI
-    refetchEducators();
-    refetchEducatorsXSchools();
-    
-    alert('Educator created and added to school successfully');
-  } catch (error) {
-    console.error('Error creating educator:', error);
-    alert('Failed to create educator. Please try again.');
-  }
-};
-
-const handleEditLocation = (location) => {
-  setSelectedLocation(location);
-  setShowLocationEditModal(true);
-};
-
-const handleEndLocationPeriod = async (locationId) => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    await updateRecord('Locations', locationId, {
-      'End Date': today,
-      'Current Mailing Address': false,
-      'Current Physical Address': false
-    });
-    
-    refetchLocations(); // Add this line
-    alert('Location period ended successfully');
-  } catch (error) {
-    console.error('Error ending location period:', error);
-    alert('Failed to end location period. Please try again.');
-  }
-};
-
-const handleDeleteLocation = async (locationId, address) => {
-  if (window.confirm(`Are you sure you want to delete the location "${address}"? This action cannot be undone.`)) {
+  const handleAddStint = async (newStint) => {
     try {
-      await deleteRecord('Locations', locationId);
+      await createRecord('Educators x Schools', {
+        'Educator': [newStint.educatorId],
+        'School': [newStint.schoolId],
+        'Start Date': newStint.startDate,
+        'Currently Active': newStint.currentlyActive,
+        'Roles': newStint.roles
+      });
       
-      refetchLocations(); // Add this line
-      alert('Location deleted successfully');
+      refetchEducatorsXSchools();
+      alert('Educator stint added successfully');
     } catch (error) {
-      console.error('Error deleting location:', error);
-      alert('Failed to delete location. Please try again.');
+      console.error('Error adding stint:', error);
+      alert('Failed to add stint. Please try again.');
     }
-  }
-};
+  };
 
-const handleUpdateLocation = async (updatedLocation) => {
-  try {
-    await updateRecord('Locations', updatedLocation.id, {
-      'Address': updatedLocation.address,
-      'Location Type': updatedLocation.locationType,
-      'Start Date': updatedLocation.startDate,
-      'End Date': updatedLocation.endDate || null,
-      'Current Mailing Address': updatedLocation.currentMailingAddress,
-      'Current Physical Address': updatedLocation.currentPhysicalAddress,
-      'Currently Active': updatedLocation.currentlyActive
-    });
-    
-    refetchLocations(); // Add this line
-    alert('Location updated successfully');
-  } catch (error) {
-    console.error('Error updating location:', error);
-    alert('Failed to update location. Please try again.');
-  }
-};
+  const handleCreateEducator = async ({ educator, stint }) => {
+    try {
+      // First create the educator
+      const newEducatorRecord = await createRecord('Educators', {
+        'First Name': educator.firstName,
+        'Last Name': educator.lastName,
+        'Contact Email': educator.email,
+        'Primary phone': educator.phone,
+        'Pronouns': educator.pronouns,
+        'Discovery status': educator.discoveryStatus,
+        'Montessori Certified': educator.montessoriCertified
+      });
+      
+      // Then create the educator x school relationship
+      await createRecord('Educators x Schools', {
+        'Educator': [newEducatorRecord.id],
+        'School': [stint.schoolId],
+        'Start Date': stint.startDate,
+        'Currently Active': stint.currentlyActive,
+        'Roles': stint.roles
+      });
+      
+      refetchEducators();
+      refetchEducatorsXSchools();
+      alert('Educator created and added to school successfully');
+    } catch (error) {
+      console.error('Error creating educator:', error);
+      alert('Failed to create educator. Please try again.');
+    }
+  };
+
+  // Location management handlers
+  const handleEditLocation = (location) => {
+    setSelectedLocation(location);
+    setShowLocationEditModal(true);
+  };
+
+  const handleEndLocationPeriod = async (locationId) => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await updateRecord('Locations', locationId, {
+        'End Date': today,
+        'Current Mailing Address': false,
+        'Current Physical Address': false
+      });
+      
+      refetchLocations();
+      alert('Location period ended successfully');
+    } catch (error) {
+      console.error('Error ending location period:', error);
+      alert('Failed to end location period. Please try again.');
+    }
+  };
+
+  const handleDeleteLocation = async (locationId, address) => {
+    if (window.confirm(`Are you sure you want to delete the location "${address}"? This action cannot be undone.`)) {
+      try {
+        await deleteRecord('Locations', locationId);
+        refetchLocations();
+        alert('Location deleted successfully');
+      } catch (error) {
+        console.error('Error deleting location:', error);
+        alert('Failed to delete location. Please try again.');
+      }
+    }
+  };
+
+  const handleUpdateLocation = async (updatedLocation) => {
+    try {
+      await updateRecord('Locations', updatedLocation.id, {
+        'Address': updatedLocation.address,
+        'Location Type': updatedLocation.locationType,
+        'Start Date': updatedLocation.startDate,
+        'End Date': updatedLocation.endDate || null,
+        'Current Mailing Address': updatedLocation.currentMailingAddress,
+        'Current Physical Address': updatedLocation.currentPhysicalAddress,
+        'Currently Active': updatedLocation.currentlyActive
+      });
+      
+      refetchLocations();
+      alert('Location updated successfully');
+    } catch (error) {
+      console.error('Error updating location:', error);
+      alert('Failed to update location. Please try again.');
+    }
+  };
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -1436,9 +2402,8 @@ const handleUpdateLocation = async (updatedLocation) => {
               </div>
             )}
             
-            {/* Collapsible sections - always shown, but content changes based on edit mode */}
+            {/* Collapsible sections */}
             <>
-              {/* Divider line */}
               <hr className="border-gray-200" />
               
               {/* Closed school collapsible section */}
@@ -1643,260 +2608,261 @@ const handleUpdateLocation = async (updatedLocation) => {
         )}
 
         {activeTab === 'tls' && (
-  <div>
-    <div className="flex items-center justify-between mb-6">
-      <h3 className="text-lg font-semibold">Teacher Leaders & Staff</h3>
-      <div className="flex space-x-2">
-        <button 
-          onClick={() => setShowAddStintModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add stint for educator in database
-        </button>
-        <button 
-          onClick={() => setShowCreateEducatorModal(true)}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create new educator in database
-        </button>
-      </div>
-    </div>
-    
-    <div className="bg-white border rounded-lg overflow-hidden">
-      <table className="min-w-full">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Educator
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Role(s)
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Start Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              End Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Currently Active
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-{educatorsXSchools
-  .filter(exs => exs.schoolId === school.id)
-            .map(relationship => (
-            <tr key={relationship.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 h-8 w-8">
-                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        {relationship.educatorName.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900">
-                      {relationship.educatorName}
-                    </div>
-                  </div>
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Teacher Leaders & Staff</h3>
+              <div className="flex space-x-2">
+                <button 
+                  onClick={() => setShowAddStintModal(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add stint for educator in database
+                </button>
+                <button 
+                  onClick={() => setShowCreateEducatorModal(true)}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create new educator in database
+                </button>
+              </div>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Educator
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role(s)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Start Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Currently Active
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {educatorsXSchools
+                    .filter(exs => exs.schoolId === school.id)
+                    .map(relationship => (
+                      <tr key={relationship.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8">
+                              <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <span className="text-sm font-medium text-gray-600">
+                                  {relationship.educatorName.split(' ').map(n => n[0]).join('')}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {relationship.educatorName}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-wrap gap-1">
+                            {relationship.roles.map((role, index) => (
+                              <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {role}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {relationship.startDate}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {relationship.endDate || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {relationship.currentlyActive ? (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-600" />
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button 
+                              onClick={() => onEducatorOpen && onEducatorOpen(relationship.educatorId)}
+                              className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                            >
+                              Open
+                            </button>
+                            <button 
+                              onClick={() => handleEndStint(relationship.id)}
+                              disabled={mutationLoading}
+                              className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 disabled:bg-yellow-300 disabled:cursor-not-allowed"
+                            >
+                              {mutationLoading ? 'Ending...' : 'End stint'}
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteStint(relationship.id, relationship.educatorName)}
+                              disabled={mutationLoading}
+                              className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed"
+                            >
+                              {mutationLoading ? 'Deleting...' : 'Delete stint'}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              
+              {sampleEducatorsXSchools.filter(exs => exs.schoolId === school.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No educators assigned to this school yet.
                 </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex flex-wrap gap-1">
-                  {relationship.roles.map((role, index) => (
-                    <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {role}
-                    </span>
-                  ))}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {relationship.startDate}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {relationship.endDate || '-'}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {relationship.currentlyActive ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
-                )}
-              </td>
-<td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-  <div className="flex space-x-2">
-    <button 
-      onClick={() => onEducatorOpen && onEducatorOpen(relationship.educatorId)}
-      className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
-    >
-      Open
-    </button>
-    <button 
-      onClick={() => handleEndStint(relationship.id)}
-      disabled={mutationLoading}
-      className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 disabled:bg-yellow-300 disabled:cursor-not-allowed"
-    >
-      {mutationLoading ? 'Ending...' : 'End stint'}
-    </button>
-    <button 
-      onClick={() => handleDeleteStint(relationship.id, relationship.educatorName)}
-      disabled={mutationLoading}
-      className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed"
-    >
-      {mutationLoading ? 'Deleting...' : 'Delete stint'}
-    </button>
-  </div>
-</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      
-      {sampleEducatorsXSchools.filter(exs => exs.schoolId === school.id).length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No educators assigned to this school yet.
-        </div>
-      )}
-    </div>
+              )}
+            </div>
 
-    {/* Modals */}
-<AddEducatorStintModal
-  isOpen={showAddStintModal}
-  onClose={() => setShowAddStintModal(false)}
-  onSubmit={handleAddStint}
-  schoolId={school.id}
-  allEducators={allEducators || []}
-/>
+            {/* Modals */}
+            <AddEducatorStintModal
+              isOpen={showAddStintModal}
+              onClose={() => setShowAddStintModal(false)}
+              onSubmit={handleAddStint}
+              schoolId={school.id}
+              allEducators={allEducators || []}
+            />
 
-    <CreateEducatorModal
-      isOpen={showCreateEducatorModal}
-      onClose={() => setShowCreateEducatorModal(false)}
-      onSubmit={handleCreateEducator}
-      schoolId={school.id}
-    />
-  </div>
-)}
-{activeTab === 'locations' && (
-  <div>
-    <div className="flex items-center justify-between mb-6">
-      <h3 className="text-lg font-semibold">Locations</h3>
-      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
-        <Plus className="w-4 h-4 mr-2" />
-        Add Location
-      </button>
-    </div>
-    
-    <div className="bg-white border rounded-lg overflow-hidden">
-      <table className="min-w-full">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Address
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Start Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              End Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Current Mailing Address
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Current Physical Address
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-{schoolLocations
-  .filter(location => location.schoolId === school.id)
-            .map(location => (
-            <tr key={location.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4">
-                <div className="text-sm font-medium text-gray-900">
-                  {location.address}
-                </div>
-                <div className="text-sm text-gray-500">
-                  {location.locationType}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {location.startDate}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {location.endDate || '-'}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {location.currentMailingAddress ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
-                )}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {location.currentPhysicalAddress ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
-                )}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => handleEditLocation(location)}
-                    className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    onClick={() => handleEndLocationPeriod(location.id)}
-                    className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700"
-                  >
-                    End period
-                  </button>
-                  <button 
-                    onClick={() => handleDeleteLocation(location.id, location.address)}
-                    className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      
-      {sampleLocations.filter(location => location.schoolId === school.id).length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No locations added for this school yet.
-        </div>
-      )}
-    </div>
+            <CreateEducatorModal
+              isOpen={showCreateEducatorModal}
+              onClose={() => setShowCreateEducatorModal(false)}
+              onSubmit={handleCreateEducator}
+              schoolId={school.id}
+            />
+          </div>
+        )}
 
-    {/* Location Edit Modal */}
-    <LocationEditModal
-      isOpen={showLocationEditModal}
-      onClose={() => {
-        setShowLocationEditModal(false);
-        setSelectedLocation(null);
-      }}
-      onSubmit={handleUpdateLocation}
-      location={selectedLocation}
-    />
-  </div>
-)}
+        {activeTab === 'locations' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Locations</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Location
+              </button>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Address
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Start Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Current Mailing Address
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Current Physical Address
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {schoolLocations
+                    .filter(location => location.schoolId === school.id)
+                    .map(location => (
+                      <tr key={location.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {location.address}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {location.locationType}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {location.startDate}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {location.endDate || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {location.currentMailingAddress ? (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-600" />
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {location.currentPhysicalAddress ? (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-600" />
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button 
+                              onClick={() => handleEditLocation(location)}
+                              className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => handleEndLocationPeriod(location.id)}
+                              className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700"
+                            >
+                              End period
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteLocation(location.id, location.address)}
+                              className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              
+              {sampleLocations.filter(location => location.schoolId === school.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No locations added for this school yet.
+                </div>
+              )}
+            </div>
+
+            {/* Location Edit Modal */}
+            <LocationEditModal
+              isOpen={showLocationEditModal}
+              onClose={() => {
+                setShowLocationEditModal(false);
+                setSelectedLocation(null);
+              }}
+              onSubmit={handleUpdateLocation}
+              location={selectedLocation}
+            />
+          </div>
+        )}
 
         {activeTab === 'governance' && (
           <div className="grid grid-cols-2 gap-8">
@@ -1962,33 +2928,33 @@ const handleUpdateLocation = async (updatedLocation) => {
                     {sampleGovernanceDocs
                       .filter(doc => doc.schoolId === school.id)
                       .map(doc => (
-                      <tr key={doc.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {doc.documentType}
-                          </div>
-                          {doc.docNotes && (
-                            <div className="text-sm text-gray-500 mt-1">
-                              {doc.docNotes}
+                        <tr key={doc.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {doc.documentType}
                             </div>
-                          )}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {doc.date}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                          <button 
-                            onClick={() => window.open(doc.docLink, '_blank')}
-                            className="text-blue-600 hover:text-blue-900 mr-3"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </button>
-                          <button className="text-red-600 hover:text-red-900">
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                            {doc.docNotes && (
+                              <div className="text-sm text-gray-500 mt-1">
+                                {doc.docNotes}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {doc.date}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                            <button 
+                              onClick={() => window.open(doc.docLink, '_blank')}
+                              className="text-blue-600 hover:text-blue-900 mr-3"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </button>
+                            <button className="text-red-600 hover:text-red-900">
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
                 
@@ -2040,57 +3006,57 @@ const handleUpdateLocation = async (updatedLocation) => {
                   {sampleGuideAssignments
                     .filter(assignment => assignment.schoolId === school.id)
                     .map(assignment => (
-                    <tr key={assignment.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-8 w-8">
-                            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-sm font-medium text-gray-600">
-                                {assignment.guideShortName.split(' ').map(n => n[0]).join('')}
-                              </span>
+                      <tr key={assignment.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8">
+                              <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <span className="text-sm font-medium text-gray-600">
+                                  {assignment.guideShortName.split(' ').map(n => n[0]).join('')}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {assignment.guideShortName}
+                              </div>
                             </div>
                           </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {assignment.guideShortName}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          {assignment.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {assignment.startDate}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {assignment.endDate || '-'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {assignment.currentlyActive ? (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button 
-                          onClick={() => alert(`Open guide assignment ${assignment.id} for editing`)}
-                          className="text-blue-600 hover:text-blue-900 mr-3"
-                        >
-                          Open
-                        </button>
-                        <button 
-                          onClick={() => alert(`Delete guide assignment ${assignment.id}`)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            {assignment.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {assignment.startDate}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {assignment.endDate || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {assignment.currentlyActive ? (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-600" />
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button 
+                            onClick={() => alert(`Open guide assignment ${assignment.id} for editing`)}
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                          >
+                            Open
+                          </button>
+                          <button 
+                            onClick={() => alert(`Delete guide assignment ${assignment.id}`)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
               
@@ -2184,9 +3150,6 @@ const handleUpdateLocation = async (updatedLocation) => {
           </div>
         )}
 
-// Add these to your existing state in SchoolDetails component
-const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-const [recordToDelete, setRecordToDelete] = useState(null);
         {activeTab === 'grants-loans' && (
           <div className="grid grid-cols-2 gap-8">
             {/* Left Half - Grants */}
@@ -2224,40 +3187,40 @@ const [recordToDelete, setRecordToDelete] = useState(null);
                     {sampleGrants
                       .filter(grant => grant.schoolId === school.id)
                       .map(grant => (
-                      <tr key={grant.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                          {grant.issueDate}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                          ${grant.amount.toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            {grant.issuedBy}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {grant.partnerName}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <StatusBadge status={grant.status} />
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                          <button 
-                            onClick={() => alert(`Open grant ${grant.id} for editing`)}
-                            className="text-blue-600 hover:text-blue-900 mr-3"
-                          >
-                            Open
-                          </button>
-                          <button 
-                            onClick={() => alert(`Delete grant ${grant.id}`)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                        <tr key={grant.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {grant.issueDate}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                            ${grant.amount.toLocaleString()}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {grant.issuedBy}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {grant.partnerName}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <StatusBadge status={grant.status} />
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                            <button 
+                              onClick={() => alert(`Open grant ${grant.id} for editing`)}
+                              className="text-blue-600 hover:text-blue-900 mr-3"
+                            >
+                              Open
+                            </button>
+                            <button 
+                              onClick={() => alert(`Delete grant ${grant.id}`)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
                 
@@ -2301,37 +3264,37 @@ const [recordToDelete, setRecordToDelete] = useState(null);
                     {sampleLoans
                       .filter(loan => loan.schoolId === school.id)
                       .map(loan => (
-                      <tr key={loan.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                          {loan.issueDate}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            ${loan.amount.toLocaleString()}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {loan.interestRate * 100}% interest
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <StatusBadge status={loan.status} />
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                          <button 
-                            onClick={() => alert(`Open loan ${loan.id} for editing`)}
-                            className="text-blue-600 hover:text-blue-900 mr-3"
-                          >
-                            Open
-                          </button>
-                          <button 
-                            onClick={() => alert(`Delete loan ${loan.id}`)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                        <tr key={loan.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {loan.issueDate}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              ${loan.amount.toLocaleString()}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {loan.interestRate * 100}% interest
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <StatusBadge status={loan.status} />
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                            <button 
+                              onClick={() => alert(`Open loan ${loan.id} for editing`)}
+                              className="text-blue-600 hover:text-blue-900 mr-3"
+                            >
+                              Open
+                            </button>
+                            <button 
+                              onClick={() => alert(`Delete loan ${loan.id}`)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
                 
@@ -2361,50 +3324,50 @@ const [recordToDelete, setRecordToDelete] = useState(null);
                 {sampleSchoolNotes
                   .filter(note => note.schoolId === school.id)
                   .map(note => (
-                  <div key={note.id} className="bg-white border rounded-lg p-6">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0 h-8 w-8">
-                          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-600">
-                              {note.createdBy.split(' ').map(n => n[0]).join('')}
+                    <div key={note.id} className="bg-white border rounded-lg p-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex-shrink-0 h-8 w-8">
+                            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-sm font-medium text-gray-600">
+                                {note.createdBy.split(' ').map(n => n[0]).join('')}
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {note.createdBy}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {note.createdDate}
+                            </div>
+                          </div>
+                          {note.isPrivate && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              Private
                             </span>
-                          </div>
+                          )}
                         </div>
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {note.createdBy}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {note.createdDate}
-                          </div>
+                        <div className="flex items-center space-x-2">
+                          <button 
+                            onClick={() => alert(`Edit note ${note.id}`)}
+                            className="text-blue-600 hover:text-blue-900 text-sm"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => alert(`Delete note ${note.id}`)}
+                            className="text-red-600 hover:text-red-900 text-sm"
+                          >
+                            Delete
+                          </button>
                         </div>
-                        {note.isPrivate && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            Private
-                          </span>
-                        )}
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          onClick={() => alert(`Edit note ${note.id}`)}
-                          className="text-blue-600 hover:text-blue-900 text-sm"
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => alert(`Delete note ${note.id}`)}
-                          className="text-red-600 hover:text-red-900 text-sm"
-                        >
-                          Delete
-                        </button>
+                      <div className="text-sm text-gray-900">
+                        {note.noteText}
                       </div>
                     </div>
-                    <div className="text-sm text-gray-900">
-                      {note.noteText}
-                    </div>
-                  </div>
-                ))}
+                  ))}
                 
                 {sampleSchoolNotes.filter(note => note.schoolId === school.id).length === 0 && (
                   <div className="text-center py-8 text-gray-500">
@@ -2449,37 +3412,37 @@ const [recordToDelete, setRecordToDelete] = useState(null);
                     {sampleActionSteps
                       .filter(action => action.schoolId === school.id)
                       .map(action => (
-                      <tr key={action.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3">
-                          <div className="text-sm font-medium text-gray-900">
-                            {action.item}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                          {action.assignee}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <StatusBadge status={action.status} />
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                          {action.dueDate}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                          <button 
-                            onClick={() => alert(`Edit action ${action.id}`)}
-                            className="text-blue-600 hover:text-blue-900 mr-3"
-                          >
-                            Edit
-                          </button>
-                          <button 
-                            onClick={() => alert(`Delete action ${action.id}`)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                        <tr key={action.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3">
+                            <div className="text-sm font-medium text-gray-900">
+                              {action.item}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {action.assignee}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <StatusBadge status={action.status} />
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {action.dueDate}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                            <button 
+                              onClick={() => alert(`Edit action ${action.id}`)}
+                              className="text-blue-600 hover:text-blue-900 mr-3"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => alert(`Delete action ${action.id}`)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
                 
@@ -2493,7 +3456,8 @@ const [recordToDelete, setRecordToDelete] = useState(null);
           </div>
         )}
 
-        {activeTab !== 'summary' && activeTab !== 'tls' && activeTab !== 'locations' && activeTab !== 'governance' && activeTab !== 'guides' && activeTab !== 'ssj-oss' && activeTab !== 'membership-fees' && activeTab !== 'grants-loans' && activeTab !== 'notes-actions' && (
+        {/* Default tab content */}
+        {!['summary', 'tls', 'locations', 'governance', 'guides', 'ssj-oss', 'membership-fees', 'grants-loans', 'notes-actions'].includes(activeTab) && (
           <div className="text-center py-8 text-gray-500">
             {tabs.find(t => t.id === activeTab)?.label} content would go here
           </div>
@@ -2501,993 +3465,3 @@ const [recordToDelete, setRecordToDelete] = useState(null);
       </div>
     </div>
   );
-};
-
-const EducatorDetails = ({ educator, onBack }) => {
-  const [activeTab, setActiveTab] = useState('summary');
-  const [selectedSSJForm, setSelectedSSJForm] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedEducator, setEditedEducator] = useState(educator);
-
-  const tabs = [
-    { id: 'summary', label: 'Summary' },
-    { id: 'schools', label: 'Schools' },
-    { id: 'demographics', label: 'Demographics' },
-    { id: 'contact-info', label: 'Contact Info' },
-    { id: 'online-forms', label: 'Online Forms' },
-    { id: 'early-cultivation', label: 'Early Cultivation' },
-    { id: 'events', label: 'Events' },
-    { id: 'guides', label: 'Guides' },
-    { id: 'certs', label: 'Certs' },
-    { id: 'notes', label: 'Notes' },
-    { id: 'linked-emails', label: 'Linked emails/meetings' }
-  ];
-
-  const handleEditSave = () => {
-    // Here you would typically save to your backend/database
-    console.log('Saving educator data:', editedEducator);
-    // For now, we'll just exit edit mode
-    setIsEditing(false);
-    // You could also update the parent component's educator data here
-  };
-
-  const handleEditCancel = () => {
-    // Reset to original data and exit edit mode
-    setEditedEducator(educator);
-    setIsEditing(false);
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditedEducator(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const EditableField = ({ label, field, value, type = 'text', options = null }) => {
-    if (type === 'boolean') {
-      return (
-        <div className="py-2">
-          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={value || false}
-              onChange={(e) => handleInputChange(field, e.target.checked)}
-              className="mr-2"
-            />
-            <span className="text-sm">{value ? 'Yes' : 'No'}</span>
-          </label>
-        </div>
-      );
-    }
-
-    if (type === 'select' && options) {
-      return (
-        <div className="py-2">
-          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
-          <select
-            value={value || ''}
-            onChange={(e) => handleInputChange(field, e.target.value)}
-            className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
-          >
-            <option value="">Select...</option>
-            {options.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        </div>
-      );
-    }
-
-    if (type === 'array') {
-      return (
-        <div className="py-2">
-          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
-          <input
-            type="text"
-            value={Array.isArray(value) ? value.join(', ') : (value || '')}
-            onChange={(e) => handleInputChange(field, e.target.value.split(', ').filter(v => v.trim()))}
-            className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
-            placeholder="Separate multiple values with commas"
-          />
-        </div>
-      );
-    }
-
-    return (
-      <div className="py-2">
-        <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
-        <input
-          type={type}
-          value={value || ''}
-          onChange={(e) => handleInputChange(field, e.target.value)}
-          className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
-        />
-      </div>
-    );
-  };
-
-  // Get SSJ forms for this educator
-  const educatorSSJForms = sampleSSJFilloutForms.filter(form => form.educatorId === educator.id);
-  
-  // Get the selected form details
-  const selectedForm = selectedSSJForm ? 
-    educatorSSJForms.find(form => form.id === selectedSSJForm) : 
-    null;
-
-  const DetailRow = ({ label, value, span = false }) => (
-    <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
-      <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
-      <div className="text-sm text-gray-900">
-        {value === true ? <CheckCircle className="w-4 h-4 text-green-600" /> : 
-         value === false ? <XCircle className="w-4 h-4 text-red-600" /> :
-         Array.isArray(value) ? value.join(', ') :
-         value || '-'}
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="h-full flex flex-col bg-white">
-      <div className="border-b bg-gray-50 px-6 py-4">
-        <div className="flex items-center mb-4">
-          <button 
-            onClick={onBack}
-            className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">{educator.firstName} {educator.lastName}</h1>
-        </div>
-        
-        <div className="flex space-x-8 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === tab.id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-6">
-        {activeTab === 'summary' && (
-          <div className="space-y-8">
-            {/* Edit Button */}
-            <div className="flex justify-end">
-              {!isEditing ? (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
-                >
-                  Edit
-                </button>
-              ) : (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handleEditSave}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={handleEditCancel}
-                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center text-sm"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                <span className="text-xl font-medium text-gray-600">
-                  {editedEducator.firstName[0]}{editedEducator.lastName[0]}
-                </span>
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-900">{editedEducator.firstName} {editedEducator.lastName}</h2>
-                <div className="mt-1 space-y-1">
-                  <div className="text-blue-600">{editedEducator.email}</div>
-                  <div className="text-gray-600">{editedEducator.role}</div>
-                  <div className="text-gray-600">{editedEducator.pronouns}</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t pt-6">
-              {isEditing ? (
-                <>
-                  <EditableField label="First Name" field="firstName" value={editedEducator.firstName} />
-                  <EditableField label="Last Name" field="lastName" value={editedEducator.lastName} />
-                  <EditableField label="Email" field="email" value={editedEducator.email} type="email" />
-                  <EditableField label="Current School" field="currentSchool" value={editedEducator.currentSchool} />
-                  <EditableField label="Role" field="role" value={editedEducator.role} />
-                  <EditableField 
-                    label="Discovery Status" 
-                    field="discoveryStatus" 
-                    value={editedEducator.discoveryStatus}
-                    type="select"
-                    options={['Complete', 'In Progress', 'Not Started']}
-                  />
-                  <EditableField label="Montessori Certified" field="montessoriCertified" value={editedEducator.montessoriCertified} type="boolean" />
-                  <EditableField label="Pronouns" field="pronouns" value={editedEducator.pronouns} />
-                  <EditableField label="Phone" field="phone" value={editedEducator.phone} type="tel" />
-                </>
-              ) : (
-                <>
-                  <DetailRow label="First Name" value={editedEducator.firstName} />
-                  <DetailRow label="Last Name" value={editedEducator.lastName} />
-                  <DetailRow label="Email" value={editedEducator.email} />
-                  <DetailRow label="Current School" value={editedEducator.currentSchool} />
-                  <DetailRow label="Role" value={editedEducator.role} />
-                  <DetailRow label="Discovery Status" value={<StatusBadge status={editedEducator.discoveryStatus} />} />
-                  <DetailRow label="Montessori Certified" value={editedEducator.montessoriCertified} />
-                  <DetailRow label="Pronouns" value={editedEducator.pronouns} />
-                  <DetailRow label="Phone" value={editedEducator.phone} />
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'schools' && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">School Affiliations</h3>
-            </div>
-            
-            <div className="bg-white border rounded-lg overflow-hidden">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      School
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role(s)
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Start Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      End Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Currently Active
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {sampleEducatorsXSchools
-                    .filter(exs => exs.educatorId === educator.id)
-                    .map(relationship => (
-                    <tr key={relationship.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {sampleSchools.find(s => s.id === relationship.schoolId)?.name || 'Unknown School'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-wrap gap-1">
-                          {relationship.roles.map((role, index) => (
-                            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              {role}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {relationship.startDate}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {relationship.endDate || '-'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {relationship.currentlyActive ? (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              {sampleEducatorsXSchools.filter(exs => exs.educatorId === educator.id).length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No school affiliations found for this educator.
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'demographics' && (
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Demographics</h3>
-              <div className="bg-white border rounded-lg p-6">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                  <DetailRow label="Race & Ethnicity" value={educator.raceEthnicity} />
-                  <DetailRow label="Gender" value={educator.gender} />
-                  <DetailRow label="Pronouns" value={educator.pronouns} />
-                  <DetailRow label="LGBTQIA+" value={educator.lgbtqia} />
-                  <DetailRow label="Household Income" value={educator.householdIncome} />
-                  <DetailRow label="Primary Language" value={educator.primaryLanguage} />
-                  <DetailRow label="Other Languages" value={educator.otherLanguages} span />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'contact-info' && (
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
-              <div className="bg-white border rounded-lg p-6">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                  <DetailRow label="Personal Email" value={educator.personalEmail} />
-                  <DetailRow label="Wildflower Email" value={educator.wildflowerEmail} />
-                  <DetailRow label="Work Email" value={educator.workEmail} />
-                  <DetailRow label="Primary Phone" value={educator.primaryPhone} />
-                  <DetailRow label="Secondary Phone" value={educator.secondaryPhone} />
-                  <DetailRow label="Home Address" value={educator.homeAddress} span />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'online-forms' && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">SSJ Fillout Forms</h3>
-            </div>
-            
-            <div className="bg-white border rounded-lg overflow-hidden">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Entry Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Assigned Partner
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {educatorSSJForms.map(form => (
-                    <tr key={form.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {form.entryDate}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {form.location}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {form.assignedPartner}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge status={form.oneOnOneStatus} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              {educatorSSJForms.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No SSJ forms found for this educator.
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'early-cultivation' && (
-          <div className="grid grid-cols-12 gap-8">
-            {/* Left Column - Form Selection */}
-            <div className="col-span-3">
-              <h3 className="text-lg font-semibold mb-4">SSJ Forms</h3>
-              <div className="space-y-2">
-                {educatorSSJForms.map(form => (
-                  <button
-                    key={form.id}
-                    onClick={() => setSelectedSSJForm(form.id)}
-                    className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
-                      selectedSSJForm === form.id
-                        ? 'bg-blue-50 border-blue-500 text-blue-700'
-                        : 'bg-white border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    {form.entryDate}
-                  </button>
-                ))}
-                {educatorSSJForms.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    No SSJ forms found
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Right Column - Form Details */}
-            <div className="col-span-9">
-              {selectedForm ? (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">
-                    Form Details - {selectedForm.entryDate}
-                  </h3>
-                  <div className="bg-white border rounded-lg p-6">
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                      <DetailRow label="Entry Date" value={selectedForm.entryDate} />
-                      <DetailRow label="Location" value={selectedForm.location} />
-                      <DetailRow label="Routed To" value={selectedForm.routedTo} />
-                      <DetailRow label="SendGrid Sent Data" value={selectedForm.sendGridSentData} />
-                      <DetailRow label="Assigned Partner" value={selectedForm.assignedPartner} />
-                      <DetailRow label="Assigned Partner Override" value={selectedForm.assignedPartnerOverride} />
-                      <DetailRow label="One on One Status" value={selectedForm.oneOnOneStatus} />
-                      <DetailRow label="Person Responsible for Follow Up" value={selectedForm.personResponsibleForFollowUp} />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <h3 className="text-lg font-semibold mb-2">Select an SSJ Form</h3>
-                  <p>Choose a form from the left to view cultivation details</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'events' && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Event Attendance</h3>
-            </div>
-            
-            <div className="bg-white border rounded-lg overflow-hidden">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Event Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Registration Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Attendance Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {sampleEventAttendance
-                    .filter(event => event.educatorId === educator.id)
-                    .map(event => (
-                    <tr key={event.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {event.eventName}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {event.eventDate}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {event.location}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge status={event.registrationStatus} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge status={event.attendanceStatus} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              {sampleEventAttendance.filter(event => event.educatorId === educator.id).length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No event attendance records found for this educator.
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'guides' && (
-          <div className="text-center py-8 text-gray-500">
-            <h3 className="text-lg font-semibold mb-2">Guides</h3>
-            <p>This section will be implemented later</p>
-          </div>
-        )}
-
-        {activeTab === 'certs' && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Montessori Certifications</h3>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Certification
-              </button>
-            </div>
-            
-            <div className="bg-white border rounded-lg overflow-hidden">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Certification Level
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Certifier
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Year
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {sampleMontessoriCerts
-                    .filter(cert => cert.educatorId === educator.id)
-                    .map(cert => (
-                    <tr key={cert.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {cert.certificationLevel}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {cert.certifier}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {cert.year}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge status={cert.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button 
-                          onClick={() => alert(`Edit certification ${cert.id}`)}
-                          className="text-blue-600 hover:text-blue-900 mr-3"
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => alert(`Delete certification ${cert.id}`)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              {sampleMontessoriCerts.filter(cert => cert.educatorId === educator.id).length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No certifications found for this educator.
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'notes' && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Educator Notes</h3>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Note
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              {sampleEducatorNotes
-                .filter(note => note.educatorId === educator.id)
-                .map(note => (
-                <div key={note.id} className="bg-white border rounded-lg p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-shrink-0 h-8 w-8">
-                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-sm font-medium text-gray-600">
-                            {note.createdBy.split(' ').map(n => n[0]).join('')}
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {note.createdBy}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {note.createdDate}
-                        </div>
-                      </div>
-                      {note.isPrivate && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          Private
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button 
-                        onClick={() => alert(`Edit note ${note.id}`)}
-                        className="text-blue-600 hover:text-blue-900 text-sm"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => alert(`Delete note ${note.id}`)}
-                        className="text-red-600 hover:text-red-900 text-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-900">
-                    {note.noteText}
-                  </div>
-                </div>
-              ))}
-              
-              {sampleEducatorNotes.filter(note => note.educatorId === educator.id).length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No notes found for this educator.
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'linked-emails' && (
-          <div className="text-center py-8 text-gray-500">
-            <h3 className="text-lg font-semibold mb-2">Linked Emails/Meetings</h3>
-            <p>This section will be implemented later</p>
-          </div>
-        )}
-
-        {activeTab !== 'summary' && activeTab !== 'schools' && activeTab !== 'demographics' && activeTab !== 'contact-info' && activeTab !== 'online-forms' && activeTab !== 'early-cultivation' && activeTab !== 'events' && activeTab !== 'guides' && activeTab !== 'certs' && activeTab !== 'notes' && activeTab !== 'linked-emails' && (
-          <div className="text-center py-8 text-gray-500">
-            {tabs.find(t => t.id === activeTab)?.label} content would go here
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const CharterDetails = ({ charter, onBack }) => {
-  return (
-    <div className="h-full flex flex-col bg-white">
-      <div className="border-b bg-gray-50 px-6 py-4">
-        <div className="flex items-center mb-4">
-          <button 
-            onClick={onBack}
-            className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">{charter.name}</h1>
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto p-6">
-        <h2 className="text-xl font-bold">{charter.name}</h2>
-        <p className="text-gray-600">{charter.initialTargetCommunity}</p>
-      </div>
-    </div>
-  );
-};
-
-const WildflowerDatabase = () => {
-  const [mainTab, setMainTab] = useState('schools');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [includeInactiveSchools, setIncludeInactiveSchools] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [columnFilters, setColumnFilters] = useState({});
-const schoolsHookResult = useSchools(includeInactiveSchools);
-console.log('🔍 Full hook result:', schoolsHookResult);
-
-// Extract data safely
-const rawSchoolsData = schoolsHookResult?.schools || schoolsHookResult?.data || schoolsHookResult || [];
-const schoolsLoading = schoolsHookResult?.loading || false;
-const schoolsError = schoolsHookResult?.error || null;
-
-const schoolsData = useMemo(() => {
-  console.log('Raw schools data type:', typeof rawSchoolsData);
-  console.log('Raw schools data is array:', Array.isArray(rawSchoolsData));
-  console.log('Raw schools data:', rawSchoolsData);
-
-  // Only transform if we have data
-  if (!rawSchoolsData || !Array.isArray(rawSchoolsData)) {
-    return [];
-  }
-  return transformSchoolsData(rawSchoolsData);
-}, [rawSchoolsData]);
-
-  const mainTabs = [
-    { 
-      id: 'schools', 
-      label: 'Schools', 
-      count: schoolsLoading ? '...' : `${schoolsData.length}${includeInactiveSchools ? '' : ' active'}` 
-    },
-    { id: 'educators', label: 'Educators', count: sampleEducators.length },
-    { id: 'charters', label: 'Charters', count: sampleCharters.length }
-  ];
-
-const schoolColumns = [
-  { key: 'shortName', label: 'Short Name' },
-  { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
-  { key: 'governanceModel', label: 'Governance' },
-  { key: 'agesServed', label: 'Ages Served', render: (value) => Array.isArray(value) ? value.join(', ') : value },
-  { 
-    key: 'location', 
-    label: 'Location',
-    render: (value, item) => {
-      // Debug log
-      console.log('🔍 Location render for:', item.name, {
-        activeLocationCity: item.activeLocationCity,
-        activeLocationState: item.activeLocationState,
-        targetCity: item.targetCity,
-        targetState: item.targetState
-      });
-
-      // Priority 1: Active location (city, state)
-      if (item.activeLocationCity && item.activeLocationState) {
-        return `${item.activeLocationCity}, ${item.activeLocationState}`;
-      }
-      // Priority 2: Target geo combined
-      if (item.targetCity && item.targetState) {
-        return `${item.targetCity}, ${item.targetState}`;
-      }
-      // Priority 3: Just target city if available
-      if (item.targetCity) {
-        return item.targetCity;
-      }
-      // Priority 4: Blank
-      return '-';
-    }
-  },
-  { key: 'membershipStatus', label: 'Membership', render: (value) => <StatusBadge status={value} /> }
-];
-
-  const educatorColumns = [
-    { key: 'fullName', label: 'Full Name', render: (value, item) => `${item.firstName} ${item.lastName}` },
-    { key: 'currentSchool', label: 'Current School' },
-    { key: 'role', label: 'Role' },
-    { key: 'email', label: 'Email' },
-    { key: 'raceEthnicity', label: 'Race & Ethnicity', render: (value) => Array.isArray(value) ? value.join(', ') : value || '-' },
-    { key: 'discoveryStatus', label: 'Discovery Status', render: (value) => <StatusBadge status={value} /> }
-  ];
-
-  const charterColumns = [
-    { key: 'name', label: 'Charter Name' },
-    { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
-    { key: 'initialTargetCommunity', label: 'Target Community' }
-  ];
-
-const getCurrentData = () => {
-  switch (mainTab) {
-    case 'schools': 
-      // Use real data if available, otherwise fallback to sample
-      if (!schoolsLoading && !schoolsError && Array.isArray(schoolsData) && schoolsData.length > 0) {
-        console.log('✅ Using real schools data:', schoolsData.length, 'schools');
-        return schoolsData;
-      } else {
-        console.log('⚠️ Using sample schools data - Real data not ready');
-        console.log('  Loading:', schoolsLoading, 'Error:', schoolsError, 'Data length:', schoolsData?.length);
-        return sampleSchools;
-      }
-    case 'educators': 
-      return sampleEducators;
-    case 'charters': 
-      return sampleCharters;
-    default: 
-      return [];
-  }
-};
-
-const getCurrentColumns = () => {
-  switch (mainTab) {
-    case 'schools': return schoolColumns;    // ← FIXED!
-    case 'educators': return educatorColumns;
-    case 'charters': return charterColumns;
-    default: return [];
-  }
-};
-
-const handleColumnFilterChange = (columnKey, value) => {
-  setColumnFilters(prev => ({
-    ...prev,
-    [columnKey]: value
-  }));
-};
-
-const clearAllFilters = () => {
-  setColumnFilters({});
-  setSearchTerm('');
-};
-
-  const getCurrentError = () => {
-    switch (mainTab) {
-      case 'schools': return schoolsError; // ← Add this
-      case 'educators': return null;
-      case 'charters': return null;
-      default: return null;
-    }
-  };
-
-  const handleRowClick = (item) => {
-  console.log('Row clicked, item:', item); // Add this debug line
-    setSelectedItem({ type: mainTab, data: item });
-  };
-
-  const handleEducatorOpen = (educatorId) => {
-    const educator = sampleEducators.find(ed => ed.id === educatorId);
-    if (educator) {
-      setSelectedItem({ type: 'educators', data: educator });
-    }
-  };
-
-  const handleBack = () => {
-    setSelectedItem(null);
-  };
-
-  if (selectedItem) {
-    switch (selectedItem.type) {
-      case 'schools':
-        return <SchoolDetails school={selectedItem.data} onBack={handleBack} onEducatorOpen={handleEducatorOpen} />;
-      case 'educators':
-        return <EducatorDetails educator={selectedItem.data} onBack={handleBack} />;
-      case 'charters':
-        return <CharterDetails charter={selectedItem.data} onBack={handleBack} />;
-      default:
-        return null;
-    }
-  }
-
-return (
-  <div className="h-screen flex flex-col bg-gray-50">
-    <div className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between py-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
-            <p className="text-gray-600">Manage schools, educators, and network data</p>
-          </div>
-          
-          {/* Move tabs to the right side of header */}
-          <div className="flex space-x-8">
-            {mainTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setMainTab(tab.id)}
-                className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
-                  mainTab === tab.id
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {tab.label} ({tab.count})
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-
-      <div className="flex-1 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
-                      <div className="bg-white rounded-lg shadow h-full flex flex-col">
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
-                <div></div>
-<div className="flex items-center space-x-4">
-  {/* Status Filter Toggle - only show for schools tab */}
-  {mainTab === 'schools' && (
-    <label className="flex items-center space-x-2 text-sm">
-      <input
-        type="checkbox"
-        checked={includeInactiveSchools}
-        onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
-        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-      />
-      <span className="text-gray-700">Include inactive schools</span>
-    </label>
-  )}
-  
-<div className="flex items-center space-x-2">
-  <button 
-    onClick={() => setShowFilters(!showFilters)}
-    className={`p-2 transition-colors ${
-      showFilters 
-        ? 'text-blue-600 bg-blue-50' 
-        : 'text-gray-400 hover:text-gray-600'
-    }`}
-  >
-    <Filter className="w-4 h-4" />
-  </button>
-  
-{(showFilters && (searchTerm.trim() || Object.keys(columnFilters).some(key => {
-  const filter = columnFilters[key];
-  if (Array.isArray(filter)) return filter.length > 0;
-  return filter && filter.trim();
-}))) && (
-    <button
-      onClick={clearAllFilters}
-      className="text-xs text-gray-500 hover:text-gray-700 underline"
-    >
-      Clear filters
-    </button>
-  )}
-</div>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-           <div className="flex-1 overflow-auto">
-<DataTable 
-  data={getCurrentData()}
-  columns={getCurrentColumns()}
-  onRowClick={handleRowClick}
-  searchTerm={searchTerm}
-  showFilters={showFilters}
-  columnFilters={columnFilters}
-  onColumnFilterChange={handleColumnFilterChange}
-/>
-</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default WildflowerDatabase;
