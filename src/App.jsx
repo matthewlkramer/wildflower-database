@@ -2866,16 +2866,6 @@ const WildflowerDatabase = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const { data: rawSchoolsData, loading, error } = useSchools();
 
-  console.log('Base ID from env:', import.meta.env.VITE_AIRTABLE_BASE_ID);
-  console.log('API Key from env:', import.meta.env.VITE_AIRTABLE_API_KEY);
-
-  useEffect(() => {
-    console.log('Loading:', loading);
-    console.log('Error:', error);
-    console.log('Raw schools data:', rawSchoolsData);
-    console.log('Transformed schools:', transformSchoolsData(rawSchoolsData));
-  }, [rawSchoolsData, loading, error]);
-
 
 
   const mainTabs = [
