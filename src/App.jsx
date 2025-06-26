@@ -2866,6 +2866,15 @@ const WildflowerDatabase = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const { data: rawSchoolsData, loading, error } = useSchools();
 
+  useEffect(() => {
+    console.log('Loading:', loading);
+    console.log('Error:', error);
+    console.log('Raw schools data:', rawSchoolsData);
+    console.log('Transformed schools:', transformSchoolsData(rawSchoolsData));
+  }, [rawSchoolsData, loading, error]);
+
+
+
   const mainTabs = [
     { id: 'schools', label: 'Schools', count: sampleSchools.length },
     { id: 'educators', label: 'Educators', count: sampleEducators.length },
@@ -3017,12 +3026,5 @@ const WildflowerDatabase = () => {
     </div>
   );
 };
-
-useEffect(() => {
-  console.log('Loading:', loading);
-  console.log('Error:', error);
-  console.log('Raw schools data:', rawSchoolsData);
-  console.log('Transformed schools:', transformSchoolsData(rawSchoolsData));
-}, [rawSchoolsData, loading, error]);
 
 export default WildflowerDatabase;
