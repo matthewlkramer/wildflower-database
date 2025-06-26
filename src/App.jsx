@@ -3,9 +3,9 @@ import { transformSchoolsData } from './utils/dataTransformers';
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText, ChevronDown, X } from 'lucide-react';
 // Add these imports at the top of your file
-import AddEducatorStintModal from './AddEducatorStintModal';
-import CreateEducatorModal from './CreateEducatorModal';
-import LocationEditModal from './LocationEditModal';
+import AddEducatorStintModal from './AddEducatorStintModal.jsx';
+import CreateEducatorModal from './CreateEducatorModal.jsx';
+import LocationEditModal from './LocationEditModal.jsx';
 import './App.css';
 
 // Multi-select dropdown component
