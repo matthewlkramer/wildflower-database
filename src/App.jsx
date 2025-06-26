@@ -2864,8 +2864,14 @@ const WildflowerDatabase = () => {
   const [mainTab, setMainTab] = useState('schools');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
-  const { data: rawSchoolsData, loading, error } = useSchools();
+//  const { data: rawSchoolsData, loading, error } = useSchools();
+const schoolsHookResult = useSchools();
+console.log('🔍 Full hook result:', schoolsHookResult);
 
+// Extract data safely
+const rawSchoolsData = schoolsHookResult?.schools || schoolsHookResult?.data || schoolsHookResult || [];
+const schoolsLoading = schoolsHookResult?.loading || false;
+const schoolsError = schoolsHookResult?.error || null;
 
 const schoolsData = useMemo(() => {
   console.log('Raw schools data type:', typeof rawSchoolsData);
