@@ -2912,8 +2912,15 @@ const schoolsData = useMemo(() => {
 const getCurrentData = () => {
   switch (mainTab) {
     case 'schools': 
-      // Temporarily use sample data while debugging
-      return sampleSchools;
+      // Use real data if available, otherwise fallback to sample
+      if (!schoolsLoading && !schoolsError && Array.isArray(schoolsData) && schoolsData.length > 0) {
+        console.log('✅ Using real schools data:', schoolsData.length, 'schools');
+        return schoolsData;
+      } else {
+        console.log('⚠️ Using sample schools data - Real data not ready');
+        console.log('  Loading:', schoolsLoading, 'Error:', schoolsError, 'Data length:', schoolsData?.length);
+        return sampleSchools;
+      }
     case 'educators': 
       return sampleEducators;
     case 'charters': 
