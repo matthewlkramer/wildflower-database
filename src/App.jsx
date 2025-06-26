@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from 'react';
-import WildflowerDatabase from './components/WildflowerDatabase';
+import WildflowerDatabase from './components/WildflowerDatabase.jsx';
 import './App.css';
 
 function App() {
