@@ -2895,7 +2895,7 @@ const schoolsData = useMemo(() => {
     { id: 'charters', label: 'Charters', count: sampleCharters.length }
   ];
 
-  const schoolColumns = [
+const schoolColumns = [
   { key: 'shortName', label: 'Short Name' },
   { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
   { key: 'governanceModel', label: 'Governance' },
@@ -2904,15 +2904,27 @@ const schoolsData = useMemo(() => {
     key: 'location', 
     label: 'Location',
     render: (value, item) => {
+      // Debug log
+      console.log('🔍 Location render for:', item.name, {
+        activeLocationCity: item.activeLocationCity,
+        activeLocationState: item.activeLocationState,
+        targetCity: item.targetCity,
+        targetState: item.targetState
+      });
+
       // Priority 1: Active location (city, state)
-      if (item.activeLocationCityState) {
-        return item.activeLocationCityState;
+      if (item.activeLocationCity && item.activeLocationState) {
+        return `${item.activeLocationCity}, ${item.activeLocationState}`;
       }
       // Priority 2: Target geo combined
-      if (item.targetGeoCombined) {
-        return item.targetGeoCombined;
+      if (item.targetCity && item.targetState) {
+        return `${item.targetCity}, ${item.targetState}`;
       }
-      // Priority 3: Blank
+      // Priority 3: Just target city if available
+      if (item.targetCity) {
+        return item.targetCity;
+      }
+      // Priority 4: Blank
       return '-';
     }
   },

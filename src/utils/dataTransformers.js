@@ -4,10 +4,17 @@
 export const transformSchoolData = (airtableRecord, relatedData = {}) => {
   if (!airtableRecord) return null;
 
+  // Debug location fields
+  console.log('🔍 Location field debug for:', airtableRecord['Name']);
+  console.log('  Current Physical Address - City:', airtableRecord['Current Physical Address - City']);
+  console.log('  Current Physical Address - State:', airtableRecord['Current Physical Address - State']);
+  console.log('  SSJ - Target City:', airtableRecord['SSJ - Target City']);
+  console.log('  SSJ - Target State:', airtableRecord['SSJ - Target State']);
+
   return {
     id: airtableRecord.id,
     name: airtableRecord['Name'] || '',
-    shortName: airtableRecord['Short Name'] || '',
+    shortName: airtableRecord['Short Name'] || airtableRecord['Name'] || '',
     status: airtableRecord['School Status'] || '',
     governanceModel: airtableRecord['Governance Model'] || '',
     agesServed: airtableRecord['Ages served'] || [],
@@ -16,6 +23,8 @@ export const transformSchoolData = (airtableRecord, relatedData = {}) => {
       (Array.isArray(airtableRecord['Current Physical Address']) ? 
         airtableRecord['Current Physical Address'][0] : 
         airtableRecord['Current Physical Address']) : '',
+
+    // Location fields with debugging
     activeLocationCity: airtableRecord['Current Physical Address - City'] ? 
       (Array.isArray(airtableRecord['Current Physical Address - City']) ? 
         airtableRecord['Current Physical Address - City'][0] : 
@@ -26,6 +35,7 @@ export const transformSchoolData = (airtableRecord, relatedData = {}) => {
         airtableRecord['Current Physical Address - State']) : null,
     targetCity: airtableRecord['SSJ - Target City'] || null,
     targetState: airtableRecord['SSJ - Target State'] || null,
+
     membershipStatus: airtableRecord['Membership Status'] || '',
     founders: airtableRecord['Founders'] || [],
     phone: airtableRecord['School Phone'] || null,
