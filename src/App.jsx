@@ -719,6 +719,8 @@ const DataTable = ({ data, columns, onRowClick, searchTerm }) => {
 const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [selectedSchoolYear, setSelectedSchoolYear] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSchool, setEditedSchool] = useState(school);
 
   const tabs = [
     { id: 'summary', label: 'Summary' },
@@ -746,6 +748,91 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     sampleMembershipFeeUpdates.filter(update => 
       update.schoolId === school.id && update.schoolYear === selectedSchoolYear
     ) : [];
+
+  const handleEditSave = () => {
+    // Here you would typically save to your backend/database
+    console.log('Saving school data:', editedSchool);
+    // For now, we'll just exit edit mode
+    setIsEditing(false);
+    // You could also update the parent component's school data here
+  };
+
+  const handleEditCancel = () => {
+    // Reset to original data and exit edit mode
+    setEditedSchool(school);
+    setIsEditing(false);
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditedSchool(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const EditableField = ({ label, field, value, type = 'text', options = null }) => {
+    if (type === 'boolean') {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={value || false}
+              onChange={(e) => handleInputChange(field, e.target.checked)}
+              className="mr-2"
+            />
+            <span className="text-sm">{value ? 'Yes' : 'No'}</span>
+          </label>
+        </div>
+      );
+    }
+
+    if (type === 'select' && options) {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <select
+            value={value || ''}
+            onChange={(e) => handleInputChange(field, e.target.value)}
+            className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+          >
+            <option value="">Select...</option>
+            {options.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    if (type === 'array') {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <input
+            type="text"
+            value={Array.isArray(value) ? value.join(', ') : (value || '')}
+            onChange={(e) => handleInputChange(field, e.target.value.split(', ').filter(v => v.trim()))}
+            className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+            placeholder="Separate multiple values with commas"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="py-2">
+        <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+        <input
+          type={type}
+          value={value || ''}
+          onChange={(e) => handleInputChange(field, e.target.value)}
+          className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+        />
+      </div>
+    );
+  };
 
   const DetailRow = ({ label, value, span = false }) => (
     <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
@@ -792,6 +879,33 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
       <div className="flex-1 overflow-y-auto p-6">
         {activeTab === 'summary' && (
           <div className="space-y-8">
+            {/* Edit Button */}
+            <div className="flex justify-end">
+              {!isEditing ? (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                >
+                  Edit
+                </button>
+              ) : (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleEditSave}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={handleEditCancel}
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Header Section with Logo and Key Info in 4-column grid */}
             <div className="grid grid-cols-4 gap-x-6 gap-y-2">
               {/* School Logo - spans 3 rows in first column */}
@@ -802,177 +916,320 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
               </div>
               
               {/* First row - columns 2, 3, 4 */}
-              {school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating' ? (
+              {isEditing ? (
                 <>
-                  <DetailRow label="School Name" value={school.name} />
-                  <DetailRow label="Short Name" value={school.shortName} />
-                  <DetailRow label="Left Network Date" value={school.leftNetworkDate} />
+                  <EditableField label="School Name" field="name" value={editedSchool.name} />
+                  <EditableField label="Short Name" field="shortName" value={editedSchool.shortName} />
+                  <EditableField label="Ages Served" field="agesServed" value={editedSchool.agesServed} type="array" />
                 </>
               ) : (
                 <>
-                  <DetailRow label="School Name" value={school.name} />
-                  <DetailRow label="Short Name" value={school.shortName} />
-                  <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
+                  {editedSchool.status === 'Permanently Closed' || editedSchool.status === 'Disaffiliated' || editedSchool.status === 'Disaffiliating' ? (
+                    <>
+                      <DetailRow label="School Name" value={editedSchool.name} />
+                      <DetailRow label="Short Name" value={editedSchool.shortName} />
+                      <DetailRow label="Left Network Date" value={editedSchool.leftNetworkDate} />
+                    </>
+                  ) : (
+                    <>
+                      <DetailRow label="School Name" value={editedSchool.name} />
+                      <DetailRow label="Short Name" value={editedSchool.shortName} />
+                      <DetailRow label="Ages Served" value={editedSchool.agesServed?.join(', ')} />
+                    </>
+                  )}
                 </>
               )}
               
               {/* Second row - columns 2, 3, 4 */}
-              {school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating' ? (
+              {isEditing ? (
                 <>
-                  <DetailRow label="Left Network Reason" value={school.leftNetworkReason} />
-                  <DetailRow label="Membership Termination Letter" value={school.membershipTerminationLetter} />
-                  <div></div> {/* Empty cell */}
+                  <EditableField 
+                    label="Governance Model" 
+                    field="governanceModel" 
+                    value={editedSchool.governanceModel} 
+                    type="select"
+                    options={['Independent', 'Charter', 'District']}
+                  />
+                  <EditableField label="Founders" field="founders" value={editedSchool.founders} type="array" />
+                  <EditableField label="Current TLs" field="currentTLs" value={editedSchool.currentTLs} type="array" />
                 </>
               ) : (
                 <>
-                  <DetailRow label="Governance Model" value={school.governanceModel} />
-                  <DetailRow label="Founders" value={school.founders?.join(', ')} />
-                  <DetailRow label="Current TLs" value={school.currentTLs?.join(', ')} />
+                  {editedSchool.status === 'Permanently Closed' || editedSchool.status === 'Disaffiliated' || editedSchool.status === 'Disaffiliating' ? (
+                    <>
+                      <DetailRow label="Left Network Reason" value={editedSchool.leftNetworkReason} />
+                      <DetailRow label="Membership Termination Letter" value={editedSchool.membershipTerminationLetter} />
+                      <div></div> {/* Empty cell */}
+                    </>
+                  ) : (
+                    <>
+                      <DetailRow label="Governance Model" value={editedSchool.governanceModel} />
+                      <DetailRow label="Founders" value={editedSchool.founders?.join(', ')} />
+                      <DetailRow label="Current TLs" value={editedSchool.currentTLs?.join(', ')} />
+                    </>
+                  )}
                 </>
               )}
               
               {/* Third row - columns 2, 3, 4 */}
-              {!(school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating') && (
+              {isEditing ? (
                 <>
-                  <DetailRow label="School Open Date" value={school.schoolOpenDate || school.opened} />
-                  <DetailRow label="School Status" value={<StatusBadge status={school.status} />} />
-                  <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
+                  <EditableField label="School Open Date" field="schoolOpenDate" value={editedSchool.schoolOpenDate || editedSchool.opened} type="date" />
+                  <EditableField 
+                    label="School Status" 
+                    field="status" 
+                    value={editedSchool.status} 
+                    type="select"
+                    options={['Emerging', 'Open', 'Permanently Closed', 'Disaffiliated', 'Disaffiliating']}
+                  />
+                  <EditableField 
+                    label="Membership Status" 
+                    field="membershipStatus" 
+                    value={editedSchool.membershipStatus}
+                    type="select"
+                    options={['Member School', 'Pending', 'Former Member']}
+                  />
+                </>
+              ) : (
+                <>
+                  {!(editedSchool.status === 'Permanently Closed' || editedSchool.status === 'Disaffiliated' || editedSchool.status === 'Disaffiliating') && (
+                    <>
+                      <DetailRow label="School Open Date" value={editedSchool.schoolOpenDate || editedSchool.opened} />
+                      <DetailRow label="School Status" value={<StatusBadge status={editedSchool.status} />} />
+                      <DetailRow label="Membership Status" value={<StatusBadge status={editedSchool.membershipStatus} />} />
+                    </>
+                  )}
                 </>
               )}
             </div>
             
             {/* Continue with 4 columns for remaining fields */}
-            {!(school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating') && (
+            {!(editedSchool.status === 'Permanently Closed' || editedSchool.status === 'Disaffiliated' || editedSchool.status === 'Disaffiliating') && (
               <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                <DetailRow label="Program Focus" value={school.programFocus} />
-                <DetailRow label="Max Capacity Enrollments" value={school.maxCapacityEnrollments} />
-                <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
-                <DetailRow label="Public Funding" value={school.publicFunding} />
-                <DetailRow label="Flexible Tuition" value={school.flexibleTuition} />
-                <DetailRow label="School Calendar" value={school.schoolCalendar} />
-                <DetailRow label="School Schedule" value={school.schoolSchedule} />
-                <div></div> {/* Empty cell to complete the row */}
+                {isEditing ? (
+                  <>
+                    <EditableField label="Program Focus" field="programFocus" value={editedSchool.programFocus} />
+                    <EditableField label="Max Capacity Enrollments" field="maxCapacityEnrollments" value={editedSchool.maxCapacityEnrollments} type="number" />
+                    <EditableField label="Number of Classrooms" field="numberOfClassrooms" value={editedSchool.numberOfClassrooms} type="number" />
+                    <EditableField label="Public Funding" field="publicFunding" value={editedSchool.publicFunding} type="boolean" />
+                    <EditableField label="Flexible Tuition" field="flexibleTuition" value={editedSchool.flexibleTuition} type="boolean" />
+                    <EditableField label="School Calendar" field="schoolCalendar" value={editedSchool.schoolCalendar} />
+                    <EditableField label="School Schedule" field="schoolSchedule" value={editedSchool.schoolSchedule} />
+                    <div></div> {/* Empty cell to complete the row */}
+                  </>
+                ) : (
+                  <>
+                    <DetailRow label="Program Focus" value={editedSchool.programFocus} />
+                    <DetailRow label="Max Capacity Enrollments" value={editedSchool.maxCapacityEnrollments} />
+                    <DetailRow label="Number of Classrooms" value={editedSchool.numberOfClassrooms} />
+                    <DetailRow label="Public Funding" value={editedSchool.publicFunding} />
+                    <DetailRow label="Flexible Tuition" value={editedSchool.flexibleTuition} />
+                    <DetailRow label="School Calendar" value={editedSchool.schoolCalendar} />
+                    <DetailRow label="School Schedule" value={editedSchool.schoolSchedule} />
+                    <div></div> {/* Empty cell to complete the row */}
+                  </>
+                )}
               </div>
             )}
             
-            {/* Divider line */}
-            <hr className="border-gray-200" />
-            
-            {/* Collapsible section for closed schools */}
-            {(school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating') && (
-              <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                  <h3 className="text-lg font-semibold">School Information</h3>
-                  <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="mt-4 p-4 bg-white border rounded-lg">
-                  <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                    <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
-                    <DetailRow label="Governance Model" value={school.governanceModel} />
-                    <DetailRow label="Founders" value={school.founders?.join(', ')} />
-                    <DetailRow label="Program Focus" value={school.programFocus} />
-                    <DetailRow label="Max Capacity Enrollments" value={school.maxCapacityEnrollments} />
-                    <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
-                    <DetailRow label="Public Funding" value={school.publicFunding} />
-                    <DetailRow label="Flexible Tuition" value={school.flexibleTuition} />
+            {/* Continue with collapsible sections - editable when in edit mode */}
+            {!isEditing && (
+              <>
+                {/* Divider line */}
+                <hr className="border-gray-200" />
+                
+                {/* Rest of the collapsible sections remain the same */}
+                {(editedSchool.status === 'Permanently Closed' || editedSchool.status === 'Disaffiliated' || editedSchool.status === 'Disaffiliating') && (
+                  <details className="group">
+                    <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                      <h3 className="text-lg font-semibold">School Information</h3>
+                      <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </summary>
+                    <div className="mt-4 p-4 bg-white border rounded-lg">
+                      <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                        <DetailRow label="Ages Served" value={editedSchool.agesServed?.join(', ')} />
+                        <DetailRow label="Governance Model" value={editedSchool.governanceModel} />
+                        <DetailRow label="Founders" value={editedSchool.founders?.join(', ')} />
+                        <DetailRow label="Program Focus" value={editedSchool.programFocus} />
+                        <DetailRow label="Max Capacity Enrollments" value={editedSchool.maxCapacityEnrollments} />
+                        <DetailRow label="Number of Classrooms" value={editedSchool.numberOfClassrooms} />
+                        <DetailRow label="Public Funding" value={editedSchool.publicFunding} />
+                        <DetailRow label="Flexible Tuition" value={editedSchool.flexibleTuition} />
+                      </div>
+                    </div>
+                  </details>
+                )}
+                
+                {/* Membership Section */}
+                <details className="group">
+                  <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                    <h3 className="text-lg font-semibold">Membership</h3>
+                    <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="mt-4 p-4 bg-white border rounded-lg">
+                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                      <DetailRow label="Membership Status" value={<StatusBadge status={editedSchool.membershipStatus} />} />
+                      <DetailRow label="Signed Membership Agreement Date" value={editedSchool.signedMembershipAgreementDate} />
+                      <DetailRow 
+                        label="Signed Membership Agreement" 
+                        value={editedSchool.signedMembershipAgreement ? (
+                          <a href={editedSchool.signedMembershipAgreement} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                            View Agreement
+                          </a>
+                        ) : null}
+                      />
+                      <DetailRow label="Agreement Version" value={editedSchool.agreementVersion} />
+                    </div>
+                  </div>
+                </details>
+                
+                {/* Contact Information and Communications */}
+                <details className="group">
+                  <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                    <h3 className="text-lg font-semibold">Contact Information and Communications</h3>
+                    <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="mt-4 p-4 bg-white border rounded-lg">
+                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                      <DetailRow label="School Email" value={editedSchool.schoolEmail} />
+                      <DetailRow label="School Phone" value={editedSchool.phone} />
+                      <DetailRow label="Email Domain" value={editedSchool.emailDomain} />
+                      <DetailRow 
+                        label="Website" 
+                        value={editedSchool.website ? (
+                          <a href={editedSchool.website} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                            {editedSchool.website}
+                          </a>
+                        ) : null}
+                      />
+                      <DetailRow 
+                        label="Facebook" 
+                        value={editedSchool.facebook ? (
+                          <a href={editedSchool.facebook} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                            {editedSchool.facebook}
+                          </a>
+                        ) : null}
+                      />
+                      <DetailRow 
+                        label="Instagram" 
+                        value={editedSchool.instagram ? (
+                          <a href={`https://instagram.com/${editedSchool.instagram.replace('@', '')}`} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                            {editedSchool.instagram}
+                          </a>
+                        ) : null}
+                      />
+                    </div>
+                  </div>
+                </details>
+                
+                {/* Legal Entity */}
+                <details className="group">
+                  <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                    <h3 className="text-lg font-semibold">Legal Entity</h3>
+                    <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="mt-4 p-4 bg-white border rounded-lg">
+                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                      <DetailRow label="EIN" value={editedSchool.ein} />
+                      <DetailRow label="Nonprofit Status" value={editedSchool.nonprofitStatus} />
+                      <DetailRow label="Group Exemption Status" value={editedSchool.groupExemptionStatus} />
+                      <DetailRow label="Date Received Group Exemption" value={editedSchool.dateReceivedGroupExemption} />
+                      <DetailRow label="Date Withdrawn from Group Exemption" value={editedSchool.dateWithdrawnFromGroupExemption} />
+                      <DetailRow label="Legal Structure" value={editedSchool.legalStructure} />
+                      <DetailRow label="Institutional Partner" value={editedSchool.institutionalPartner} />
+                      <DetailRow label="Incorporation Date" value={editedSchool.incorporationDate} />
+                      <DetailRow label="Current End of Fiscal Year" value={editedSchool.currentFYEnd} />
+                      <DetailRow label="Legal Name" value={editedSchool.legalName} />
+                      <DetailRow label="Loan Report Name" value={editedSchool.loanReportName} />
+                      <div></div> {/* Empty cell to complete the row */}
+                    </div>
+                  </div>
+                </details>
+              </>
+            )}
+
+            {/* Editable collapsible sections when in edit mode */}
+            {isEditing && (
+              <>
+                {/* Divider line */}
+                <hr className="border-gray-200" />
+                
+                {/* Membership Section - Editable */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">Membership</h3>
+                  <div className="bg-white border rounded-lg p-4">
+                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                      <EditableField 
+                        label="Membership Status" 
+                        field="membershipStatus" 
+                        value={editedSchool.membershipStatus}
+                        type="select"
+                        options={['Member School', 'Pending', 'Former Member']}
+                      />
+                      <EditableField label="Signed Membership Agreement Date" field="signedMembershipAgreementDate" value={editedSchool.signedMembershipAgreementDate} type="date" />
+                      <EditableField label="Signed Membership Agreement" field="signedMembershipAgreement" value={editedSchool.signedMembershipAgreement} type="url" />
+                      <EditableField label="Agreement Version" field="agreementVersion" value={editedSchool.agreementVersion} />
+                    </div>
                   </div>
                 </div>
-              </details>
+                
+                {/* Contact Information and Communications - Editable */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">Contact Information and Communications</h3>
+                  <div className="bg-white border rounded-lg p-4">
+                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                      <EditableField label="School Email" field="schoolEmail" value={editedSchool.schoolEmail} type="email" />
+                      <EditableField label="School Phone" field="phone" value={editedSchool.phone} type="tel" />
+                      <EditableField label="Email Domain" field="emailDomain" value={editedSchool.emailDomain} />
+                      <EditableField label="Website" field="website" value={editedSchool.website} type="url" />
+                      <EditableField label="Facebook" field="facebook" value={editedSchool.facebook} type="url" />
+                      <EditableField label="Instagram" field="instagram" value={editedSchool.instagram} />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Legal Entity - Editable */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">Legal Entity</h3>
+                  <div className="bg-white border rounded-lg p-4">
+                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                      <EditableField label="EIN" field="ein" value={editedSchool.ein} />
+                      <EditableField 
+                        label="Nonprofit Status" 
+                        field="nonprofitStatus" 
+                        value={editedSchool.nonprofitStatus}
+                        type="select"
+                        options={['501(c)(3)', 'group exemption', 'pending', 'for-profit']}
+                      />
+                      <EditableField 
+                        label="Group Exemption Status" 
+                        field="groupExemptionStatus" 
+                        value={editedSchool.groupExemptionStatus}
+                        type="select"
+                        options={['Active', 'Pending', 'Withdrawn', 'Not Applicable']}
+                      />
+                      <EditableField label="Date Received Group Exemption" field="dateReceivedGroupExemption" value={editedSchool.dateReceivedGroupExemption} type="date" />
+                      <EditableField label="Date Withdrawn from Group Exemption" field="dateWithdrawnFromGroupExemption" value={editedSchool.dateWithdrawnFromGroupExemption} type="date" />
+                      <EditableField label="Legal Structure" field="legalStructure" value={editedSchool.legalStructure} />
+                      <EditableField label="Institutional Partner" field="institutionalPartner" value={editedSchool.institutionalPartner} />
+                      <EditableField label="Incorporation Date" field="incorporationDate" value={editedSchool.incorporationDate} type="date" />
+                      <EditableField label="Current End of Fiscal Year" field="currentFYEnd" value={editedSchool.currentFYEnd} />
+                      <EditableField label="Legal Name" field="legalName" value={editedSchool.legalName} />
+                      <EditableField label="Loan Report Name" field="loanReportName" value={editedSchool.loanReportName} />
+                      <div></div> {/* Empty cell to complete the row */}
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
-            
-            {/* Membership Section */}
-            <details className="group">
-              <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                <h3 className="text-lg font-semibold">Membership</h3>
-                <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </summary>
-              <div className="mt-4 p-4 bg-white border rounded-lg">
-                <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                  <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
-                  <DetailRow label="Signed Membership Agreement Date" value={school.signedMembershipAgreementDate} />
-                  <DetailRow 
-                    label="Signed Membership Agreement" 
-                    value={school.signedMembershipAgreement ? (
-                      <a href={school.signedMembershipAgreement} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                        View Agreement
-                      </a>
-                    ) : null}
-                  />
-                  <DetailRow label="Agreement Version" value={school.agreementVersion} />
-                </div>
-              </div>
-            </details>
-            
-            {/* Contact Information and Communications */}
-            <details className="group">
-              <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                <h3 className="text-lg font-semibold">Contact Information and Communications</h3>
-                <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </summary>
-              <div className="mt-4 p-4 bg-white border rounded-lg">
-                <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                  <DetailRow label="School Email" value={school.schoolEmail} />
-                  <DetailRow label="School Phone" value={school.phone} />
-                  <DetailRow label="Email Domain" value={school.emailDomain} />
-                  <DetailRow 
-                    label="Website" 
-                    value={school.website ? (
-                      <a href={school.website} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                        {school.website}
-                      </a>
-                    ) : null}
-                  />
-                  <DetailRow 
-                    label="Facebook" 
-                    value={school.facebook ? (
-                      <a href={school.facebook} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                        {school.facebook}
-                      </a>
-                    ) : null}
-                  />
-                  <DetailRow 
-                    label="Instagram" 
-                    value={school.instagram ? (
-                      <a href={`https://instagram.com/${school.instagram.replace('@', '')}`} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                        {school.instagram}
-                      </a>
-                    ) : null}
-                  />
-                </div>
-              </div>
-            </details>
-            
-            {/* Legal Entity */}
-            <details className="group">
-              <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                <h3 className="text-lg font-semibold">Legal Entity</h3>
-                <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </summary>
-              <div className="mt-4 p-4 bg-white border rounded-lg">
-                <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                  <DetailRow label="EIN" value={school.ein} />
-                  <DetailRow label="Nonprofit Status" value={school.nonprofitStatus} />
-                  <DetailRow label="Group Exemption Status" value={school.groupExemptionStatus} />
-                  <DetailRow label="Date Received Group Exemption" value={school.dateReceivedGroupExemption} />
-                  <DetailRow label="Date Withdrawn from Group Exemption" value={school.dateWithdrawnFromGroupExemption} />
-                  <DetailRow label="Legal Structure" value={school.legalStructure} />
-                  <DetailRow label="Institutional Partner" value={school.institutionalPartner} />
-                  <DetailRow label="Incorporation Date" value={school.incorporationDate} />
-                  <DetailRow label="Current End of Fiscal Year" value={school.currentFYEnd} />
-                  <DetailRow label="Legal Name" value={school.legalName} />
-                  <DetailRow label="Loan Report Name" value={school.loanReportName} />
-                  <div></div> {/* Empty cell to complete the row */}
-                </div>
-              </div>
-            </details>
           </div>
         )}
 
@@ -1889,6 +2146,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
 const EducatorDetails = ({ educator, onBack }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [selectedSSJForm, setSelectedSSJForm] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedEducator, setEditedEducator] = useState(educator);
 
   const tabs = [
     { id: 'summary', label: 'Summary' },
@@ -1903,6 +2162,91 @@ const EducatorDetails = ({ educator, onBack }) => {
     { id: 'notes', label: 'Notes' },
     { id: 'linked-emails', label: 'Linked emails/meetings' }
   ];
+
+  const handleEditSave = () => {
+    // Here you would typically save to your backend/database
+    console.log('Saving educator data:', editedEducator);
+    // For now, we'll just exit edit mode
+    setIsEditing(false);
+    // You could also update the parent component's educator data here
+  };
+
+  const handleEditCancel = () => {
+    // Reset to original data and exit edit mode
+    setEditedEducator(educator);
+    setIsEditing(false);
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditedEducator(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const EditableField = ({ label, field, value, type = 'text', options = null }) => {
+    if (type === 'boolean') {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={value || false}
+              onChange={(e) => handleInputChange(field, e.target.checked)}
+              className="mr-2"
+            />
+            <span className="text-sm">{value ? 'Yes' : 'No'}</span>
+          </label>
+        </div>
+      );
+    }
+
+    if (type === 'select' && options) {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <select
+            value={value || ''}
+            onChange={(e) => handleInputChange(field, e.target.value)}
+            className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+          >
+            <option value="">Select...</option>
+            {options.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    if (type === 'array') {
+      return (
+        <div className="py-2">
+          <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+          <input
+            type="text"
+            value={Array.isArray(value) ? value.join(', ') : (value || '')}
+            onChange={(e) => handleInputChange(field, e.target.value.split(', ').filter(v => v.trim()))}
+            className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+            placeholder="Separate multiple values with commas"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="py-2">
+        <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+        <input
+          type={type}
+          value={value || ''}
+          onChange={(e) => handleInputChange(field, e.target.value)}
+          className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+        />
+      </div>
+    );
+  };
 
   // Get SSJ forms for this educator
   const educatorSSJForms = sampleSSJFilloutForms.filter(form => form.educatorId === educator.id);
@@ -1957,32 +2301,81 @@ const EducatorDetails = ({ educator, onBack }) => {
       <div className="flex-1 overflow-y-auto p-6">
         {activeTab === 'summary' && (
           <div className="space-y-8">
+            {/* Edit Button */}
+            <div className="flex justify-end">
+              {!isEditing ? (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                >
+                  Edit
+                </button>
+              ) : (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleEditSave}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={handleEditCancel}
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="flex items-start space-x-4">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                 <span className="text-xl font-medium text-gray-600">
-                  {educator.firstName[0]}{educator.lastName[0]}
+                  {editedEducator.firstName[0]}{editedEducator.lastName[0]}
                 </span>
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-900">{educator.firstName} {educator.lastName}</h2>
+                <h2 className="text-xl font-bold text-gray-900">{editedEducator.firstName} {editedEducator.lastName}</h2>
                 <div className="mt-1 space-y-1">
-                  <div className="text-blue-600">{educator.email}</div>
-                  <div className="text-gray-600">{educator.role}</div>
-                  <div className="text-gray-600">{educator.pronouns}</div>
+                  <div className="text-blue-600">{editedEducator.email}</div>
+                  <div className="text-gray-600">{editedEducator.role}</div>
+                  <div className="text-gray-600">{editedEducator.pronouns}</div>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t pt-6">
-              <DetailRow label="First Name" value={educator.firstName} />
-              <DetailRow label="Last Name" value={educator.lastName} />
-              <DetailRow label="Email" value={educator.email} />
-              <DetailRow label="Current School" value={educator.currentSchool} />
-              <DetailRow label="Role" value={educator.role} />
-              <DetailRow label="Discovery Status" value={<StatusBadge status={educator.discoveryStatus} />} />
-              <DetailRow label="Montessori Certified" value={educator.montessoriCertified} />
-              <DetailRow label="Pronouns" value={educator.pronouns} />
-              <DetailRow label="Phone" value={educator.phone} />
+              {isEditing ? (
+                <>
+                  <EditableField label="First Name" field="firstName" value={editedEducator.firstName} />
+                  <EditableField label="Last Name" field="lastName" value={editedEducator.lastName} />
+                  <EditableField label="Email" field="email" value={editedEducator.email} type="email" />
+                  <EditableField label="Current School" field="currentSchool" value={editedEducator.currentSchool} />
+                  <EditableField label="Role" field="role" value={editedEducator.role} />
+                  <EditableField 
+                    label="Discovery Status" 
+                    field="discoveryStatus" 
+                    value={editedEducator.discoveryStatus}
+                    type="select"
+                    options={['Complete', 'In Progress', 'Not Started']}
+                  />
+                  <EditableField label="Montessori Certified" field="montessoriCertified" value={editedEducator.montessoriCertified} type="boolean" />
+                  <EditableField label="Pronouns" field="pronouns" value={editedEducator.pronouns} />
+                  <EditableField label="Phone" field="phone" value={editedEducator.phone} type="tel" />
+                </>
+              ) : (
+                <>
+                  <DetailRow label="First Name" value={editedEducator.firstName} />
+                  <DetailRow label="Last Name" value={editedEducator.lastName} />
+                  <DetailRow label="Email" value={editedEducator.email} />
+                  <DetailRow label="Current School" value={editedEducator.currentSchool} />
+                  <DetailRow label="Role" value={editedEducator.role} />
+                  <DetailRow label="Discovery Status" value={<StatusBadge status={editedEducator.discoveryStatus} />} />
+                  <DetailRow label="Montessori Certified" value={editedEducator.montessoriCertified} />
+                  <DetailRow label="Pronouns" value={editedEducator.pronouns} />
+                  <DetailRow label="Phone" value={editedEducator.phone} />
+                </>
+              )}
             </div>
           </div>
         )}
