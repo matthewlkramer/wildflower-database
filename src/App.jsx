@@ -282,6 +282,84 @@ const sampleGuideAssignments = [
   }
 ];
 
+// Grants data
+const sampleGrants = [
+  {
+    id: 'gr1',
+    schoolId: 'rec1', // Yellow Rose
+    amount: 25000,
+    issueDate: '2023-05-15',
+    issuedBy: 'Rachel Kelley-Cohen',
+    partnerName: 'TWF National',
+    status: 'Issued',
+    useOfFunds: 'Startup funding for materials and training'
+  },
+  {
+    id: 'gr2',
+    schoolId: 'rec1', // Yellow Rose
+    amount: 15000,
+    issueDate: '2023-08-01',
+    issuedBy: 'Daniela Vasan',
+    partnerName: 'TWF Walton',
+    status: 'Planned',
+    useOfFunds: 'Facility preparation and equipment'
+  },
+  {
+    id: 'gr3',
+    schoolId: 'rec2', // WF Boston
+    amount: 30000,
+    issueDate: '2023-01-10',
+    issuedBy: 'Sara Hernandez',
+    partnerName: 'TWF Cambridge',
+    status: 'Issued',
+    useOfFunds: 'Expansion funding for additional classroom'
+  },
+  {
+    id: 'gr4',
+    schoolId: 'rec2', // WF Boston
+    amount: 12000,
+    issueDate: '2023-03-22',
+    issuedBy: 'Erika McDowell',
+    partnerName: 'COVID Relief Fund',
+    status: 'Issued',
+    useOfFunds: 'COVID-19 safety measures and technology upgrades'
+  }
+];
+
+// Loans data
+const sampleLoans = [
+  {
+    id: 'ln1',
+    schoolId: 'rec1', // Yellow Rose
+    amount: 75000,
+    issueDate: '2023-09-01',
+    maturityDate: '2026-09-01',
+    interestRate: 0.03,
+    status: 'Interest Only Period',
+    useOfProceeds: 'Startup funding for facility and initial operations'
+  },
+  {
+    id: 'ln2',
+    schoolId: 'rec2', // WF Boston
+    amount: 100000,
+    issueDate: '2018-08-15',
+    maturityDate: '2023-08-15',
+    interestRate: 0.025,
+    status: 'Paid Off',
+    useOfProceeds: 'Initial school operations and equipment'
+  },
+  {
+    id: 'ln3',
+    schoolId: 'rec2', // WF Boston
+    amount: 50000,
+    issueDate: '2021-06-01',
+    maturityDate: '2026-06-01',
+    interestRate: 0.035,
+    status: 'Principal Repayment',
+    useOfProceeds: 'Expansion to second classroom'
+  }
+];
+
 const StatusBadge = ({ status }) => {
   const getStatusColor = () => {
     switch (status) {
@@ -1049,7 +1127,165 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           </div>
         )}
 
-        {activeTab !== 'summary' && activeTab !== 'tls' && activeTab !== 'locations' && activeTab !== 'governance' && activeTab !== 'guides' && activeTab !== 'ssj-oss' && activeTab !== 'membership-fees' && (
+        {activeTab === 'grants-loans' && (
+          <div className="grid grid-cols-2 gap-8">
+            {/* Left Half - Grants */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">Grants</h3>
+                <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create New Grant
+                </button>
+              </div>
+              
+              <div className="bg-white border rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Issue Date
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Amount
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Issued By
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {sampleGrants
+                      .filter(grant => grant.schoolId === school.id)
+                      .map(grant => (
+                      <tr key={grant.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {grant.issueDate}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                          ${grant.amount.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {grant.issuedBy}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {grant.partnerName}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <StatusBadge status={grant.status} />
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                          <button 
+                            onClick={() => alert(`Open grant ${grant.id} for editing`)}
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                          >
+                            Open
+                          </button>
+                          <button 
+                            onClick={() => alert(`Delete grant ${grant.id}`)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
+                {sampleGrants.filter(grant => grant.schoolId === school.id).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No grants found for this school.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Half - Loans */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">Loans</h3>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create New Loan
+                </button>
+              </div>
+              
+              <div className="bg-white border rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Issue Date
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Amount
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {sampleLoans
+                      .filter(loan => loan.schoolId === school.id)
+                      .map(loan => (
+                      <tr key={loan.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {loan.issueDate}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            ${loan.amount.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {loan.interestRate * 100}% interest
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <StatusBadge status={loan.status} />
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                          <button 
+                            onClick={() => alert(`Open loan ${loan.id} for editing`)}
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                          >
+                            Open
+                          </button>
+                          <button 
+                            onClick={() => alert(`Delete loan ${loan.id}`)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
+                {sampleLoans.filter(loan => loan.schoolId === school.id).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No loans found for this school.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab !== 'summary' && activeTab !== 'tls' && activeTab !== 'locations' && activeTab !== 'governance' && activeTab !== 'guides' && activeTab !== 'ssj-oss' && activeTab !== 'membership-fees' && activeTab !== 'grants-loans' && (
           <div className="text-center py-8 text-gray-500">
             {tabs.find(t => t.id === activeTab)?.label} content would go here
           </div>
