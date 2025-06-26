@@ -792,40 +792,53 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
       <div className="flex-1 overflow-y-auto p-6">
         {activeTab === 'summary' && (
           <div className="space-y-8">
-            {/* Header Section with Logo and Key Info */}
-            <div className="flex items-start space-x-6">
-              {/* School Logo - bigger */}
-              <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-16 h-16 text-gray-400" />
+            {/* Header Section with Logo and Key Info in 4-column grid */}
+            <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+              {/* School Logo - spans 3 rows in first column */}
+              <div className="row-span-3 flex items-center justify-center">
+                <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <FileText className="w-16 h-16 text-gray-400" />
+                </div>
               </div>
               
-              {/* Key Information to the right of logo - 3 columns for first section */}
-              <div className="flex-1">
-                {/* Check if school is closed/disaffiliated */}
-                {school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating' ? (
-                  /* For closed schools - only show left network info */
-                  <div className="grid grid-cols-3 gap-x-8 gap-y-2">
-                    <DetailRow label="School Name" value={school.name} />
-                    <DetailRow label="Short Name" value={school.shortName} />
-                    <DetailRow label="Left Network Date" value={school.leftNetworkDate} />
-                    <DetailRow label="Left Network Reason" value={school.leftNetworkReason} />
-                    <DetailRow label="Membership Termination Letter" value={school.membershipTerminationLetter} />
-                  </div>
-                ) : (
-                  /* For active schools - show standard info in 3 columns for first 3 rows */
-                  <div className="grid grid-cols-3 gap-x-6 gap-y-2">
-                    <DetailRow label="School Name" value={school.name} />
-                    <DetailRow label="Short Name" value={school.shortName} />
-                    <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
-                    <DetailRow label="Governance Model" value={school.governanceModel} />
-                    <DetailRow label="Founders" value={school.founders?.join(', ')} />
-                    <DetailRow label="Current TLs" value={school.currentTLs?.join(', ')} />
-                    <DetailRow label="School Open Date" value={school.schoolOpenDate || school.opened} />
-                    <DetailRow label="School Status" value={<StatusBadge status={school.status} />} />
-                    <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
-                  </div>
-                )}
-              </div>
+              {/* First row - columns 2, 3, 4 */}
+              {school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating' ? (
+                <>
+                  <DetailRow label="School Name" value={school.name} />
+                  <DetailRow label="Short Name" value={school.shortName} />
+                  <DetailRow label="Left Network Date" value={school.leftNetworkDate} />
+                </>
+              ) : (
+                <>
+                  <DetailRow label="School Name" value={school.name} />
+                  <DetailRow label="Short Name" value={school.shortName} />
+                  <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
+                </>
+              )}
+              
+              {/* Second row - columns 2, 3, 4 */}
+              {school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating' ? (
+                <>
+                  <DetailRow label="Left Network Reason" value={school.leftNetworkReason} />
+                  <DetailRow label="Membership Termination Letter" value={school.membershipTerminationLetter} />
+                  <div></div> {/* Empty cell */}
+                </>
+              ) : (
+                <>
+                  <DetailRow label="Governance Model" value={school.governanceModel} />
+                  <DetailRow label="Founders" value={school.founders?.join(', ')} />
+                  <DetailRow label="Current TLs" value={school.currentTLs?.join(', ')} />
+                </>
+              )}
+              
+              {/* Third row - columns 2, 3, 4 */}
+              {!(school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating') && (
+                <>
+                  <DetailRow label="School Open Date" value={school.schoolOpenDate || school.opened} />
+                  <DetailRow label="School Status" value={<StatusBadge status={school.status} />} />
+                  <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
+                </>
+              )}
             </div>
             
             {/* Continue with 4 columns for remaining fields */}
@@ -838,6 +851,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 <DetailRow label="Flexible Tuition" value={school.flexibleTuition} />
                 <DetailRow label="School Calendar" value={school.schoolCalendar} />
                 <DetailRow label="School Schedule" value={school.schoolSchedule} />
+                <div></div> {/* Empty cell to complete the row */}
               </div>
             )}
             
@@ -955,6 +969,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                   <DetailRow label="Current End of Fiscal Year" value={school.currentFYEnd} />
                   <DetailRow label="Legal Name" value={school.legalName} />
                   <DetailRow label="Loan Report Name" value={school.loanReportName} />
+                  <div></div> {/* Empty cell to complete the row */}
                 </div>
               </div>
             </details>
