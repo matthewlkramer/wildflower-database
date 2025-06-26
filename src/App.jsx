@@ -3013,30 +3013,26 @@ const getCurrentColumns = () => {
     }
   }
 
-  return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
-              <p className="text-gray-600">Manage schools, educators, and network data</p>
-            </div>
+return (
+  <div className="h-screen flex flex-col bg-gray-50">
+    <div className="bg-white shadow-sm border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between py-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
+            <p className="text-gray-600">Manage schools, educators, and network data</p>
           </div>
-        </div>
-      </div>
-
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Move tabs to the right side of header */}
           <div className="flex space-x-8">
             {mainTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setMainTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
                   mainTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 {tab.label} ({tab.count})
@@ -3045,6 +3041,7 @@ const getCurrentColumns = () => {
           </div>
         </div>
       </div>
+    </div>
 
       <div className="flex-1 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
