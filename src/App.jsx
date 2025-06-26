@@ -30,7 +30,60 @@ const sampleSchools = [
     guidestarRequested: true,
     flexibleTuitionModel: false,
     activePodMember: 'Yes, regular attendee/role holder',
-    membershipAgreementDate: '5/28/2024'
+    membershipAgreementDate: '5/28/2024',
+    // SSJ/OSS Data
+    ssjStage: 'Startup',
+    ssjTargetCity: 'Houston',
+    ssjTargetState: 'TX',
+    ssjOriginalProjectedOpenDate: '9/10/2024, 12:00 AM',
+    ssjProjOpenSchoolYear: '2027',
+    ssjProjectedOpen: '9/1/2026, 12:00 AM',
+    riskFactors: '-',
+    watchlist: '-',
+    ssjBoardDevelopment: 'Board is forming, 1-2 mtgs',
+    ssjCohortStatus: '-',
+    enteredVisioningDate: '1/9/2024, 12:00 AM',
+    cohorts: '-',
+    visioningAlbumComplete: '-',
+    ssjHasETLPartner: 'No partner',
+    ssjOpsGuideTrack: '1:1 Support',
+    enteredPlanningDate: '3/14/2024, 12:00 AM',
+    planningAlbum: '-',
+    ssjReadinessRating: 'Low',
+    ssjTool: 'My Wildflower - Sensible Default',
+    enteredStartupDate: '5/28/2024, 12:00 AM',
+    logoDesigner: 'internal design',
+    trademarkFiled: '-',
+    nameSelectionProposal: '-',
+    ssjNameReserved: 'reserved',
+    ssjFacility: 'Searching, intending to rent',
+    building4GoodFirm: '-',
+    ssjBuilding4GoodStatus: '-',
+    ssjDateSharedN4G: '-',
+    ssjAmountRaised: '-',
+    ssjGapInFunding: '-',
+    ssjLoanApprovedAmt: '-',
+    ssjLoanEligibility: '-',
+    ssjTotalStartupFunding: '$200,000',
+    ssjViablePathway: 'Maybe, prospects identified but not secured',
+    ssjFundraisingNarrative: 'Biggest barrier is finding a facility. Funding gap is complicated, without a facility.',
+    ssjInternalFunding: 'Yes, loan',
+    ssjBudgetStage: '-',
+    ssjEnrollmentTrack: '-',
+    ssjNextDecision: 'Pre-program office with Daniela, Maya and team for Powell app',
+    // Systems
+    googleVoice: '-',
+    budgetUtility: '-',
+    admissionsSystem: 'TC',
+    billComAccount: '-',
+    bookkeeper: '-',
+    businessInsurance: '-',
+    tcRecordkeeping: '-',
+    tcAdmissions: '-',
+    qbo: 'internal license - active',
+    tcSchoolId: '-',
+    websiteTool: 'Wix v2',
+    gusto: '-'
   },
   {
     id: 'rec2',
@@ -46,6 +99,139 @@ const sampleSchools = [
     pod: 'Mass: Broadway',
     opened: '2018-09-01',
     founders: ['Sarah Johnson']
+  }
+// Membership fee annual records
+const sampleMembershipFeeRecords = [
+  {
+    id: 'mfr1',
+    schoolId: 'rec1',
+    schoolYear: '2023-2024',
+    initialFee: 5000,
+    revisedAmount: 4500,
+    amountPaid: 2000,
+    amountReceivable: 2500,
+    exemptionStatus: 'Non-exempt',
+    revenue: 125000,
+    nthYear: 1,
+    historyStatus: 'Emerging'
+  },
+  {
+    id: 'mfr2',
+    schoolId: 'rec1',
+    schoolYear: '2024-2025',
+    initialFee: 6000,
+    revisedAmount: 6000,
+    amountPaid: 1500,
+    amountReceivable: 4500,
+    exemptionStatus: 'Non-exempt',
+    revenue: 150000,
+    nthYear: 2,
+    historyStatus: 'Open'
+  }
+// Grants data
+const sampleGrants = [
+  {
+    id: 'gr1',
+    schoolId: 'rec1',
+    amount: 25000,
+    issueDate: '2023-06-15',
+    issuedBy: 'Rachel Kelley-Cohen',
+    status: 'Issued',
+    fundingSource: 'TWF - National'
+  },
+  {
+    id: 'gr2',
+    schoolId: 'rec1',
+    amount: 15000,
+    issueDate: '2024-01-10',
+    issuedBy: 'Daniela Vasan',
+    status: 'Planned',
+    fundingSource: 'TWF - Walton'
+  }
+];
+
+// Loans data
+const sampleLoans = [
+  {
+    id: 'ln1',
+    schoolId: 'rec1',
+    amount: 75000,
+    issueDate: '2023-09-01',
+    status: 'Interest Only Period',
+    useOfProceeds: 'Start-up'
+  }
+];
+
+// School notes data
+const sampleSchoolNotes = [
+  {
+    id: 'sn1',
+    schoolId: 'rec1',
+    notes: 'Initial meeting with founders went well. Strong commitment to Montessori philosophy.',
+    dateCreated: '2023-01-15',
+    createdBy: 'Rachel Kelley-Cohen',
+    private: false
+  },
+  {
+    id: 'sn2',
+    schoolId: 'rec1',
+    notes: 'CONFIDENTIAL: Board concerns about timeline. Need to address funding gap.',
+    dateCreated: '2024-02-10',
+    createdBy: 'Rachel Kelley-Cohen',
+    private: true
+  }
+];
+
+// Action steps data
+const sampleActionSteps = [
+  {
+    id: 'as1',
+    schoolId: 'rec1',
+    item: 'Complete facility lease agreement review',
+    assignee: 'Rachel Kelley-Cohen',
+    status: 'Incomplete',
+    assignedDate: '2023-09-01',
+    dueDate: '2023-10-15'
+  },
+  {
+    id: 'as2',
+    schoolId: 'rec1',
+    item: 'Submit final enrollment projections',
+    assignee: 'Ashten Sommer',
+    status: 'Complete',
+    assignedDate: '2023-08-15',
+    dueDate: '2023-09-30'
+  }
+];
+
+// Membership fee updates
+const sampleMembershipFeeUpdates = [
+  {
+    id: 'mfu1',
+    schoolId: 'rec1',
+    schoolYear: '2023-2024',
+    updateType: 'Payment received',
+    date: '2023-09-15',
+    amountPaid: 1000,
+    explanation: 'First installment payment received'
+  },
+  {
+    id: 'mfu2',
+    schoolId: 'rec1',
+    schoolYear: '2023-2024',
+    updateType: 'Change in fee',
+    date: '2023-10-01',
+    revisedFeeAmount: 4500,
+    explanation: 'Fee reduced due to lower than expected enrollment'
+  },
+  {
+    id: 'mfu3',
+    schoolId: 'rec1',
+    schoolYear: '2024-2025',
+    updateType: 'Payment received',
+    date: '2024-08-15',
+    amountPaid: 1500,
+    explanation: 'First payment for 2024-2025 school year'
   }
 ];
 
@@ -231,6 +417,7 @@ const DataTable = ({ data, columns, onRowClick, searchTerm }) => {
 
 const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   const [activeTab, setActiveTab] = useState('summary');
+  const [selectedSchoolYear, setSelectedSchoolYear] = useState(null);
 
   const tabs = [
     { id: 'summary', label: 'Summary' },
@@ -245,12 +432,27 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     { id: 'notes-actions', label: 'Notes/Action steps' }
   ];
 
+  // Get membership fee records for this school
+  const membershipFeeRecords = sampleMembershipFeeRecords.filter(record => record.schoolId === school.id);
+  
+  // Get the selected record details
+  const selectedRecord = selectedSchoolYear ? 
+    membershipFeeRecords.find(record => record.schoolYear === selectedSchoolYear) : 
+    null;
+  
+  // Get updates for the selected school year
+  const membershipUpdates = selectedSchoolYear ? 
+    sampleMembershipFeeUpdates.filter(update => 
+      update.schoolId === school.id && update.schoolYear === selectedSchoolYear
+    ) : [];
+
   const DetailRow = ({ label, value, span = false }) => (
     <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
       <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
       <div className="text-sm text-gray-900">
         {value === true ? <CheckCircle className="w-4 h-4 text-green-600" /> : 
          value === false ? <XCircle className="w-4 h-4 text-red-600" /> :
+         typeof value === 'number' ? value.toLocaleString() :
          value || '-'}
       </div>
     </div>
@@ -721,7 +923,205 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           </div>
         )}
 
-        {activeTab !== 'summary' && activeTab !== 'tls' && activeTab !== 'locations' && activeTab !== 'governance' && activeTab !== 'guides' && (
+        {activeTab === 'ssj-oss' && (
+          <div className="grid grid-cols-4 gap-8">
+            {/* Column 1 */}
+            <div className="space-y-4">
+              <DetailRow label="SSJ Stage" value={school.ssjStage} />
+              <DetailRow label="SSJ - Target City" value={school.ssjTargetCity} />
+              <DetailRow label="SSJ - Board development" value={school.ssjBoardDevelopment} />
+              <DetailRow label="SSJ - Has the ETL identified a partner?" value={school.ssjHasETLPartner} />
+              <DetailRow label="SSJ - Is the budget at a stage that will allow the ETL(s) to take their next steps?" value={school.ssjBudgetStage} />
+              <DetailRow label="SSJ - Is the team on track for their enrollment goals?" value={school.ssjEnrollmentTrack} />
+              <DetailRow label="SSJ - What is the next big decision or action this school is working on?" value={school.ssjNextDecision} />
+              <DetailRow label="SSJ - Amount raised" value={school.ssjAmountRaised} />
+              <DetailRow label="SSJ - Gap in Funding" value={school.ssjGapInFunding} />
+              <DetailRow label="SSJ - Is the school planning to apply for internal Wildflower funding?" value={school.ssjInternalFunding} />
+              <DetailRow label="SSJ - Loan approved amt" value={school.ssjLoanApprovedAmt} />
+              <DetailRow label="SSJ - Loan eligibility" value={school.ssjLoanEligibility} />
+              <DetailRow label="SSJ - Total Startup Funding Needed" value={school.ssjTotalStartupFunding} />
+              <DetailRow label="SSJ - Does the school have a viable pathway to funding?" value={school.ssjViablePathway} />
+              <DetailRow label="SSJ - Fundraising narrative" value={school.ssjFundraisingNarrative} />
+            </div>
+
+            {/* Column 2 */}
+            <div className="space-y-4">
+              <DetailRow label="SSJ - Original Projected Open Date" value={school.ssjOriginalProjectedOpenDate} />
+              <DetailRow label="SSJ - Target State" value={school.ssjTargetState} />
+              <DetailRow label="SSJ - Cohort Status" value={school.ssjCohortStatus} />
+              <DetailRow label="Cohorts" value={school.cohorts} />
+              <DetailRow label="SSJ - Ops Guide Support Track" value={school.ssjOpsGuideTrack} />
+              <DetailRow label="SSJ - Readiness to Open Rating" value={school.ssjReadinessRating} />
+              <DetailRow label="SSJ - SSJ Tool" value={school.ssjTool} />
+              <DetailRow label="Logo designer" value={school.logoDesigner} />
+              <DetailRow label="Trademark filed" value={school.trademarkFiled} />
+              <DetailRow label="Name Selection Proposal" value={school.nameSelectionProposal} />
+              <DetailRow label="SSJ - Name Reserved" value={school.ssjNameReserved} />
+              <DetailRow label="SSJ - Facility" value={school.ssjFacility} />
+              <DetailRow label="Building4Good Firm & Attorney" value={school.building4GoodFirm} />
+              <DetailRow label="SSJ - Building4Good Status" value={school.ssjBuilding4GoodStatus} />
+              <DetailRow label="SSJ - Date shared with N4G" value={school.ssjDateSharedN4G} />
+            </div>
+
+            {/* Column 3 */}
+            <div className="space-y-4">
+              <DetailRow label="SSJ - Proj Open School Year" value={school.ssjProjOpenSchoolYear} />
+              <DetailRow label="Risk Factors" value={school.riskFactors} />
+              <DetailRow label="Entered Visioning Date" value={school.enteredVisioningDate} />
+              <DetailRow label="Visioning album complete" value={school.visioningAlbumComplete} />
+              <DetailRow label="Visioning album" value={school.visioningAlbum} />
+              <DetailRow label="Entered Planning Date" value={school.enteredPlanningDate} />
+              <DetailRow label="Planning album" value={school.planningAlbum} />
+              <DetailRow label="Entered Startup Date" value={school.enteredStartupDate} />
+            </div>
+
+            {/* Column 4 - SSJ Projected Open & Systems */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <DetailRow label="SSJ - Projected Open" value={school.ssjProjectedOpen} />
+                <DetailRow label="Watchlist" value={school.watchlist} />
+              </div>
+
+              {/* Systems Section */}
+              <div>
+                <h4 className="text-lg font-semibold mb-4 text-gray-900">Systems</h4>
+                <div className="space-y-4">
+                  <DetailRow label="Google Voice" value={school.googleVoice} />
+                  <DetailRow label="Budget Utility" value={school.budgetUtility} />
+                  <DetailRow label="Admissions System" value={school.admissionsSystem} />
+                  <DetailRow label="Bill.com account" value={school.billComAccount} />
+                  <DetailRow label="Bookkeeper / Accountant" value={school.bookkeeper} />
+                  <DetailRow label="Business Insurance" value={school.businessInsurance} />
+                  <DetailRow label="TC Recordkeeping" value={school.tcRecordkeeping} />
+                  <DetailRow label="TC Admissions" value={school.tcAdmissions} />
+                  <DetailRow label="QBO" value={school.qbo} />
+                  <DetailRow label="TC school ID" value={school.tcSchoolId} />
+                  <DetailRow label="Website tool" value={school.websiteTool} />
+                  <DetailRow label="Gusto" value={school.gusto} />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'membership-fees' && (
+          <div className="grid grid-cols-12 gap-8">
+            {/* Left Column - School Year Selection */}
+            <div className="col-span-3">
+              <h3 className="text-lg font-semibold mb-4">School Years</h3>
+              <div className="space-y-2">
+                {membershipFeeRecords.map(record => (
+                  <button
+                    key={record.id}
+                    onClick={() => setSelectedSchoolYear(record.schoolYear)}
+                    className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                      selectedSchoolYear === record.schoolYear
+                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                        : 'bg-white border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    {record.schoolYear}
+                  </button>
+                ))}
+                {membershipFeeRecords.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No membership fee records found
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Middle Column - Record Details */}
+            <div className="col-span-5">
+              {selectedRecord ? (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Membership Fee Details - {selectedRecord.schoolYear}
+                  </h3>
+                  <div className="bg-white border rounded-lg p-6">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                      <DetailRow label="School Year" value={selectedRecord.schoolYear} />
+                      <DetailRow label="nth Year" value={selectedRecord.nthYear} />
+                      
+                      <DetailRow label="Initial Fee" value={`${selectedRecord.initialFee?.toLocaleString() || 0}`} />
+                      <DetailRow label="Revised Amount" value={`${selectedRecord.revisedAmount?.toLocaleString() || 0}`} />
+                      
+                      <DetailRow label="Amount Paid" value={`${selectedRecord.amountPaid?.toLocaleString() || 0}`} />
+                      <DetailRow label="Amount Receivable" value={`${selectedRecord.amountReceivable?.toLocaleString() || 0}`} />
+                      
+                      <DetailRow label="Exemption Status" value={selectedRecord.exemptionStatus} />
+                      <DetailRow label="History Status" value={selectedRecord.historyStatus} />
+                      
+                      <DetailRow label="Revenue" value={`${selectedRecord.revenue?.toLocaleString() || 0}`} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <h3 className="text-lg font-semibold mb-2">Select a School Year</h3>
+                  <p>Choose a school year from the left to view membership fee details</p>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column - Updates Table */}
+            <div className="col-span-4">
+              <h3 className="text-lg font-semibold mb-4">Fee Updates</h3>
+              {selectedSchoolYear ? (
+                <div className="bg-white border rounded-lg overflow-hidden">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Update Type
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Amount
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {membershipUpdates.map(update => (
+                        <tr key={update.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3">
+                            <div className="text-sm font-medium text-gray-900">
+                              {update.updateType}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {update.explanation}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {update.date}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {update.amountPaid && `${update.amountPaid.toLocaleString()}`}
+                            {update.revisedFeeAmount && `${update.revisedFeeAmount.toLocaleString()}`}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  
+                  {membershipUpdates.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      No updates for this school year
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  Select a school year to view updates
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab !== 'summary' && activeTab !== 'tls' && activeTab !== 'locations' && activeTab !== 'governance' && activeTab !== 'guides' && activeTab !== 'ssj-oss' && activeTab !== 'membership-fees' && (
           <div className="text-center py-8 text-gray-500">
             {tabs.find(t => t.id === activeTab)?.label} content would go here
           </div>
