@@ -1,4 +1,68 @@
-import React, { useState, useMemo } from 'react';
+{activeTab === 'guides' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Guide Assignments</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Assignment
+              </button>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Guide
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Start Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Currently Active
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleGuideAssignments
+                    .filter(assignment => assignment.schoolId === school.id)
+                    .map(assignment => (
+                    <tr key={assignment.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-8 w-8">
+                            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-sm font-medium text-gray-600">
+                                {assignment.guideShortName.split(' ').map(n => n[0]).join('')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {assignment.guideShortName}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          {assignment.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {assignment.startDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {assignment.endDate ||import React, { useState, useMemo } from 'react';
 import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText } from 'lucide-react';
 import './App.css';
 
@@ -13,7 +77,24 @@ const sampleSchools = [
     agesServed: ['Primary'],
     location: 'Austin, TX',
     membershipStatus: 'Member School',
-    founders: ['Ashten Sommer', 'Gabrielle Tyree']
+    founders: ['Ashten Sommer', 'Gabrielle Tyree'],
+    phone: null,
+    website: 'https://www.yellowrosemontessori.org/',
+    emailDomain: 'yellowrosemontessori.org',
+    pod: 'TX Pod',
+    ein: '99-2818038',
+    legalName: 'Yellow Rose Montessori',
+    incorporationDate: '4/9/2024',
+    nonprofitStatus: 'group exemption',
+    groupExemptionStatus: 'Active',
+    dateReceivedGroupExemption: '5/30/2024',
+    currentFYEnd: '6/30',
+    nondiscriminationOnApplication: true,
+    nondiscriminationOnWebsite: true,
+    guidestarRequested: true,
+    flexibleTuitionModel: false,
+    activePodMember: 'Yes, regular attendee/role holder',
+    membershipAgreementDate: '5/28/2024'
   },
   {
     id: 'rec2',
@@ -23,7 +104,174 @@ const sampleSchools = [
     governanceModel: 'Independent',
     agesServed: ['Primary', 'Lower Elementary'],
     location: 'Boston, MA',
-    membershipStatus: 'Member School'
+    membershipStatus: 'Member School',
+    phone: '(617) 555-0123',
+    website: 'https://boston.wildflowerschools.org',
+    pod: 'Mass: Broadway',
+    opened: '2018-09-01',
+    founders: ['Sarah Johnson']
+  }
+// Guide assignments data
+const sampleGuideAssignments = [
+  {
+    id: 'ga1',
+    schoolId: 'rec1',
+    guideShortName: 'Rachel K-C',
+    role: 'Ops Guide',
+    startDate: '2023-01-15',
+    endDate: null,
+    currentlyActive: true
+  },
+  {
+    id: 'ga2',
+    schoolId: 'rec1',
+    guideShortName: 'Daniela V',
+    role: 'Regional Entrepreneur',
+    startDate: '2023-02-01',
+    endDate: '2023-12-31',
+    currentlyActive: false
+  }
+];
+
+// Grants data
+const sampleGrants = [
+  {
+    id: 'gr1',
+    schoolId: 'rec1',
+    amount: 25000,
+    issueDate: '2023-06-15',
+    issuedBy: 'Rachel Kelley-Cohen',
+    status: 'Issued',
+    fundingSource: 'TWF - National'
+  },
+  {
+    id: 'gr2',
+    schoolId: 'rec1',
+    amount: 15000,
+    issueDate: '2024-01-10',
+    issuedBy: 'Daniela Vasan',
+    status: 'Planned',
+    fundingSource: 'TWF - Walton'
+  }
+];
+
+// Loans data
+const sampleLoans = [
+  {
+    id: 'ln1',
+    schoolId: 'rec1',
+    amount: 75000,
+    issueDate: '2023-09-01',
+    status: 'Interest Only Period',
+    useOfProceeds: 'Start-up'
+  }
+];
+
+// School notes data
+const sampleSchoolNotes = [
+  {
+    id: 'sn1',
+    schoolId: 'rec1',
+    notes: 'Initial meeting with founders went well. Strong commitment to Montessori philosophy.',
+    dateCreated: '2023-01-15',
+    createdBy: 'Rachel Kelley-Cohen',
+    private: false
+  },
+  {
+    id: 'sn2',
+    schoolId: 'rec1',
+    notes: 'CONFIDENTIAL: Board concerns about timeline. Need to address funding gap.',
+    dateCreated: '2024-02-10',
+    createdBy: 'Rachel Kelley-Cohen',
+    private: true
+  }
+];
+
+// Action steps data
+const sampleActionSteps = [
+  {
+    id: 'as1',
+    schoolId: 'rec1',
+    item: 'Complete facility lease agreement review',
+    assignee: 'Rachel Kelley-Cohen',
+    status: 'Incomplete',
+    assignedDate: '2023-09-01',
+    dueDate: '2023-10-15'
+  },
+  {
+    id: 'as2',
+    schoolId: 'rec1',
+    item: 'Submit final enrollment projections',
+    assignee: 'Ashten Sommer',
+    status: 'Complete',
+    assignedDate: '2023-08-15',
+    dueDate: '2023-09-30'
+  }
+];
+
+// Educators x Schools relationship data
+const sampleEducatorsXSchools = [
+  {
+    id: 'exs1',
+    educatorId: 'ed1',
+    schoolId: 'rec1',
+    startDate: '2023-01-15',
+    endDate: null,
+    currentlyActive: true,
+    roles: ['Founder', 'Teacher Leader'],
+    educatorName: 'Ashten Sommer'
+  },
+  {
+    id: 'exs2',
+    educatorId: 'ed2',
+    schoolId: 'rec1',
+    startDate: '2023-01-15',
+    endDate: null,
+    currentlyActive: true,
+    roles: ['Founder'],
+    educatorName: 'Gabrielle Tyree'
+  }
+];
+
+// Locations data
+const sampleLocations = [
+  {
+    id: 'loc1',
+    schoolId: 'rec1',
+    address: '1234 Oak Street, Austin, TX 78704',
+    startDate: '2023-01-15',
+    endDate: null,
+    currentlyActive: true,
+    locationType: 'School address and mailing address'
+  },
+  {
+    id: 'loc2',
+    schoolId: 'rec2',
+    address: '567 Commonwealth Ave, Boston, MA 02215',
+    startDate: '2018-09-01',
+    endDate: null,
+    currentlyActive: true,
+    locationType: 'School address and mailing address'
+  }
+];
+
+// Governance documents data
+const sampleGovernanceDocs = [
+  {
+    id: 'gd1',
+    schoolId: 'rec1',
+    documentType: 'Articles of Incorporation - AOI',
+    date: '2023-04-09',
+    docLink: 'https://example.com/yellow-rose-aoi.pdf',
+    docNotes: 'Filed with Texas Secretary of State'
+  },
+  {
+    id: 'gd2',
+    schoolId: 'rec1',
+    documentType: 'Bylaws - BYL',
+    date: '2023-04-15',
+    docLink: 'https://example.com/yellow-rose-bylaws.pdf',
+    docNotes: 'Board approved bylaws'
   }
 ];
 
@@ -119,7 +367,33 @@ const DataTable = ({ data, columns, onRowClick, searchTerm }) => {
   );
 };
 
-const SchoolDetails = ({ school, onBack }) => {
+const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
+  const [activeTab, setActiveTab] = useState('summary');
+
+  const tabs = [
+    { id: 'summary', label: 'Summary' },
+    { id: 'tls', label: 'TLs' },
+    { id: 'locations', label: 'Locations' },
+    { id: 'governance', label: 'Governance' },
+    { id: 'guides', label: 'Guides' },
+    { id: 'ssj-oss', label: 'SSJ / OSS' },
+    { id: 'membership-fees', label: 'Membership fees' },
+    { id: 'grants-loans', label: 'Grants and Loans' },
+    { id: 'linked-mtgs', label: 'Linked mtgs/emails' },
+    { id: 'notes-actions', label: 'Notes/Action steps' }
+  ];
+
+  const DetailRow = ({ label, value, span = false }) => (
+    <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
+      <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+      <div className="text-sm text-gray-900">
+        {value === true ? <CheckCircle className="w-4 h-4 text-green-600" /> : 
+         value === false ? <XCircle className="w-4 h-4 text-red-600" /> :
+         value || '-'}
+      </div>
+    </div>
+  );
+
   return (
     <div className="h-full flex flex-col bg-white">
       <div className="border-b bg-gray-50 px-6 py-4">
@@ -132,50 +406,464 @@ const SchoolDetails = ({ school, onBack }) => {
           </button>
           <h1 className="text-2xl font-bold text-gray-900">School details</h1>
         </div>
+        
+        <div className="flex space-x-8 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6">
-        <div className="space-y-8">
-          <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-              <FileText className="w-8 h-8 text-gray-400" />
+        {activeTab === 'summary' && (
+          <div className="space-y-8">
+            <div className="flex items-start space-x-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-8 h-8 text-gray-400" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-gray-900">{school.name}</h2>
+                <div className="mt-1 space-y-1">
+                  <div className="text-blue-600">{school.agesServed?.join(', ')}</div>
+                  <div className="text-blue-600">{school.governanceModel}</div>
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">{school.name}</h2>
-              <div className="mt-1 space-y-1">
-                <div className="text-blue-600">{school.agesServed?.join(', ')}</div>
-                <div className="text-blue-600">{school.governanceModel}</div>
+
+            <div className="grid grid-cols-2 gap-x-8 gap-y-1 border-t pt-6">
+              <DetailRow label="Short Name" value={school.shortName} />
+              <DetailRow label="School Status" value={<StatusBadge status={school.status} />} />
+              <DetailRow label="Membership Status" value={school.membershipStatus} />
+              <DetailRow label="Membership Agreement date" value={school.membershipAgreementDate} />
+              <DetailRow label="Email Domain" value={school.emailDomain} />
+              <DetailRow label="School Phone" value={school.phone} />
+              <DetailRow label="EIN" value={school.ein} />
+              <DetailRow label="Legal Name" value={school.legalName} />
+              <DetailRow label="Incorporation Date" value={school.incorporationDate} />
+              <DetailRow label="Nonprofit status" value={school.nonprofitStatus} />
+              <DetailRow label="Group exemption status" value={school.groupExemptionStatus} />
+              <DetailRow label="Date received group exemption" value={school.dateReceivedGroupExemption} />
+              <DetailRow label="Founders" value={school.founders?.join(', ')} />
+              <DetailRow label="Pod" value={school.pod} />
+              <DetailRow label="Active Pod Member" value={school.activePodMember} />
+              <DetailRow label="Nondiscrimination Policy on Application" value={school.nondiscriminationOnApplication} />
+              <DetailRow label="Nondiscrimination Policy on Website" value={school.nondiscriminationOnWebsite} />
+              <DetailRow label="GuideStar Listing Requested?" value={school.guidestarRequested} />
+              <DetailRow label="Flexible Tuition Model" value={school.flexibleTuitionModel} />
+              <DetailRow label="Current FY end" value={school.currentFYEnd} />
+              <DetailRow 
+                label="Website" 
+                value={school.website ? (
+                  <a href={school.website} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                    {school.website}
+                  </a>
+                ) : null}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'tls' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Teacher Leaders & Staff</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Educator
+              </button>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Educator
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role(s)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Start Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Currently Active
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleEducatorsXSchools
+                    .filter(exs => exs.schoolId === school.id)
+                    .map(relationship => (
+                    <tr key={relationship.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-8 w-8">
+                            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-sm font-medium text-gray-600">
+                                {relationship.educatorName.split(' ').map(n => n[0]).join('')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {relationship.educatorName}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex flex-wrap gap-1">
+                          {relationship.roles.map((role, index) => (
+                            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              {role}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {relationship.startDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {relationship.endDate || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {relationship.currentlyActive ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button 
+                          onClick={() => onEducatorOpen && onEducatorOpen(relationship.educatorId)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Open
+                        </button>
+                        <button className="text-red-600 hover:text-red-900">
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {sampleEducatorsXSchools.filter(exs => exs.schoolId === school.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No educators assigned to this school yet.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'locations' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Locations</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Location
+              </button>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Address
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Start Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Currently Active
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleLocations
+                    .filter(location => location.schoolId === school.id)
+                    .map(location => (
+                    <tr key={location.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {location.address}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {location.locationType}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {location.startDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {location.endDate || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {location.currentlyActive ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button className="text-blue-600 hover:text-blue-900 mr-3">
+                          Edit
+                        </button>
+                        <button className="text-red-600 hover:text-red-900">
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {sampleLocations.filter(location => location.schoolId === school.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No locations added for this school yet.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'governance' && (
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">Board Members</h3>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Member
+                </button>
+              </div>
+              
+              <div className="bg-white border rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Role
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                  </tbody>
+                </table>
+                
+                <div className="text-center py-8 text-gray-500">
+                  No board members added yet.
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">Policies and Documents</h3>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Document
+                </button>
+              </div>
+              
+              <div className="bg-white border rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Document Type
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {sampleGovernanceDocs
+                      .filter(doc => doc.schoolId === school.id)
+                      .map(doc => (
+                      <tr key={doc.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {doc.documentType}
+                          </div>
+                          {doc.docNotes && (
+                            <div className="text-sm text-gray-500 mt-1">
+                              {doc.docNotes}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {doc.date}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                          <button 
+                            onClick={() => window.open(doc.docLink, '_blank')}
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </button>
+                          <button className="text-red-600 hover:text-red-900">
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
+                {sampleGovernanceDocs.filter(doc => doc.schoolId === school.id).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No governance documents added yet.
+                  </div>
+                )}
               </div>
             </div>
           </div>
+        )}
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t pt-6">
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Short Name</div>
-              <div className="text-sm text-gray-900">{school.shortName}</div>
+        {activeTab === 'guides' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Guide Assignments</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Assignment
+              </button>
             </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Status</div>
-              <StatusBadge status={school.status} />
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Location</div>
-              <div className="text-sm text-gray-900">{school.location}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Governance Model</div>
-              <div className="text-sm text-gray-900">{school.governanceModel}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Founders</div>
-              <div className="text-sm text-gray-900">{school.founders?.join(', ')}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Membership Status</div>
-              <StatusBadge status={school.membershipStatus} />
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Guide
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Start Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Currently Active
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleGuideAssignments
+                    .filter(assignment => assignment.schoolId === school.id)
+                    .map(assignment => (
+                    <tr key={assignment.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-8 w-8">
+                            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-sm font-medium text-gray-600">
+                                {assignment.guideShortName.split(' ').map(n => n[0]).join('')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {assignment.guideShortName}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          {assignment.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {assignment.startDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {assignment.endDate || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {assignment.currentlyActive ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button 
+                          onClick={() => alert(`Open guide assignment ${assignment.id} for editing`)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Open
+                        </button>
+                        <button 
+                          onClick={() => alert(`Delete guide assignment ${assignment.id}`)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {sampleGuideAssignments.filter(assignment => assignment.schoolId === school.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No guide assignments for this school yet.
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
+
+        {activeTab !== 'summary' && activeTab !== 'tls' && activeTab !== 'locations' && activeTab !== 'governance' && activeTab !== 'guides' && (
+          <div className="text-center py-8 text-gray-500">
+            {tabs.find(t => t.id === activeTab)?.label} content would go here
+          </div>
+        )}
       </div>
     </div>
   );
@@ -325,6 +1013,13 @@ const WildflowerDatabase = () => {
     setSelectedItem({ type: mainTab, data: item });
   };
 
+  const handleEducatorOpen = (educatorId) => {
+    const educator = sampleEducators.find(ed => ed.id === educatorId);
+    if (educator) {
+      setSelectedItem({ type: 'educators', data: educator });
+    }
+  };
+
   const handleBack = () => {
     setSelectedItem(null);
   };
@@ -332,7 +1027,7 @@ const WildflowerDatabase = () => {
   if (selectedItem) {
     switch (selectedItem.type) {
       case 'schools':
-        return <SchoolDetails school={selectedItem.data} onBack={handleBack} />;
+        return <SchoolDetails school={selectedItem.data} onBack={handleBack} onEducatorOpen={handleEducatorOpen} />;
       case 'educators':
         return <EducatorDetails educator={selectedItem.data} onBack={handleBack} />;
       case 'charters':
