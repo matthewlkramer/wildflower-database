@@ -123,7 +123,7 @@ class AirtableService {
 
   async fetchSchools(includeInactive = false) {
     const options = {
-      sort: { field: 'Name', direction: 'asc' }
+      sort: { field: 'Name', direction: 'asc' },
       maxRecords: 200  // ← Add this line	
     };
   
