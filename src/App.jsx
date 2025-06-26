@@ -1,8 +1,90 @@
 import { useSchools, useEducators } from './hooks/useAirtableData';
 import { transformSchoolsData } from './utils/dataTransformers';
-import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText, ChevronDown, X } from 'lucide-react';
 import './App.css';
+
+// Multi-select dropdown component
+const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleToggleOption = (value) => {
+    const newSelected = selectedValues.includes(value)
+      ? selectedValues.filter(v => v !== value)
+      : [...selectedValues, value];
+    onChange(newSelected);
+  };
+
+  const handleClearAll = (e) => {
+    e.stopPropagation();
+    onChange([]);
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-left flex items-center justify-between"
+      >
+        <span className="truncate">
+          {selectedValues.length === 0 
+            ? placeholder 
+            : selectedValues.length === 1 
+              ? selectedValues[0] 
+              : `${selectedValues.length} selected`
+          }
+        </span>
+        <div className="flex items-center space-x-1">
+          {selectedValues.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              className="p-0.5 hover:bg-gray-200 rounded"
+              title="Clear all"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+          <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </div>
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+          {options.map((option) => (
+            <label
+              key={option}
+              className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={selectedValues.includes(option)}
+                onChange={() => handleToggleOption(option)}
+                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm">{option}</span>
+            </label>
+          ))}
+          {options.length === 0 && (
+            <div className="px-3 py-2 text-sm text-gray-500">No options available</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Sample data
 const sampleSchools = [
@@ -677,6 +759,28 @@ const StatusBadge = ({ status }) => {
 };
 
 const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnFilters, onColumnFilterChange }) => {
+  // Get unique values for multi-select columns
+  const getUniqueValues = (columnKey) => {
+    const values = new Set();
+    data.forEach(item => {
+      const value = item[columnKey];
+      if (Array.isArray(value)) {
+        value.forEach(v => v && values.add(v));
+      } else if (value) {
+        values.add(value);
+      }
+    });
+    return Array.from(values).sort();
+  };
+
+  // Define which columns should use multi-select
+  const multiSelectColumns = {
+    'status': true,
+    'agesServed': true,
+    'governanceModel': true,
+    'membershipStatus': true
+  };
+
   // Apply both search and column filters
   const filteredData = useMemo(() => {
     let result = data;
@@ -684,20 +788,43 @@ const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnF
     // Apply search term filter
     if (searchTerm) {
       result = result.filter(item => 
-        Object.values(item).some(value => 
-          value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        Object.values(item).some(value => {
+          if (Array.isArray(value)) {
+            return value.some(v => v && v.toString().toLowerCase().includes(searchTerm.toLowerCase()));
+          }
+          return value && value.toString().toLowerCase().includes(searchTerm.toLowerCase());
+        })
       );
     }
     
     // Apply column filters
     Object.entries(columnFilters).forEach(([columnKey, filterValue]) => {
-      if (filterValue && filterValue.trim()) {
-        result = result.filter(item => {
-          const itemValue = item[columnKey];
-          if (itemValue == null) return false;
-          return itemValue.toString().toLowerCase().includes(filterValue.toLowerCase());
-        });
+      if (filterValue) {
+        if (multiSelectColumns[columnKey] && Array.isArray(filterValue) && filterValue.length > 0) {
+          // Multi-select filter logic
+          result = result.filter(item => {
+            const itemValue = item[columnKey];
+            if (Array.isArray(itemValue)) {
+              // Check if any of the item's values match any selected filter values
+              return itemValue.some(val => filterValue.includes(val));
+            } else {
+              // Check if the item's value matches any selected filter values
+              return filterValue.includes(itemValue);
+            }
+          });
+        } else if (typeof filterValue === 'string' && filterValue.trim()) {
+          // Text filter logic
+          result = result.filter(item => {
+            const itemValue = item[columnKey];
+            if (itemValue == null) return false;
+            if (Array.isArray(itemValue)) {
+              return itemValue.some(val => 
+                val && val.toString().toLowerCase().includes(filterValue.toLowerCase())
+              );
+            }
+            return itemValue.toString().toLowerCase().includes(filterValue.toLowerCase());
+          });
+        }
       }
     });
     
@@ -707,6 +834,32 @@ const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnF
   const handleColumnFilterChange = (columnKey, value) => {
     if (onColumnFilterChange) {
       onColumnFilterChange(columnKey, value);
+    }
+  };
+
+  const renderFilterInput = (col) => {
+    if (multiSelectColumns[col.key]) {
+      const options = getUniqueValues(col.key);
+      const selectedValues = columnFilters[col.key] || [];
+      
+      return (
+        <MultiSelectDropdown
+          options={options}
+          selectedValues={selectedValues}
+          onChange={(values) => handleColumnFilterChange(col.key, values)}
+          placeholder={`Filter ${col.label}...`}
+        />
+      );
+    } else {
+      return (
+        <input
+          type="text"
+          placeholder={`Filter ${col.label}...`}
+          value={columnFilters[col.key] || ''}
+          onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
+          className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+        />
+      );
     }
   };
 
@@ -727,13 +880,7 @@ const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnF
             <tr className="bg-gray-100">
               {columns.map((col) => (
                 <th key={`filter-${col.key}`} className="px-6 py-2">
-                  <input
-                    type="text"
-                    placeholder={`Filter ${col.label}...`}
-                    value={columnFilters[col.key] || ''}
-                    onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
-                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                  {renderFilterInput(col)}
                 </th>
               ))}
             </tr>
@@ -755,10 +902,15 @@ const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnF
           ))}
         </tbody>
       </table>
+      
+      {filteredData.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          No results found. Try adjusting your filters or search term.
+        </div>
+      )}
     </div>
   );
 };
-
 const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [selectedSchoolYear, setSelectedSchoolYear] = useState(null);
@@ -3130,7 +3282,11 @@ return (
     <Filter className="w-4 h-4" />
   </button>
   
-  {(showFilters && Object.keys(columnFilters).some(key => columnFilters[key])) && (
+{(showFilters && (searchTerm.trim() || Object.keys(columnFilters).some(key => {
+  const filter = columnFilters[key];
+  if (Array.isArray(filter)) return filter.length > 0;
+  return filter && filter.trim();
+}))) && (
     <button
       onClick={clearAllFilters}
       className="text-xs text-gray-500 hover:text-gray-700 underline"
