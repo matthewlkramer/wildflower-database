@@ -676,15 +676,39 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const DataTable = ({ data, columns, onRowClick, searchTerm }) => {
+const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnFilters, onColumnFilterChange }) => {
+  // Apply both search and column filters
   const filteredData = useMemo(() => {
-    if (!searchTerm) return data;
-    return data.filter(item => 
-      Object.values(item).some(value => 
-        value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [data, searchTerm]);
+    let result = data;
+    
+    // Apply search term filter
+    if (searchTerm) {
+      result = result.filter(item => 
+        Object.values(item).some(value => 
+          value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+    
+    // Apply column filters
+    Object.entries(columnFilters).forEach(([columnKey, filterValue]) => {
+      if (filterValue && filterValue.trim()) {
+        result = result.filter(item => {
+          const itemValue = item[columnKey];
+          if (itemValue == null) return false;
+          return itemValue.toString().toLowerCase().includes(filterValue.toLowerCase());
+        });
+      }
+    });
+    
+    return result;
+  }, [data, searchTerm, columnFilters]);
+
+  const handleColumnFilterChange = (columnKey, value) => {
+    if (onColumnFilterChange) {
+      onColumnFilterChange(columnKey, value);
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -697,6 +721,23 @@ const DataTable = ({ data, columns, onRowClick, searchTerm }) => {
               </th>
             ))}
           </tr>
+          
+          {/* Filter Row */}
+          {showFilters && (
+            <tr className="bg-gray-100">
+              {columns.map((col) => (
+                <th key={`filter-${col.key}`} className="px-6 py-2">
+                  <input
+                    type="text"
+                    placeholder={`Filter ${col.label}...`}
+                    value={columnFilters[col.key] || ''}
+                    onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </th>
+              ))}
+            </tr>
+          )}
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {filteredData.map((item) => (
@@ -735,7 +776,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     { id: 'grants-loans', label: 'Grants and Loans' },
     { id: 'linked-mtgs', label: 'Linked mtgs/emails' },
     { id: 'notes-actions', label: 'Notes/Action steps' }
-  ];
+  ]
 
   // Get membership fee records for this school
   const membershipFeeRecords = sampleMembershipFeeRecords.filter(record => record.schoolId === school.id);
@@ -2864,7 +2905,9 @@ const WildflowerDatabase = () => {
   const [mainTab, setMainTab] = useState('schools');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
-  const [includeInactiveSchools, setIncludeInactiveSchools] = useState(false); // Add this line
+  const [includeInactiveSchools, setIncludeInactiveSchools] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [columnFilters, setColumnFilters] = useState({});
 const schoolsHookResult = useSchools(includeInactiveSchools);
 console.log('🔍 Full hook result:', schoolsHookResult);
 
@@ -2976,6 +3019,18 @@ const getCurrentColumns = () => {
   }
 };
 
+const handleColumnFilterChange = (columnKey, value) => {
+  setColumnFilters(prev => ({
+    ...prev,
+    [columnKey]: value
+  }));
+};
+
+const clearAllFilters = () => {
+  setColumnFilters({});
+  setSearchTerm('');
+};
+
   const getCurrentError = () => {
     switch (mainTab) {
       case 'schools': return error; // ← Add this
@@ -3063,9 +3118,29 @@ return (
     </label>
   )}
   
-  <button className="p-2 text-gray-400 hover:text-gray-600">
+<div className="flex items-center space-x-2">
+  <button 
+    onClick={() => setShowFilters(!showFilters)}
+    className={`p-2 transition-colors ${
+      showFilters 
+        ? 'text-blue-600 bg-blue-50' 
+        : 'text-gray-400 hover:text-gray-600'
+    }`}
+  >
     <Filter className="w-4 h-4" />
   </button>
+  
+  {(showFilters && Object.keys(columnFilters).some(key => columnFilters[key])) && (
+    <button
+      onClick={clearAllFilters}
+      className="text-xs text-gray-500 hover:text-gray-700 underline"
+    >
+      Clear filters
+    </button>
+  )}
+</div>
+  <Filter className="w-4 h-4" />
+</button>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
@@ -3085,12 +3160,15 @@ return (
             </div>
             
            <div className="flex-1 overflow-auto">
-  <DataTable 
-    data={getCurrentData()}
-    columns={getCurrentColumns()}
-    onRowClick={handleRowClick}
-    searchTerm={searchTerm}
-  />
+<DataTable 
+  data={getCurrentData()}
+  columns={getCurrentColumns()}
+  onRowClick={handleRowClick}
+  searchTerm={searchTerm}
+  showFilters={showFilters}
+  columnFilters={columnFilters}
+  onColumnFilterChange={handleColumnFilterChange}
+/>
 </div>
           </div>
         </div>
