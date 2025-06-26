@@ -85,6 +85,434 @@ const LocationEditModal = ({ isOpen, onClose, onSubmit, location, isCreating = f
     }
   }, [location, isOpen, isCreating]);
 
+const AddGuideAssignmentModal = ({ isOpen, onClose, onSubmit, schoolId, allGuides }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGuide, setSelectedGuide] = useState(null);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState('');
+  const [currentlyActive, setCurrentlyActive] = useState(true);
+  const [role, setRole] = useState('');
+
+  const roleOptions = [
+    'Ops Guide',
+    'Regional Entrepreneur',
+    'Startup Guide',
+    'Partnership Lead',
+    'Mentor'
+  ];
+
+  const filteredGuides = useMemo(() => {
+    return (allGuides || []).filter(guide =>
+      `${guide.firstName} ${guide.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guide.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allGuides, searchTerm]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!selectedGuide || !role) return;
+
+    const newAssignment = {
+      guideId: selectedGuide.id,
+      schoolId: schoolId,
+      startDate: startDate,
+      endDate: endDate || null,
+      currentlyActive: currentlyActive,
+      role: role,
+      guideName: `${selectedGuide.firstName} ${selectedGuide.lastName}`
+    };
+
+    onSubmit(newAssignment);
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setSearchTerm('');
+    setSelectedGuide(null);
+    setStartDate(new Date().toISOString().split('T')[0]);
+    setEndDate('');
+    setCurrentlyActive(true);
+    setRole('');
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Add Guide Assignment</h3>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Select Guide
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search guides..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            {searchTerm && (
+              <div className="mt-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg">
+                {filteredGuides.map(guide => (
+                  <button
+                    key={guide.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedGuide(guide);
+                      setSearchTerm(`${guide.firstName} ${guide.lastName}`);
+                    }}
+                    className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${
+                      selectedGuide?.id === guide.id ? 'bg-blue-50' : ''
+                    }`}
+                  >
+                    <div className="font-medium">{guide.firstName} {guide.lastName}</div>
+                    <div className="text-sm text-gray-500">{guide.email}</div>
+                  </button>
+                ))}
+                {filteredGuides.length === 0 && (
+                  <div className="px-3 py-2 text-gray-500">No guides found</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Role *
+            </label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+              <option value="">Select role...</option>
+              {roleOptions.map(roleOption => (
+                <option key={roleOption} value={roleOption}>{roleOption}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={currentlyActive}
+                onChange={(e) => setCurrentlyActive(e.target.checked)}
+                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700">Currently Active</span>
+            </label>
+          </div>
+
+          <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!selectedGuide || !role}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Add Assignment
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const CreateGuideModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    organization: '',
+    expertise: ''
+  });
+
+  const [assignment, setAssignment] = useState({
+    role: '',
+    startDate: new Date().toISOString().split('T')[0],
+    currentlyActive: true
+  });
+
+  const roleOptions = [
+    'Ops Guide',
+    'Regional Entrepreneur', 
+    'Startup Guide',
+    'Partnership Lead',
+    'Mentor'
+  ];
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleAssignmentChange = (field, value) => {
+    setAssignment(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.firstName || !formData.lastName || !formData.email || !assignment.role) {
+      return;
+    }
+
+    const newGuideId = `guide_${Date.now()}`;
+    
+    const newGuide = {
+      id: newGuideId,
+      ...formData
+    };
+
+    const guideAssignment = {
+      guideId: newGuideId,
+      schoolId: schoolId,
+      startDate: assignment.startDate,
+      endDate: null,
+      currentlyActive: assignment.currentlyActive,
+      role: assignment.role,
+      guideName: `${formData.firstName} ${formData.lastName}`
+    };
+
+    onSubmit({ guide: newGuide, assignment: guideAssignment });
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      organization: '',
+      expertise: ''
+    });
+    setAssignment({
+      role: '',
+      startDate: new Date().toISOString().split('T')[0],
+      currentlyActive: true
+    });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Create New Guide</h3>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">Guide Information</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  First Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Organization
+                </label>
+                <input
+                  type="text"
+                  value={formData.organization}
+                  onChange={(e) => handleInputChange('organization', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Expertise
+                </label>
+                <input
+                  type="text"
+                  value={formData.expertise}
+                  onChange={(e) => handleInputChange('expertise', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., Finance, Operations, Legal"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="text-md font-medium text-gray-900 mb-3">Assignment to School</h4>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Role *
+                </label>
+                <select
+                  value={assignment.role}
+                  onChange={(e) => handleAssignmentChange('role', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">Select role...</option>
+                  {roleOptions.map(role => (
+                    <option key={role} value={role}>{role}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={assignment.startDate}
+                  onChange={(e) => handleAssignmentChange('startDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="mt-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={assignment.currentlyActive}
+                  onChange={(e) => handleAssignmentChange('currentlyActive', e.target.checked)}
+                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Currently Active</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex space-x-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!formData.firstName || !formData.lastName || !formData.email || !assignment.role}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Create Guide & Add Assignment
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -379,3 +807,5 @@ const LocationEditModal = ({ isOpen, onClose, onSubmit, location, isCreating = f
     </div>
   );
 };
+
+export default LocationEditModal;
