@@ -355,6 +355,7 @@ export const transformLocationData = (airtableRecord) => {
 export const transformLocationsData = (airtableRecords) => {
   return airtableRecords.map(transformLocationData).filter(Boolean);
 };
+
 // Batch transform functions
 export const transformSchoolsData = (airtableRecords) => {
   return airtableRecords.map(transformSchoolData).filter(Boolean);

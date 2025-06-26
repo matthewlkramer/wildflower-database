@@ -1,4 +1,4 @@
-import { useSchools, useEducators, useAirtableMutations, useEducatorsXSchools } from './hooks/useAirtableData';
+import { useSchools, useEducators, useAirtableMutations, useEducatorsXSchools, useSchoolLocations } from './hooks/useAirtableData';
 import { transformSchoolsData } from './utils/dataTransformers';
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText, ChevronDown, X } from 'lucide-react';
@@ -1159,7 +1159,7 @@ const handleEndLocationPeriod = async (locationId) => {
       'Current Physical Address': false
     });
     
-    // You might need to add a refetch for locations here
+    refetchLocations(); // Add this line
     alert('Location period ended successfully');
   } catch (error) {
     console.error('Error ending location period:', error);
@@ -1172,7 +1172,7 @@ const handleDeleteLocation = async (locationId, address) => {
     try {
       await deleteRecord('Locations', locationId);
       
-      // You might need to add a refetch for locations here
+      refetchLocations(); // Add this line
       alert('Location deleted successfully');
     } catch (error) {
       console.error('Error deleting location:', error);
@@ -1193,7 +1193,7 @@ const handleUpdateLocation = async (updatedLocation) => {
       'Currently Active': updatedLocation.currentlyActive
     });
     
-    // You might need to add a refetch for locations here
+    refetchLocations(); // Add this line
     alert('Location updated successfully');
   } catch (error) {
     console.error('Error updating location:', error);
