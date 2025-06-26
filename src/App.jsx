@@ -2867,10 +2867,17 @@ const WildflowerDatabase = () => {
   const { data: rawSchoolsData, loading, error } = useSchools();
 
 
-  const schoolsData = useMemo(() => 
-    transformSchoolsData(rawSchoolsData || []), 
-    [rawSchoolsData]
-  );
+const schoolsData = useMemo(() => {
+  console.log('Raw schools data type:', typeof rawSchoolsData);
+  console.log('Raw schools data is array:', Array.isArray(rawSchoolsData));
+  console.log('Raw schools data:', rawSchoolsData);
+
+  // Only transform if we have data
+  if (!rawSchoolsData || !Array.isArray(rawSchoolsData)) {
+    return [];
+  }
+  return transformSchoolsData(rawSchoolsData);
+}, [rawSchoolsData]);
 
   const mainTabs = [
     { id: 'schools', label: 'Schools', count: schoolsData.length }, // ← Changed to real data
@@ -2902,14 +2909,19 @@ const WildflowerDatabase = () => {
     { key: 'initialTargetCommunity', label: 'Target Community' }
   ];
 
-  const getCurrentData = () => {
-    switch (mainTab) {
-      case 'schools': return schoolsData;
-      case 'educators': return sampleEducators;
-      case 'charters': return sampleCharters;
-      default: return [];
-    }
-  };
+const getCurrentData = () => {
+  switch (mainTab) {
+    case 'schools': 
+      // Make sure we return an array, even if data is still loading
+      return Array.isArray(schoolsData) ? schoolsData : [];
+    case 'educators': 
+      return sampleEducators;
+    case 'charters': 
+      return sampleCharters;
+    default: 
+      return [];
+  }
+};
 
   const getCurrentColumns = () => {
     switch (mainTab) {
