@@ -10,26 +10,30 @@ class AirtableService {
     };
   }
 
-  // Generic method to fetch records from any table
-  async fetchRecords(tableName, options = {}) {
-    try {
-      const { 
-        view, 
-        maxRecords = 100, 
-        pageSize = 100,
-        sort,
-        filterByFormula,
-        fields
-      } = options;
-      
+// Generic method to fetch records from any table
+async fetchRecords(tableName, options = {}) {
+  try {
+    const { 
+      view, 
+      maxRecords = 200,
+      pageSize = 100,
+      sort,
+      filterByFormula,
+      fields
+    } = options;
+    
+    let allRecords = [];
+    let offset = null;
+    
+    do {
       const params = new URLSearchParams();
       if (view) params.append('view', view);
-      if (maxRecords) params.append('maxRecords', maxRecords);
       if (pageSize) params.append('pageSize', pageSize);
       if (sort) params.append('sort[0][field]', sort.field);
       if (sort) params.append('sort[0][direction]', sort.direction || 'asc');
       if (filterByFormula) params.append('filterByFormula', filterByFormula);
       if (fields) fields.forEach(field => params.append('fields[]', field));
+      if (offset) params.append('offset', offset);
 
       const url = `${this.baseUrl}/${encodeURIComponent(tableName)}?${params}`;
       const response = await fetch(url, { headers: this.headers });
@@ -39,12 +43,29 @@ class AirtableService {
       }
       
       const data = await response.json();
-      return this.transformRecords(data.records);
-    } catch (error) {
-      console.error(`Error fetching records from ${tableName}:`, error);
-      throw error;
+      allRecords = allRecords.concat(data.records || []);
+      offset = data.offset; // Airtable provides offset for next page
+      
+      console.log(`📄 Fetched ${data.records?.length || 0} records, total so far: ${allRecords.length}`);
+      
+      // Stop if we have enough records or no more pages
+      if (!offset || allRecords.length >= maxRecords) {
+        break;
+      }
+    } while (offset);
+    
+    // Trim to maxRecords if we got too many
+    if (allRecords.length > maxRecords) {
+      allRecords = allRecords.slice(0, maxRecords);
     }
+    
+    console.log(`✅ Final result: ${allRecords.length} records`);
+    return this.transformRecords(allRecords);
+  } catch (error) {
+    console.error(`Error fetching records from ${tableName}:`, error);
+    throw error;
   }
+}
 
   // Transform Airtable records to a more usable format
   transformRecords(records) {
