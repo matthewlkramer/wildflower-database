@@ -2866,9 +2866,8 @@ const WildflowerDatabase = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const { data: rawSchoolsData, loading, error } = useSchools();
 
-  // Add these lines to test your environment variables:
-  console.log('Base ID from env:', process.env.REACT_APP_AIRTABLE_BASE_ID);
-  console.log('API Key from env:', process.env.REACT_APP_AIRTABLE_API_KEY);
+  console.log('Base ID from env:', import.meta.env.VITE_AIRTABLE_BASE_ID);
+  console.log('API Key from env:', import.meta.env.VITE_AIRTABLE_API_KEY);
 
   useEffect(() => {
     console.log('Loading:', loading);

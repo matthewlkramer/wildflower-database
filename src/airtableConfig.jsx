@@ -1,7 +1,6 @@
-// src/airtableConfig.js
 export const AIRTABLE_CONFIG = {
-  BASE_ID: process.env.REACT_APP_AIRTABLE_BASE_ID,
-  API_KEY: process.env.REACT_APP_AIRTABLE_API_KEY,
+  BASE_ID: import.meta.env.VITE_AIRTABLE_BASE_ID,
+  API_KEY: import.meta.env.VITE_AIRTABLE_API_KEY,
   BASE_URL: 'https://api.airtable.com/v0'
 };
 
