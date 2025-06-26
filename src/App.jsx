@@ -2864,8 +2864,8 @@ const WildflowerDatabase = () => {
   const [mainTab, setMainTab] = useState('schools');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
-//  const { data: rawSchoolsData, loading, error } = useSchools();
-const schoolsHookResult = useSchools();
+  const [includeInactiveSchools, setIncludeInactiveSchools] = useState(false); // Add this line
+const schoolsHookResult = useSchools(includeInactiveSchools);
 console.log('🔍 Full hook result:', schoolsHookResult);
 
 // Extract data safely
@@ -2886,7 +2886,11 @@ const schoolsData = useMemo(() => {
 }, [rawSchoolsData]);
 
   const mainTabs = [
-    { id: 'schools', label: 'Schools', count: schoolsData.length }, // ← Changed to real data
+    { 
+      id: 'schools', 
+      label: 'Schools', 
+      count: schoolsLoading ? '...' : `${schoolsData.length}${includeInactiveSchools ? '' : ' active'}` 
+    },
     { id: 'educators', label: 'Educators', count: sampleEducators.length },
     { id: 'charters', label: 'Charters', count: sampleCharters.length }
   ];
@@ -3020,11 +3024,24 @@ const getCurrentColumns = () => {
                       <div className="bg-white rounded-lg shadow h-full flex flex-col">
             <div className="p-6 border-b">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 capitalize">{mainTab}</h2>
-                <div className="flex items-center space-x-4">
-                  <button className="p-2 text-gray-400 hover:text-gray-600">
-                    <Filter className="w-4 h-4" />
-                  </button>
+                <div></div>
+<div className="flex items-center space-x-4">
+  {/* Status Filter Toggle - only show for schools tab */}
+  {mainTab === 'schools' && (
+    <label className="flex items-center space-x-2 text-sm">
+      <input
+        type="checkbox"
+        checked={includeInactiveSchools}
+        onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
+        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+      />
+      <span className="text-gray-700">Include inactive schools</span>
+    </label>
+  )}
+  
+  <button className="p-2 text-gray-400 hover:text-gray-600">
+    <Filter className="w-4 h-4" />
+  </button>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input

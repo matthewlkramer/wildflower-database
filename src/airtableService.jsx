@@ -120,10 +120,19 @@ class AirtableService {
   }
 
   // Fetch schools with related data
-  async fetchSchools() {
-    return this.fetchRecords(TABLES.SCHOOLS, {
+
+  async fetchSchools(includeInactive = false) {
+    const options = {
       sort: { field: 'Name', direction: 'asc' }
-    });
+    };
+  
+    // Add filter for active schools only (default behavior)
+    if (!includeInactive) {
+      options.filterByFormula = "OR({Status} = 'Open', {Status} = 'Emerging')";
+    }
+  
+    console.log('🔄 Fetching schools with options:', options);
+    return this.fetchRecords(TABLES.SCHOOLS, options);
   }
 
   // Fetch educators with related data

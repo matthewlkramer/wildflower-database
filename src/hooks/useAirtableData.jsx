@@ -33,9 +33,41 @@ export const useAirtableData = (fetchFunction, dependencies = []) => {
   return { data, loading, error, refetch };
 };
 
-// Hook for fetching schools
-export const useSchools = () => {
-  return useAirtableData(() => airtableService.fetchSchools());
+export const useSchools = (includeInactive = false) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchSchools = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('🔄 Fetching schools, includeInactive:', includeInactive);
+      
+      const rawSchools = await airtableService.fetchSchools(includeInactive);
+      console.log('✅ Raw schools received:', rawSchools);
+      
+      setData(rawSchools || []);
+      
+    } catch (err) {
+      console.error('❌ Error fetching schools:', err);
+      setError(err);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSchools();
+  }, [includeInactive]); // Re-fetch when includeInactive changes
+
+  return { 
+    data, 
+    loading, 
+    error, 
+    refetch: fetchSchools 
+  };
 };
 
 // Hook for fetching educators
