@@ -83,7 +83,32 @@ const sampleSchools = [
     qbo: 'internal license - active',
     tcSchoolId: '-',
     websiteTool: 'Wix v2',
-    gusto: '-'
+    // Additional fields for summary
+    currentTLs: ['Ashten Sommer', 'Gabrielle Tyree'],
+    schoolOpenDate: null,
+    programFocus: 'Nature-based Montessori',
+    maxCapacityEnrollments: 60,
+    numberOfClassrooms: 3,
+    publicFunding: false,
+    schoolCalendar: 'Year-round',
+    schoolSchedule: 'Extended Day (7:30 AM - 6:00 PM)',
+    // Membership fields
+    signedMembershipAgreementDate: '5/28/2024',
+    signedMembershipAgreement: 'https://example.com/yellow-rose-agreement.pdf',
+    agreementVersion: 'v3.0',
+    // Contact info
+    schoolEmail: 'info@yellowrosemontessori.org',
+    facebook: 'https://facebook.com/yellowrosemontessori',
+    instagram: '@yellowrosemontessori',
+    // Legal entity
+    legalStructure: '501(c)(3) Nonprofit Corporation',
+    institutionalPartner: null,
+    dateWithdrawnFromGroupExemption: null,
+    loanReportName: 'Yellow Rose Montessori Inc.',
+    // Closed school fields (not applicable for Yellow Rose)
+    leftNetworkDate: null,
+    leftNetworkReason: null,
+    membershipTerminationLetter: null
   },
   {
     id: 'rec2',
@@ -97,8 +122,30 @@ const sampleSchools = [
     phone: '(617) 555-0123',
     website: 'https://boston.wildflowerschools.org',
     pod: 'Mass: Broadway',
-    opened: '2018-09-01',
-    founders: ['Sarah Johnson']
+    opened: null,
+    founders: ['Sarah Johnson'],
+    // Additional fields for summary
+    currentTLs: ['Sarah Johnson'],
+    programFocus: 'Traditional Montessori',
+    maxCapacityEnrollments: 120,
+    numberOfClassrooms: 6,
+    publicFunding: false,
+    flexibleTuition: true,
+    schoolCalendar: 'Traditional School Year',
+    schoolSchedule: 'Full Day (8:30 AM - 3:30 PM)',
+    // Membership fields
+    signedMembershipAgreementDate: '2018-06-15',
+    signedMembershipAgreement: 'https://example.com/wf-boston-agreement.pdf',
+    agreementVersion: 'v2.1',
+    // Contact info
+    schoolEmail: 'info@bostonwildflower.org',
+    facebook: 'https://facebook.com/wildflowerboston',
+    instagram: '@wildflowerboston',
+    // Legal entity
+    legalStructure: '501(c)(3) Nonprofit Corporation',
+    institutionalPartner: null,
+    dateWithdrawnFromGroupExemption: null,
+    loanReportName: 'Wildflower Montessori School Boston Inc.'
   }
 ];
 
@@ -707,7 +754,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">School details</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{school.name}</h1>
         </div>
         
         <div className="flex space-x-8 overflow-x-auto">
@@ -730,49 +777,162 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
       <div className="flex-1 overflow-y-auto p-6">
         {activeTab === 'summary' && (
           <div className="space-y-8">
-            <div className="flex items-start space-x-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-8 h-8 text-gray-400" />
+            {/* Header Section with Logo and Key Info */}
+            <div className="flex items-start space-x-6">
+              {/* School Logo - 1 inch by 1 inch */}
+              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-12 h-12 text-gray-400" />
               </div>
+              
+              {/* Key Information to the right of logo */}
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-900">{school.name}</h2>
-                <div className="mt-1 space-y-1">
-                  <div className="text-blue-600">{school.agesServed?.join(', ')}</div>
-                  <div className="text-blue-600">{school.governanceModel}</div>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">{school.name}</h2>
+                
+                {/* Check if school is closed/disaffiliated */}
+                {school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating' ? (
+                  /* For closed schools - only show left network info */
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                    <DetailRow label="Left Network Date" value={school.leftNetworkDate} />
+                    <DetailRow label="Left Network Reason" value={school.leftNetworkReason} />
+                    <DetailRow label="Membership Termination Letter" value={school.membershipTerminationLetter} />
+                  </div>
+                ) : (
+                  /* For active schools - show standard info */
+                  <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                    <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
+                    <DetailRow label="Governance Model" value={school.governanceModel} />
+                    <DetailRow label="Founders" value={school.founders?.join(', ')} />
+                    <DetailRow label="Current TLs" value={school.currentTLs?.join(', ')} />
+                    <DetailRow label="School Open Date" value={school.schoolOpenDate || school.opened} />
+                    <DetailRow label="School Status" value={<StatusBadge status={school.status} />} />
+                    <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
+                    <DetailRow label="Program Focus" value={school.programFocus} />
+                    <DetailRow label="Max Capacity Enrollments" value={school.maxCapacityEnrollments} />
+                    <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
+                    <DetailRow label="Public Funding" value={school.publicFunding} />
+                    <DetailRow label="Flexible Tuition" value={school.flexibleTuition} />
+                    <DetailRow label="School Calendar" value={school.schoolCalendar} />
+                    <DetailRow label="School Schedule" value={school.schoolSchedule} />
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Divider line */}
+            <hr className="border-gray-200" />
+            
+            {/* Collapsible section for closed schools */}
+            {(school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating') && (
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                  <h3 className="text-lg font-semibold">School Information</h3>
+                  <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="mt-4 p-4 bg-white border rounded-lg">
+                  <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                    <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
+                    <DetailRow label="Governance Model" value={school.governanceModel} />
+                    <DetailRow label="Founders" value={school.founders?.join(', ')} />
+                    <DetailRow label="Program Focus" value={school.programFocus} />
+                    <DetailRow label="Max Capacity Enrollments" value={school.maxCapacityEnrollments} />
+                    <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
+                  </div>
+                </div>
+              </details>
+            )}
+            
+            {/* Membership Section */}
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                <h3 className="text-lg font-semibold">Membership</h3>
+                <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="mt-4 p-4 bg-white border rounded-lg">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                  <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
+                  <DetailRow label="Signed Membership Agreement Date" value={school.signedMembershipAgreementDate} />
+                  <DetailRow 
+                    label="Signed Membership Agreement" 
+                    value={school.signedMembershipAgreement ? (
+                      <a href={school.signedMembershipAgreement} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                        View Agreement
+                      </a>
+                    ) : null}
+                  />
+                  <DetailRow label="Agreement Version" value={school.agreementVersion} />
                 </div>
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-8 gap-y-1 border-t pt-6">
-              <DetailRow label="Short Name" value={school.shortName} />
-              <DetailRow label="School Status" value={<StatusBadge status={school.status} />} />
-              <DetailRow label="Membership Status" value={school.membershipStatus} />
-              <DetailRow label="Membership Agreement date" value={school.membershipAgreementDate} />
-              <DetailRow label="Email Domain" value={school.emailDomain} />
-              <DetailRow label="School Phone" value={school.phone} />
-              <DetailRow label="EIN" value={school.ein} />
-              <DetailRow label="Legal Name" value={school.legalName} />
-              <DetailRow label="Incorporation Date" value={school.incorporationDate} />
-              <DetailRow label="Nonprofit status" value={school.nonprofitStatus} />
-              <DetailRow label="Group exemption status" value={school.groupExemptionStatus} />
-              <DetailRow label="Date received group exemption" value={school.dateReceivedGroupExemption} />
-              <DetailRow label="Founders" value={school.founders?.join(', ')} />
-              <DetailRow label="Pod" value={school.pod} />
-              <DetailRow label="Active Pod Member" value={school.activePodMember} />
-              <DetailRow label="Nondiscrimination Policy on Application" value={school.nondiscriminationOnApplication} />
-              <DetailRow label="Nondiscrimination Policy on Website" value={school.nondiscriminationOnWebsite} />
-              <DetailRow label="GuideStar Listing Requested?" value={school.guidestarRequested} />
-              <DetailRow label="Flexible Tuition Model" value={school.flexibleTuitionModel} />
-              <DetailRow label="Current FY end" value={school.currentFYEnd} />
-              <DetailRow 
-                label="Website" 
-                value={school.website ? (
-                  <a href={school.website} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                    {school.website}
-                  </a>
-                ) : null}
-              />
-            </div>
+            </details>
+            
+            {/* Contact Information and Communications */}
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                <h3 className="text-lg font-semibold">Contact Information and Communications</h3>
+                <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="mt-4 p-4 bg-white border rounded-lg">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                  <DetailRow label="School Email" value={school.schoolEmail} />
+                  <DetailRow label="School Phone" value={school.phone} />
+                  <DetailRow label="Email Domain" value={school.emailDomain} />
+                  <DetailRow 
+                    label="Website" 
+                    value={school.website ? (
+                      <a href={school.website} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                        {school.website}
+                      </a>
+                    ) : null}
+                  />
+                  <DetailRow 
+                    label="Facebook" 
+                    value={school.facebook ? (
+                      <a href={school.facebook} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                        {school.facebook}
+                      </a>
+                    ) : null}
+                  />
+                  <DetailRow 
+                    label="Instagram" 
+                    value={school.instagram ? (
+                      <a href={`https://instagram.com/${school.instagram.replace('@', '')}`} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                        {school.instagram}
+                      </a>
+                    ) : null}
+                  />
+                </div>
+              </div>
+            </details>
+            
+            {/* Legal Entity */}
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                <h3 className="text-lg font-semibold">Legal Entity</h3>
+                <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="mt-4 p-4 bg-white border rounded-lg">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                  <DetailRow label="EIN" value={school.ein} />
+                  <DetailRow label="Nonprofit Status" value={school.nonprofitStatus} />
+                  <DetailRow label="Group Exemption Status" value={school.groupExemptionStatus} />
+                  <DetailRow label="Date Received Group Exemption" value={school.dateReceivedGroupExemption} />
+                  <DetailRow label="Date Withdrawn from Group Exemption" value={school.dateWithdrawnFromGroupExemption} />
+                  <DetailRow label="Legal Structure" value={school.legalStructure} />
+                  <DetailRow label="Institutional Partner" value={school.institutionalPartner} />
+                  <DetailRow label="Incorporation Date" value={school.incorporationDate} />
+                  <DetailRow label="Current End of Fiscal Year" value={school.currentFYEnd} />
+                  <DetailRow label="Legal Name" value={school.legalName} />
+                  <DetailRow label="Loan Report Name" value={school.loanReportName} />
+                </div>
+              </div>
+            </details>
           </div>
         )}
 
@@ -1724,7 +1884,7 @@ const EducatorDetails = ({ educator, onBack }) => {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Educator details</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{educator.firstName} {educator.lastName}</h1>
         </div>
         
         <div className="flex space-x-8 overflow-x-auto">
@@ -2237,7 +2397,7 @@ const CharterDetails = ({ charter, onBack }) => {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Charter details</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{charter.name}</h1>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-6">
@@ -2261,25 +2421,24 @@ const WildflowerDatabase = () => {
 
   const schoolColumns = [
     { key: 'name', label: 'School Name' },
-    { key: 'shortName', label: 'Short Name' },
     { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
     { key: 'governanceModel', label: 'Governance' },
+    { key: 'agesServed', label: 'Ages Served', render: (value) => Array.isArray(value) ? value.join(', ') : value },
     { key: 'location', label: 'Location' },
     { key: 'membershipStatus', label: 'Membership', render: (value) => <StatusBadge status={value} /> }
   ];
 
   const educatorColumns = [
-    { key: 'firstName', label: 'First Name' },
-    { key: 'lastName', label: 'Last Name' },
+    { key: 'fullName', label: 'Full Name', render: (value, item) => `${item.firstName} ${item.lastName}` },
     { key: 'currentSchool', label: 'Current School' },
     { key: 'role', label: 'Role' },
     { key: 'email', label: 'Email' },
+    { key: 'raceEthnicity', label: 'Race & Ethnicity', render: (value) => Array.isArray(value) ? value.join(', ') : value || '-' },
     { key: 'discoveryStatus', label: 'Discovery Status', render: (value) => <StatusBadge status={value} /> }
   ];
 
   const charterColumns = [
     { key: 'name', label: 'Charter Name' },
-    { key: 'shortName', label: 'Short Name' },
     { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
     { key: 'initialTargetCommunity', label: 'Target Community' }
   ];
@@ -2339,22 +2498,6 @@ const WildflowerDatabase = () => {
               <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
               <p className="text-gray-600">Manage schools, educators, and network data</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
-                <Plus className="w-4 h-4 mr-2" />
-                Add
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -2381,13 +2524,29 @@ const WildflowerDatabase = () => {
 
       <div className="flex-1 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
-          <div className="bg-white rounded-lg shadow h-full flex flex-col">
+                      <div className="bg-white rounded-lg shadow h-full flex flex-col">
             <div className="p-6 border-b">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900 capitalize">{mainTab}</h2>
-                <button className="p-2 text-gray-400 hover:text-gray-600">
-                  <Filter className="w-4 h-4" />
-                </button>
+                <div className="flex items-center space-x-4">
+                  <button className="p-2 text-gray-400 hover:text-gray-600">
+                    <Filter className="w-4 h-4" />
+                  </button>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add
+                  </button>
+                </div>
               </div>
             </div>
             
