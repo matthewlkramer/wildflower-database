@@ -2923,14 +2923,14 @@ const getCurrentData = () => {
   }
 };
 
-  const getCurrentColumns = () => {
-    switch (mainTab) {
-      case 'schools': return loading;
-      case 'educators': return educatorColumns;
-      case 'charters': return charterColumns;
-      default: return [];
-    }
-  };
+const getCurrentColumns = () => {
+  switch (mainTab) {
+    case 'schools': return schoolColumns;    // ← FIXED!
+    case 'educators': return educatorColumns;
+    case 'charters': return charterColumns;
+    default: return [];
+  }
+};
 
   const getCurrentError = () => {
     switch (mainTab) {
