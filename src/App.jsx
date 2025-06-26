@@ -1,68 +1,4 @@
-{activeTab === 'guides' && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Guide Assignments</h3>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Assignment
-              </button>
-            </div>
-            
-            <div className="bg-white border rounded-lg overflow-hidden">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Guide
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Start Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      End Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Currently Active
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {sampleGuideAssignments
-                    .filter(assignment => assignment.schoolId === school.id)
-                    .map(assignment => (
-                    <tr key={assignment.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-8 w-8">
-                            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-sm font-medium text-gray-600">
-                                {assignment.guideShortName.split(' ').map(n => n[0]).join('')}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {assignment.guideShortName}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          {assignment.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {assignment.startDate}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {assignment.endDate ||import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText } from 'lucide-react';
 import './App.css';
 
@@ -111,101 +47,36 @@ const sampleSchools = [
     opened: '2018-09-01',
     founders: ['Sarah Johnson']
   }
-// Guide assignments data
-const sampleGuideAssignments = [
+];
+
+const sampleEducators = [
   {
-    id: 'ga1',
-    schoolId: 'rec1',
-    guideShortName: 'Rachel K-C',
-    role: 'Ops Guide',
-    startDate: '2023-01-15',
-    endDate: null,
-    currentlyActive: true
+    id: 'ed1',
+    firstName: 'Ashten',
+    lastName: 'Sommer',
+    email: 'ashten@yellowrosemontessori.org',
+    currentSchool: 'Yellow Rose',
+    role: 'Founder',
+    discoveryStatus: 'Complete'
   },
   {
-    id: 'ga2',
-    schoolId: 'rec1',
-    guideShortName: 'Daniela V',
-    role: 'Regional Entrepreneur',
-    startDate: '2023-02-01',
-    endDate: '2023-12-31',
-    currentlyActive: false
+    id: 'ed2',
+    firstName: 'Gabrielle',
+    lastName: 'Tyree',
+    email: 'gabrielle@yellowrosemontessori.org',
+    currentSchool: 'Yellow Rose',
+    role: 'Founder',
+    discoveryStatus: 'Complete'
   }
 ];
 
-// Grants data
-const sampleGrants = [
+const sampleCharters = [
   {
-    id: 'gr1',
-    schoolId: 'rec1',
-    amount: 25000,
-    issueDate: '2023-06-15',
-    issuedBy: 'Rachel Kelley-Cohen',
-    status: 'Issued',
-    fundingSource: 'TWF - National'
-  },
-  {
-    id: 'gr2',
-    schoolId: 'rec1',
-    amount: 15000,
-    issueDate: '2024-01-10',
-    issuedBy: 'Daniela Vasan',
-    status: 'Planned',
-    fundingSource: 'TWF - Walton'
-  }
-];
-
-// Loans data
-const sampleLoans = [
-  {
-    id: 'ln1',
-    schoolId: 'rec1',
-    amount: 75000,
-    issueDate: '2023-09-01',
-    status: 'Interest Only Period',
-    useOfProceeds: 'Start-up'
-  }
-];
-
-// School notes data
-const sampleSchoolNotes = [
-  {
-    id: 'sn1',
-    schoolId: 'rec1',
-    notes: 'Initial meeting with founders went well. Strong commitment to Montessori philosophy.',
-    dateCreated: '2023-01-15',
-    createdBy: 'Rachel Kelley-Cohen',
-    private: false
-  },
-  {
-    id: 'sn2',
-    schoolId: 'rec1',
-    notes: 'CONFIDENTIAL: Board concerns about timeline. Need to address funding gap.',
-    dateCreated: '2024-02-10',
-    createdBy: 'Rachel Kelley-Cohen',
-    private: true
-  }
-];
-
-// Action steps data
-const sampleActionSteps = [
-  {
-    id: 'as1',
-    schoolId: 'rec1',
-    item: 'Complete facility lease agreement review',
-    assignee: 'Rachel Kelley-Cohen',
-    status: 'Incomplete',
-    assignedDate: '2023-09-01',
-    dueDate: '2023-10-15'
-  },
-  {
-    id: 'as2',
-    schoolId: 'rec1',
-    item: 'Submit final enrollment projections',
-    assignee: 'Ashten Sommer',
-    status: 'Complete',
-    assignedDate: '2023-08-15',
-    dueDate: '2023-09-30'
+    id: 'ch1',
+    name: 'Denver Charter Network',
+    shortName: 'Denver Charter',
+    status: 'Applying',
+    initialTargetCommunity: 'Denver Metro'
   }
 ];
 
@@ -275,34 +146,25 @@ const sampleGovernanceDocs = [
   }
 ];
 
-const sampleEducators = [
+// Guide assignments data
+const sampleGuideAssignments = [
   {
-    id: 'ed1',
-    firstName: 'Ashten',
-    lastName: 'Sommer',
-    email: 'ashten@yellowrosemontessori.org',
-    currentSchool: 'Yellow Rose',
-    role: 'Founder',
-    discoveryStatus: 'Complete'
+    id: 'ga1',
+    schoolId: 'rec1',
+    guideShortName: 'Rachel K-C',
+    role: 'Ops Guide',
+    startDate: '2023-01-15',
+    endDate: null,
+    currentlyActive: true
   },
   {
-    id: 'ed2',
-    firstName: 'Gabrielle',
-    lastName: 'Tyree',
-    email: 'gabrielle@yellowrosemontessori.org',
-    currentSchool: 'Yellow Rose',
-    role: 'Founder',
-    discoveryStatus: 'Complete'
-  }
-];
-
-const sampleCharters = [
-  {
-    id: 'ch1',
-    name: 'Denver Charter Network',
-    shortName: 'Denver Charter',
-    status: 'Applying',
-    initialTargetCommunity: 'Denver Metro'
+    id: 'ga2',
+    schoolId: 'rec1',
+    guideShortName: 'Daniela V',
+    role: 'Regional Entrepreneur',
+    startDate: '2023-02-01',
+    endDate: '2023-12-31',
+    currentlyActive: false
   }
 ];
 
