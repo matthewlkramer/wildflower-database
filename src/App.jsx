@@ -916,6 +916,7 @@ const DataTable = ({ data, columns, onRowClick, searchTerm, showFilters, columnF
   );
 };
 const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
+  console.log('SchoolDetails received school:', school); // Add this debug line
   const [activeTab, setActiveTab] = useState('summary');
   const [selectedSchoolYear, setSelectedSchoolYear] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -3415,6 +3416,7 @@ const clearAllFilters = () => {
   };
 
   const handleRowClick = (item) => {
+  console.log('Row clicked, item:', item); // Add this debug line
     setSelectedItem({ type: mainTab, data: item });
   };
 
