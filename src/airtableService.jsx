@@ -124,6 +124,7 @@ class AirtableService {
   async fetchSchools(includeInactive = false) {
     const options = {
       sort: { field: 'Name', direction: 'asc' }
+      maxRecords: 200  // ← Add this line	
     };
   
     // Add filter for active schools only (default behavior)
