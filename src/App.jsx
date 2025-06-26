@@ -1,5 +1,4 @@
-import { useSchools, useEducators } from './hooks/useAirtableData';
-import { useAirtableMutations, useEducators, useEducatorsXSchools } from './hooks/useAirtableData';
+import { useSchools, useEducators, useAirtableMutations, useEducatorsXSchools } from './hooks/useAirtableData';
 import { transformSchoolsData } from './utils/dataTransformers';
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText, ChevronDown, X } from 'lucide-react';
