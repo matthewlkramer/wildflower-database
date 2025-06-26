@@ -290,3 +290,32 @@ export const useDataFiltering = (data, searchTerm) => {
 
   return filteredData;
 };
+
+// Hook for fetching school locations
+export const useSchoolLocations = (schoolId) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchLocations = useCallback(async () => {
+    if (!schoolId) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      const locations = await airtableService.fetchSchoolLocations(schoolId);
+      setData(locations || []);
+    } catch (err) {
+      setError(err);
+      console.error('Error fetching locations:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [schoolId]);
+
+  useEffect(() => {
+    fetchLocations();
+  }, [fetchLocations]);
+
+  return { data, loading, error, refetch: fetchLocations };
+};

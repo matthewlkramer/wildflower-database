@@ -334,6 +334,27 @@ export const transformActionStepData = (airtableRecord) => {
   };
 };
 
+export const transformLocationData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    schoolId: Array.isArray(airtableRecord['School']) ? 
+      airtableRecord['School'][0] : 
+      airtableRecord['School'],
+    address: airtableRecord['Address'] || '',
+    startDate: airtableRecord['Start Date'] || '',
+    endDate: airtableRecord['End Date'] || null,
+    currentlyActive: airtableRecord['Currently Active'] || true,
+    locationType: airtableRecord['Location Type'] || '',
+    currentMailingAddress: airtableRecord['Current Mailing Address'] || false,
+    currentPhysicalAddress: airtableRecord['Current Physical Address'] || false
+  };
+};
+
+export const transformLocationsData = (airtableRecords) => {
+  return airtableRecords.map(transformLocationData).filter(Boolean);
+};
 // Batch transform functions
 export const transformSchoolsData = (airtableRecords) => {
   return airtableRecords.map(transformSchoolData).filter(Boolean);
