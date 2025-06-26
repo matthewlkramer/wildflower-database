@@ -11,10 +11,21 @@ export const transformSchoolData = (airtableRecord, relatedData = {}) => {
     status: airtableRecord['School Status'] || '',
     governanceModel: airtableRecord['Governance Model'] || '',
     agesServed: airtableRecord['Ages served'] || [],
+
     location: airtableRecord['Current Physical Address'] ? 
       (Array.isArray(airtableRecord['Current Physical Address']) ? 
         airtableRecord['Current Physical Address'][0] : 
         airtableRecord['Current Physical Address']) : '',
+    activeLocationCity: airtableRecord['Current Physical Address - City'] ? 
+      (Array.isArray(airtableRecord['Current Physical Address - City']) ? 
+        airtableRecord['Current Physical Address - City'][0] : 
+        airtableRecord['Current Physical Address - City']) : null,
+    activeLocationState: airtableRecord['Current Physical Address - State'] ? 
+      (Array.isArray(airtableRecord['Current Physical Address - State']) ? 
+        airtableRecord['Current Physical Address - State'][0] : 
+        airtableRecord['Current Physical Address - State']) : null,
+    targetCity: airtableRecord['SSJ - Target City'] || null,
+    targetState: airtableRecord['SSJ - Target State'] || null,
     membershipStatus: airtableRecord['Membership Status'] || '',
     founders: airtableRecord['Founders'] || [],
     phone: airtableRecord['School Phone'] || null,

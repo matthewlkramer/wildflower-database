@@ -2896,13 +2896,28 @@ const schoolsData = useMemo(() => {
   ];
 
   const schoolColumns = [
-    { key: 'name', label: 'School Name' },
-    { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
-    { key: 'governanceModel', label: 'Governance' },
-    { key: 'agesServed', label: 'Ages Served', render: (value) => Array.isArray(value) ? value.join(', ') : value },
-    { key: 'location', label: 'Location' },
-    { key: 'membershipStatus', label: 'Membership', render: (value) => <StatusBadge status={value} /> }
-  ];
+  { key: 'shortName', label: 'Short Name' },
+  { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
+  { key: 'governanceModel', label: 'Governance' },
+  { key: 'agesServed', label: 'Ages Served', render: (value) => Array.isArray(value) ? value.join(', ') : value },
+  { 
+    key: 'location', 
+    label: 'Location',
+    render: (value, item) => {
+      // Priority 1: Active location (city, state)
+      if (item.activeLocationCityState) {
+        return item.activeLocationCityState;
+      }
+      // Priority 2: Target geo combined
+      if (item.targetGeoCombined) {
+        return item.targetGeoCombined;
+      }
+      // Priority 3: Blank
+      return '-';
+    }
+  },
+  { key: 'membershipStatus', label: 'Membership', render: (value) => <StatusBadge status={value} /> }
+];
 
   const educatorColumns = [
     { key: 'fullName', label: 'Full Name', render: (value, item) => `${item.firstName} ${item.lastName}` },
