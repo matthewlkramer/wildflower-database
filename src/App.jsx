@@ -821,14 +821,16 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
       );
     }
 
+    // Handle URL, email, tel, date, number, and text inputs
     return (
       <div className="py-2">
         <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
         <input
-          type={type}
+          type={type === 'url' ? 'text' : type}
           value={value || ''}
           onChange={(e) => handleInputChange(field, e.target.value)}
           className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
+          placeholder={type === 'url' ? 'https://...' : ''}
         />
       </div>
     );
@@ -1032,204 +1034,209 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
               </div>
             )}
             
-            {/* Continue with collapsible sections - editable when in edit mode */}
-            {!isEditing && (
-              <>
-                {/* Divider line */}
-                <hr className="border-gray-200" />
-                
-                {/* Rest of the collapsible sections remain the same */}
-                {(editedSchool.status === 'Permanently Closed' || editedSchool.status === 'Disaffiliated' || editedSchool.status === 'Disaffiliating') && (
-                  <details className="group">
-                    <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                      <h3 className="text-lg font-semibold">School Information</h3>
-                      <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </summary>
-                    <div className="mt-4 p-4 bg-white border rounded-lg">
-                      <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                        <DetailRow label="Ages Served" value={editedSchool.agesServed?.join(', ')} />
-                        <DetailRow label="Governance Model" value={editedSchool.governanceModel} />
-                        <DetailRow label="Founders" value={editedSchool.founders?.join(', ')} />
-                        <DetailRow label="Program Focus" value={editedSchool.programFocus} />
-                        <DetailRow label="Max Capacity Enrollments" value={editedSchool.maxCapacityEnrollments} />
-                        <DetailRow label="Number of Classrooms" value={editedSchool.numberOfClassrooms} />
-                        <DetailRow label="Public Funding" value={editedSchool.publicFunding} />
-                        <DetailRow label="Flexible Tuition" value={editedSchool.flexibleTuition} />
-                      </div>
-                    </div>
-                  </details>
-                )}
-                
-                {/* Membership Section */}
+            {/* Collapsible sections - always shown, but content changes based on edit mode */}
+            <>
+              {/* Divider line */}
+              <hr className="border-gray-200" />
+              
+              {/* Closed school collapsible section */}
+              {(editedSchool.status === 'Permanently Closed' || editedSchool.status === 'Disaffiliated' || editedSchool.status === 'Disaffiliating') && (
                 <details className="group">
                   <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                    <h3 className="text-lg font-semibold">Membership</h3>
+                    <h3 className="text-lg font-semibold">School Information</h3>
                     <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </summary>
                   <div className="mt-4 p-4 bg-white border rounded-lg">
                     <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                      <DetailRow label="Membership Status" value={<StatusBadge status={editedSchool.membershipStatus} />} />
-                      <DetailRow label="Signed Membership Agreement Date" value={editedSchool.signedMembershipAgreementDate} />
-                      <DetailRow 
-                        label="Signed Membership Agreement" 
-                        value={editedSchool.signedMembershipAgreement ? (
-                          <a href={editedSchool.signedMembershipAgreement} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                            View Agreement
-                          </a>
-                        ) : null}
-                      />
-                      <DetailRow label="Agreement Version" value={editedSchool.agreementVersion} />
+                      {isEditing ? (
+                        <>
+                          <EditableField label="Ages Served" field="agesServed" value={editedSchool.agesServed} type="array" />
+                          <EditableField 
+                            label="Governance Model" 
+                            field="governanceModel" 
+                            value={editedSchool.governanceModel}
+                            type="select"
+                            options={['Independent', 'Charter', 'District']}
+                          />
+                          <EditableField label="Founders" field="founders" value={editedSchool.founders} type="array" />
+                          <EditableField label="Program Focus" field="programFocus" value={editedSchool.programFocus} />
+                          <EditableField label="Max Capacity Enrollments" field="maxCapacityEnrollments" value={editedSchool.maxCapacityEnrollments} type="number" />
+                          <EditableField label="Number of Classrooms" field="numberOfClassrooms" value={editedSchool.numberOfClassrooms} type="number" />
+                          <EditableField label="Public Funding" field="publicFunding" value={editedSchool.publicFunding} type="boolean" />
+                          <EditableField label="Flexible Tuition" field="flexibleTuition" value={editedSchool.flexibleTuition} type="boolean" />
+                        </>
+                      ) : (
+                        <>
+                          <DetailRow label="Ages Served" value={editedSchool.agesServed?.join(', ')} />
+                          <DetailRow label="Governance Model" value={editedSchool.governanceModel} />
+                          <DetailRow label="Founders" value={editedSchool.founders?.join(', ')} />
+                          <DetailRow label="Program Focus" value={editedSchool.programFocus} />
+                          <DetailRow label="Max Capacity Enrollments" value={editedSchool.maxCapacityEnrollments} />
+                          <DetailRow label="Number of Classrooms" value={editedSchool.numberOfClassrooms} />
+                          <DetailRow label="Public Funding" value={editedSchool.publicFunding} />
+                          <DetailRow label="Flexible Tuition" value={editedSchool.flexibleTuition} />
+                        </>
+                      )}
                     </div>
                   </div>
                 </details>
-                
-                {/* Contact Information and Communications */}
-                <details className="group">
-                  <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                    <h3 className="text-lg font-semibold">Contact Information and Communications</h3>
-                    <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="mt-4 p-4 bg-white border rounded-lg">
-                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                      <DetailRow label="School Email" value={editedSchool.schoolEmail} />
-                      <DetailRow label="School Phone" value={editedSchool.phone} />
-                      <DetailRow label="Email Domain" value={editedSchool.emailDomain} />
-                      <DetailRow 
-                        label="Website" 
-                        value={editedSchool.website ? (
-                          <a href={editedSchool.website} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                            {editedSchool.website}
-                          </a>
-                        ) : null}
-                      />
-                      <DetailRow 
-                        label="Facebook" 
-                        value={editedSchool.facebook ? (
-                          <a href={editedSchool.facebook} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                            {editedSchool.facebook}
-                          </a>
-                        ) : null}
-                      />
-                      <DetailRow 
-                        label="Instagram" 
-                        value={editedSchool.instagram ? (
-                          <a href={`https://instagram.com/${editedSchool.instagram.replace('@', '')}`} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                            {editedSchool.instagram}
-                          </a>
-                        ) : null}
-                      />
-                    </div>
-                  </div>
-                </details>
-                
-                {/* Legal Entity */}
-                <details className="group">
-                  <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                    <h3 className="text-lg font-semibold">Legal Entity</h3>
-                    <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="mt-4 p-4 bg-white border rounded-lg">
-                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                      <DetailRow label="EIN" value={editedSchool.ein} />
-                      <DetailRow label="Nonprofit Status" value={editedSchool.nonprofitStatus} />
-                      <DetailRow label="Group Exemption Status" value={editedSchool.groupExemptionStatus} />
-                      <DetailRow label="Date Received Group Exemption" value={editedSchool.dateReceivedGroupExemption} />
-                      <DetailRow label="Date Withdrawn from Group Exemption" value={editedSchool.dateWithdrawnFromGroupExemption} />
-                      <DetailRow label="Legal Structure" value={editedSchool.legalStructure} />
-                      <DetailRow label="Institutional Partner" value={editedSchool.institutionalPartner} />
-                      <DetailRow label="Incorporation Date" value={editedSchool.incorporationDate} />
-                      <DetailRow label="Current End of Fiscal Year" value={editedSchool.currentFYEnd} />
-                      <DetailRow label="Legal Name" value={editedSchool.legalName} />
-                      <DetailRow label="Loan Report Name" value={editedSchool.loanReportName} />
-                      <div></div> {/* Empty cell to complete the row */}
-                    </div>
-                  </div>
-                </details>
-              </>
-            )}
-
-            {/* Editable collapsible sections when in edit mode */}
-            {isEditing && (
-              <>
-                {/* Divider line */}
-                <hr className="border-gray-200" />
-                
-                {/* Membership Section - Editable */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4">Membership</h3>
-                  <div className="bg-white border rounded-lg p-4">
-                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                      <EditableField 
-                        label="Membership Status" 
-                        field="membershipStatus" 
-                        value={editedSchool.membershipStatus}
-                        type="select"
-                        options={['Member School', 'Pending', 'Former Member']}
-                      />
-                      <EditableField label="Signed Membership Agreement Date" field="signedMembershipAgreementDate" value={editedSchool.signedMembershipAgreementDate} type="date" />
-                      <EditableField label="Signed Membership Agreement" field="signedMembershipAgreement" value={editedSchool.signedMembershipAgreement} type="url" />
-                      <EditableField label="Agreement Version" field="agreementVersion" value={editedSchool.agreementVersion} />
-                    </div>
+              )}
+              
+              {/* Membership Section */}
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                  <h3 className="text-lg font-semibold">Membership</h3>
+                  <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="mt-4 p-4 bg-white border rounded-lg">
+                  <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                    {isEditing ? (
+                      <>
+                        <EditableField 
+                          label="Membership Status" 
+                          field="membershipStatus" 
+                          value={editedSchool.membershipStatus}
+                          type="select"
+                          options={['Member School', 'Pending', 'Former Member']}
+                        />
+                        <EditableField label="Signed Membership Agreement Date" field="signedMembershipAgreementDate" value={editedSchool.signedMembershipAgreementDate} type="date" />
+                        <EditableField label="Signed Membership Agreement" field="signedMembershipAgreement" value={editedSchool.signedMembershipAgreement} type="url" />
+                        <EditableField label="Agreement Version" field="agreementVersion" value={editedSchool.agreementVersion} />
+                      </>
+                    ) : (
+                      <>
+                        <DetailRow label="Membership Status" value={<StatusBadge status={editedSchool.membershipStatus} />} />
+                        <DetailRow label="Signed Membership Agreement Date" value={editedSchool.signedMembershipAgreementDate} />
+                        <DetailRow 
+                          label="Signed Membership Agreement" 
+                          value={editedSchool.signedMembershipAgreement ? (
+                            <a href={editedSchool.signedMembershipAgreement} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                              View Agreement
+                            </a>
+                          ) : null}
+                        />
+                        <DetailRow label="Agreement Version" value={editedSchool.agreementVersion} />
+                      </>
+                    )}
                   </div>
                 </div>
-                
-                {/* Contact Information and Communications - Editable */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4">Contact Information and Communications</h3>
-                  <div className="bg-white border rounded-lg p-4">
-                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                      <EditableField label="School Email" field="schoolEmail" value={editedSchool.schoolEmail} type="email" />
-                      <EditableField label="School Phone" field="phone" value={editedSchool.phone} type="tel" />
-                      <EditableField label="Email Domain" field="emailDomain" value={editedSchool.emailDomain} />
-                      <EditableField label="Website" field="website" value={editedSchool.website} type="url" />
-                      <EditableField label="Facebook" field="facebook" value={editedSchool.facebook} type="url" />
-                      <EditableField label="Instagram" field="instagram" value={editedSchool.instagram} />
-                    </div>
+              </details>
+              
+              {/* Contact Information and Communications */}
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                  <h3 className="text-lg font-semibold">Contact Information and Communications</h3>
+                  <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="mt-4 p-4 bg-white border rounded-lg">
+                  <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                    {isEditing ? (
+                      <>
+                        <EditableField label="School Email" field="schoolEmail" value={editedSchool.schoolEmail} type="email" />
+                        <EditableField label="School Phone" field="phone" value={editedSchool.phone} type="tel" />
+                        <EditableField label="Email Domain" field="emailDomain" value={editedSchool.emailDomain} />
+                        <EditableField label="Website" field="website" value={editedSchool.website} type="url" />
+                        <EditableField label="Facebook" field="facebook" value={editedSchool.facebook} type="url" />
+                        <EditableField label="Instagram" field="instagram" value={editedSchool.instagram} />
+                      </>
+                    ) : (
+                      <>
+                        <DetailRow label="School Email" value={editedSchool.schoolEmail} />
+                        <DetailRow label="School Phone" value={editedSchool.phone} />
+                        <DetailRow label="Email Domain" value={editedSchool.emailDomain} />
+                        <DetailRow 
+                          label="Website" 
+                          value={editedSchool.website ? (
+                            <a href={editedSchool.website} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                              {editedSchool.website}
+                            </a>
+                          ) : null}
+                        />
+                        <DetailRow 
+                          label="Facebook" 
+                          value={editedSchool.facebook ? (
+                            <a href={editedSchool.facebook} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                              {editedSchool.facebook}
+                            </a>
+                          ) : null}
+                        />
+                        <DetailRow 
+                          label="Instagram" 
+                          value={editedSchool.instagram ? (
+                            <a href={`https://instagram.com/${editedSchool.instagram.replace('@', '')}`} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                              {editedSchool.instagram}
+                            </a>
+                          ) : null}
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
-                
-                {/* Legal Entity - Editable */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4">Legal Entity</h3>
-                  <div className="bg-white border rounded-lg p-4">
-                    <div className="grid grid-cols-4 gap-x-6 gap-y-2">
-                      <EditableField label="EIN" field="ein" value={editedSchool.ein} />
-                      <EditableField 
-                        label="Nonprofit Status" 
-                        field="nonprofitStatus" 
-                        value={editedSchool.nonprofitStatus}
-                        type="select"
-                        options={['501(c)(3)', 'group exemption', 'pending', 'for-profit']}
-                      />
-                      <EditableField 
-                        label="Group Exemption Status" 
-                        field="groupExemptionStatus" 
-                        value={editedSchool.groupExemptionStatus}
-                        type="select"
-                        options={['Active', 'Pending', 'Withdrawn', 'Not Applicable']}
-                      />
-                      <EditableField label="Date Received Group Exemption" field="dateReceivedGroupExemption" value={editedSchool.dateReceivedGroupExemption} type="date" />
-                      <EditableField label="Date Withdrawn from Group Exemption" field="dateWithdrawnFromGroupExemption" value={editedSchool.dateWithdrawnFromGroupExemption} type="date" />
-                      <EditableField label="Legal Structure" field="legalStructure" value={editedSchool.legalStructure} />
-                      <EditableField label="Institutional Partner" field="institutionalPartner" value={editedSchool.institutionalPartner} />
-                      <EditableField label="Incorporation Date" field="incorporationDate" value={editedSchool.incorporationDate} type="date" />
-                      <EditableField label="Current End of Fiscal Year" field="currentFYEnd" value={editedSchool.currentFYEnd} />
-                      <EditableField label="Legal Name" field="legalName" value={editedSchool.legalName} />
-                      <EditableField label="Loan Report Name" field="loanReportName" value={editedSchool.loanReportName} />
-                      <div></div> {/* Empty cell to complete the row */}
-                    </div>
+              </details>
+              
+              {/* Legal Entity */}
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                  <h3 className="text-lg font-semibold">Legal Entity</h3>
+                  <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="mt-4 p-4 bg-white border rounded-lg">
+                  <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                    {isEditing ? (
+                      <>
+                        <EditableField label="EIN" field="ein" value={editedSchool.ein} />
+                        <EditableField 
+                          label="Nonprofit Status" 
+                          field="nonprofitStatus" 
+                          value={editedSchool.nonprofitStatus}
+                          type="select"
+                          options={['501(c)(3)', 'group exemption', 'pending', 'for-profit']}
+                        />
+                        <EditableField 
+                          label="Group Exemption Status" 
+                          field="groupExemptionStatus" 
+                          value={editedSchool.groupExemptionStatus}
+                          type="select"
+                          options={['Active', 'Pending', 'Withdrawn', 'Not Applicable']}
+                        />
+                        <EditableField label="Date Received Group Exemption" field="dateReceivedGroupExemption" value={editedSchool.dateReceivedGroupExemption} type="date" />
+                        <EditableField label="Date Withdrawn from Group Exemption" field="dateWithdrawnFromGroupExemption" value={editedSchool.dateWithdrawnFromGroupExemption} type="date" />
+                        <EditableField label="Legal Structure" field="legalStructure" value={editedSchool.legalStructure} />
+                        <EditableField label="Institutional Partner" field="institutionalPartner" value={editedSchool.institutionalPartner} />
+                        <EditableField label="Incorporation Date" field="incorporationDate" value={editedSchool.incorporationDate} type="date" />
+                        <EditableField label="Current End of Fiscal Year" field="currentFYEnd" value={editedSchool.currentFYEnd} />
+                        <EditableField label="Legal Name" field="legalName" value={editedSchool.legalName} />
+                        <EditableField label="Loan Report Name" field="loanReportName" value={editedSchool.loanReportName} />
+                        <div></div> {/* Empty cell to complete the row */}
+                      </>
+                    ) : (
+                      <>
+                        <DetailRow label="EIN" value={editedSchool.ein} />
+                        <DetailRow label="Nonprofit Status" value={editedSchool.nonprofitStatus} />
+                        <DetailRow label="Group Exemption Status" value={editedSchool.groupExemptionStatus} />
+                        <DetailRow label="Date Received Group Exemption" value={editedSchool.dateReceivedGroupExemption} />
+                        <DetailRow label="Date Withdrawn from Group Exemption" value={editedSchool.dateWithdrawnFromGroupExemption} />
+                        <DetailRow label="Legal Structure" value={editedSchool.legalStructure} />
+                        <DetailRow label="Institutional Partner" value={editedSchool.institutionalPartner} />
+                        <DetailRow label="Incorporation Date" value={editedSchool.incorporationDate} />
+                        <DetailRow label="Current End of Fiscal Year" value={editedSchool.currentFYEnd} />
+                        <DetailRow label="Legal Name" value={editedSchool.legalName} />
+                        <DetailRow label="Loan Report Name" value={editedSchool.loanReportName} />
+                        <div></div> {/* Empty cell to complete the row */}
+                      </>
+                    )}
                   </div>
                 </div>
-              </>
-            )}
+              </details>
+            </>
           </div>
         )}
 
