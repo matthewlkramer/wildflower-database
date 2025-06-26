@@ -929,6 +929,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   const { data: allEducators, refetch: refetchEducators } = useEducators();
   const { data: educatorsXSchools, refetch: refetchEducatorsXSchools } = useEducatorsXSchools();
   const { data: schoolLocations, refetch: refetchLocations } = useSchoolLocations(school.id);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null);
 
   const tabs = [
     { id: 'summary', label: 'Summary' },
@@ -1056,7 +1058,54 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     </div>
   );
 
-// Handler functions - replace existing ones in SchoolDetails component
+// Handler functions for membership fees - add these to SchoolDetails component
+const handleViewSchoolYear = (record) => {
+  // Set the selected school year to filter the middle and right sections
+  setSelectedSchoolYear(record.schoolYear);
+  
+  // Optional: Add visual feedback that the record is now being viewed
+  console.log(`Viewing school year ${record.schoolYear} for school ${school.id}`);
+};
+
+const handleDeleteSchoolYear = (record) => {
+  setRecordToDelete(record);
+  setShowDeleteConfirm(true);
+};
+
+const confirmDeleteSchoolYear = async () => {
+  if (!recordToDelete) return;
+  
+  try {
+    await deleteRecord('Membership Fee Records', recordToDelete.id);
+    
+    // Also delete any associated fee updates
+    const relatedUpdates = sampleMembershipFeeUpdates.filter(
+      update => update.schoolId === school.id && update.schoolYear === recordToDelete.schoolYear
+    );
+    
+    for (const update of relatedUpdates) {
+      await deleteRecord('Membership Fee Updates', update.id);
+    }
+    
+    // Clear selection if we deleted the currently selected record
+    if (selectedSchoolYear === recordToDelete.schoolYear) {
+      setSelectedSchoolYear(null);
+    }
+    
+    // Close modal and clear state
+    setShowDeleteConfirm(false);
+    setRecordToDelete(null);
+    
+    // You would typically refetch the data here
+    // refetchMembershipFees();
+    
+    alert('School year record deleted successfully');
+  } catch (error) {
+    console.error('Error deleting school year record:', error);
+    alert('Failed to delete school year record. Please try again.');
+  }
+};
+
 const handleEndStint = async (stintId) => {
   try {
     const today = new Date().toISOString().split('T')[0];
@@ -2135,123 +2184,9 @@ const handleUpdateLocation = async (updatedLocation) => {
           </div>
         )}
 
-        {activeTab === 'membership-fees' && (
-          <div className="grid grid-cols-12 gap-8">
-            {/* Left Column - School Year Selection */}
-            <div className="col-span-3">
-              <h3 className="text-lg font-semibold mb-4">School Years</h3>
-              <div className="space-y-2">
-                {membershipFeeRecords.map(record => (
-                  <button
-                    key={record.id}
-                    onClick={() => setSelectedSchoolYear(record.schoolYear)}
-                    className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
-                      selectedSchoolYear === record.schoolYear
-                        ? 'bg-blue-50 border-blue-500 text-blue-700'
-                        : 'bg-white border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    {record.schoolYear}
-                  </button>
-                ))}
-                {membershipFeeRecords.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    No membership fee records found
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Middle Column - Record Details */}
-            <div className="col-span-5">
-              {selectedRecord ? (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">
-                    Membership Fee Details - {selectedRecord.schoolYear}
-                  </h3>
-                  <div className="bg-white border rounded-lg p-6">
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                      <DetailRow label="School Year" value={selectedRecord.schoolYear} />
-                      <DetailRow label="nth Year" value={selectedRecord.nthYear} />
-                      
-                      <DetailRow label="Initial Fee" value={`${selectedRecord.initialFee?.toLocaleString() || 0}`} />
-                      <DetailRow label="Revised Amount" value={`${selectedRecord.revisedAmount?.toLocaleString() || 0}`} />
-                      
-                      <DetailRow label="Amount Paid" value={`${selectedRecord.amountPaid?.toLocaleString() || 0}`} />
-                      <DetailRow label="Amount Receivable" value={`${selectedRecord.amountReceivable?.toLocaleString() || 0}`} />
-                      
-                      <DetailRow label="Exemption Status" value={selectedRecord.exemptionStatus} />
-                      <DetailRow label="History Status" value={selectedRecord.historyStatus} />
-                      
-                      <DetailRow label="Revenue" value={`${selectedRecord.revenue?.toLocaleString() || 0}`} />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <h3 className="text-lg font-semibold mb-2">Select a School Year</h3>
-                  <p>Choose a school year from the left to view membership fee details</p>
-                </div>
-              )}
-            </div>
-
-            {/* Right Column - Updates Table */}
-            <div className="col-span-4">
-              <h3 className="text-lg font-semibold mb-4">Fee Updates</h3>
-              {selectedSchoolYear ? (
-                <div className="bg-white border rounded-lg overflow-hidden">
-                  <table className="min-w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Update Type
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Date
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Amount
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {membershipUpdates.map(update => (
-                        <tr key={update.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3">
-                            <div className="text-sm font-medium text-gray-900">
-                              {update.updateType}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {update.explanation}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                            {update.date}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                            {update.amountPaid && `${update.amountPaid.toLocaleString()}`}
-                            {update.revisedFeeAmount && `${update.revisedFeeAmount.toLocaleString()}`}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  
-                  {membershipUpdates.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      No updates for this school year
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  Select a school year to view updates
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
+// Add these to your existing state in SchoolDetails component
+const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+const [recordToDelete, setRecordToDelete] = useState(null);
         {activeTab === 'grants-loans' && (
           <div className="grid grid-cols-2 gap-8">
             {/* Left Half - Grants */}
