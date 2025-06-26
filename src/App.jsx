@@ -3043,21 +3043,14 @@ const getCurrentColumns = () => {
               </div>
             </div>
             
-            <div className="flex-1 overflow-auto">
-const currentData = getCurrentData();
-console.log('Data being passed to DataTable:', currentData);
-console.log('Data type:', typeof currentData);
-console.log('Is array:', Array.isArray(currentData));
-	    <DataTable 
-              data={getCurrentData()}
-              columns={getCurrentColumns()}
-              onRowClick={handleRowClick}
-              searchTerm={searchTerm}
-              // loading={getCurrentLoading()} // ← Add this
-              // error={getCurrentError()}     // ← Add this
-              // onRetry={() => {}}           // ← Add this (we'll implement refetch later)
-            />
-            </div>
+           <div className="flex-1 overflow-auto">
+  <DataTable 
+    data={getCurrentData()}
+    columns={getCurrentColumns()}
+    onRowClick={handleRowClick}
+    searchTerm={searchTerm}
+  />
+</div>
           </div>
         </div>
       </div>
