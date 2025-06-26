@@ -507,7 +507,9 @@ const sampleLocations = [
     startDate: '2023-01-15',
     endDate: null,
     currentlyActive: true,
-    locationType: 'School address and mailing address'
+    locationType: 'School address and mailing address',
+    currentMailingAddress: true,
+    currentPhysicalAddress: true
   },
   {
     id: 'loc2',
@@ -516,7 +518,20 @@ const sampleLocations = [
     startDate: '2018-09-01',
     endDate: null,
     currentlyActive: true,
-    locationType: 'School address and mailing address'
+    locationType: 'School address and mailing address',
+    currentMailingAddress: true,
+    currentPhysicalAddress: true
+  },
+  {
+    id: 'loc3',
+    schoolId: 'rec2',
+    address: '123 Harvard St, Cambridge, MA 02138',
+    startDate: '2018-09-01',
+    endDate: '2020-06-30',
+    currentlyActive: false,
+    locationType: 'Former mailing address',
+    currentMailingAddress: false,
+    currentPhysicalAddress: false
   }
 ];
 
@@ -779,26 +794,28 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <div className="space-y-8">
             {/* Header Section with Logo and Key Info */}
             <div className="flex items-start space-x-6">
-              {/* School Logo - 1 inch by 1 inch */}
-              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-12 h-12 text-gray-400" />
+              {/* School Logo - bigger */}
+              <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-16 h-16 text-gray-400" />
               </div>
               
-              {/* Key Information to the right of logo */}
+              {/* Key Information to the right of logo - 3 columns for first section */}
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">{school.name}</h2>
-                
                 {/* Check if school is closed/disaffiliated */}
                 {school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating' ? (
                   /* For closed schools - only show left network info */
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                  <div className="grid grid-cols-3 gap-x-8 gap-y-2">
+                    <DetailRow label="School Name" value={school.name} />
+                    <DetailRow label="Short Name" value={school.shortName} />
                     <DetailRow label="Left Network Date" value={school.leftNetworkDate} />
                     <DetailRow label="Left Network Reason" value={school.leftNetworkReason} />
                     <DetailRow label="Membership Termination Letter" value={school.membershipTerminationLetter} />
                   </div>
                 ) : (
-                  /* For active schools - show standard info */
+                  /* For active schools - show standard info in 3 columns for first 3 rows */
                   <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                    <DetailRow label="School Name" value={school.name} />
+                    <DetailRow label="Short Name" value={school.shortName} />
                     <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
                     <DetailRow label="Governance Model" value={school.governanceModel} />
                     <DetailRow label="Founders" value={school.founders?.join(', ')} />
@@ -806,17 +823,23 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     <DetailRow label="School Open Date" value={school.schoolOpenDate || school.opened} />
                     <DetailRow label="School Status" value={<StatusBadge status={school.status} />} />
                     <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
-                    <DetailRow label="Program Focus" value={school.programFocus} />
-                    <DetailRow label="Max Capacity Enrollments" value={school.maxCapacityEnrollments} />
-                    <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
-                    <DetailRow label="Public Funding" value={school.publicFunding} />
-                    <DetailRow label="Flexible Tuition" value={school.flexibleTuition} />
-                    <DetailRow label="School Calendar" value={school.schoolCalendar} />
-                    <DetailRow label="School Schedule" value={school.schoolSchedule} />
                   </div>
                 )}
               </div>
             </div>
+            
+            {/* Continue with 4 columns for remaining fields */}
+            {!(school.status === 'Permanently Closed' || school.status === 'Disaffiliated' || school.status === 'Disaffiliating') && (
+              <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                <DetailRow label="Program Focus" value={school.programFocus} />
+                <DetailRow label="Max Capacity Enrollments" value={school.maxCapacityEnrollments} />
+                <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
+                <DetailRow label="Public Funding" value={school.publicFunding} />
+                <DetailRow label="Flexible Tuition" value={school.flexibleTuition} />
+                <DetailRow label="School Calendar" value={school.schoolCalendar} />
+                <DetailRow label="School Schedule" value={school.schoolSchedule} />
+              </div>
+            )}
             
             {/* Divider line */}
             <hr className="border-gray-200" />
@@ -831,13 +854,15 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                   </svg>
                 </summary>
                 <div className="mt-4 p-4 bg-white border rounded-lg">
-                  <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                  <div className="grid grid-cols-4 gap-x-6 gap-y-2">
                     <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
                     <DetailRow label="Governance Model" value={school.governanceModel} />
                     <DetailRow label="Founders" value={school.founders?.join(', ')} />
                     <DetailRow label="Program Focus" value={school.programFocus} />
                     <DetailRow label="Max Capacity Enrollments" value={school.maxCapacityEnrollments} />
                     <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
+                    <DetailRow label="Public Funding" value={school.publicFunding} />
+                    <DetailRow label="Flexible Tuition" value={school.flexibleTuition} />
                   </div>
                 </div>
               </details>
@@ -852,7 +877,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 </svg>
               </summary>
               <div className="mt-4 p-4 bg-white border rounded-lg">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                <div className="grid grid-cols-4 gap-x-6 gap-y-2">
                   <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
                   <DetailRow label="Signed Membership Agreement Date" value={school.signedMembershipAgreementDate} />
                   <DetailRow 
@@ -877,7 +902,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 </svg>
               </summary>
               <div className="mt-4 p-4 bg-white border rounded-lg">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                <div className="grid grid-cols-4 gap-x-6 gap-y-2">
                   <DetailRow label="School Email" value={school.schoolEmail} />
                   <DetailRow label="School Phone" value={school.phone} />
                   <DetailRow label="Email Domain" value={school.emailDomain} />
@@ -918,7 +943,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 </svg>
               </summary>
               <div className="mt-4 p-4 bg-white border rounded-lg">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                <div className="grid grid-cols-4 gap-x-6 gap-y-2">
                   <DetailRow label="EIN" value={school.ein} />
                   <DetailRow label="Nonprofit Status" value={school.nonprofitStatus} />
                   <DetailRow label="Group Exemption Status" value={school.groupExemptionStatus} />
@@ -1062,7 +1087,10 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       End Date
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Currently Active
+                      Current Mailing Address
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Current Physical Address
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
@@ -1089,7 +1117,14 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                         {location.endDate || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {location.currentlyActive ? (
+                        {location.currentMailingAddress ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {location.currentPhysicalAddress ? (
                           <CheckCircle className="w-5 h-5 text-green-600" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-600" />
