@@ -102,6 +102,117 @@ const sampleSchools = [
   }
 ];
 
+// SSJ Fillout Forms data
+const sampleSSJFilloutForms = [
+  {
+    id: 'ssj1',
+    educatorId: 'ed1',
+    firstName: 'Ashten',
+    lastName: 'Sommer',
+    entryDate: '2022-11-15',
+    location: 'Austin, TX',
+    routedTo: 'daniela.vasan@wildflowerschools.org',
+    sendGridSentData: '2022-11-15 10:30 AM',
+    assignedPartner: 'Daniela Vasan',
+    assignedPartnerOverride: null,
+    oneOnOneStatus: 'Completed',
+    personResponsibleForFollowUp: 'Rachel Kelley-Cohen'
+  },
+  {
+    id: 'ssj2',
+    educatorId: 'ed2',
+    firstName: 'Gabrielle',
+    lastName: 'Tyree',
+    entryDate: '2022-12-03',
+    location: 'Austin, TX',
+    routedTo: 'daniela.vasan@wildflowerschools.org',
+    sendGridSentData: '2022-12-03 2:15 PM',
+    assignedPartner: 'Daniela Vasan',
+    assignedPartnerOverride: null,
+    oneOnOneStatus: 'Scheduled',
+    personResponsibleForFollowUp: 'Daniela Vasan'
+  }
+];
+
+// Event Attendance data
+const sampleEventAttendance = [
+  {
+    id: 'ea1',
+    educatorId: 'ed1',
+    eventName: 'Wildflower Summer Institute 2023',
+    eventDate: '2023-07-15',
+    registrationStatus: 'Registered',
+    attendanceStatus: 'Attended',
+    location: 'Austin, TX'
+  },
+  {
+    id: 'ea2',
+    educatorId: 'ed1',
+    eventName: 'Regional Gathering - Texas',
+    eventDate: '2023-10-08',
+    registrationStatus: 'Registered',
+    attendanceStatus: 'Attended',
+    location: 'Dallas, TX'
+  },
+  {
+    id: 'ea3',
+    educatorId: 'ed2',
+    eventName: 'Wildflower Summer Institute 2023',
+    eventDate: '2023-07-15',
+    registrationStatus: 'Registered',
+    attendanceStatus: 'No Show',
+    location: 'Austin, TX'
+  }
+];
+
+// Montessori Certifications data
+const sampleMontessoriCerts = [
+  {
+    id: 'mc1',
+    educatorId: 'ed1',
+    certificationLevel: 'Primary (3-6)',
+    certifier: 'AMI',
+    year: 2020,
+    status: 'Active'
+  },
+  {
+    id: 'mc2',
+    educatorId: 'ed2',
+    certificationLevel: 'Primary (3-6)',
+    certifier: 'AMS',
+    year: 2019,
+    status: 'Active'
+  }
+];
+
+// Educator Notes data
+const sampleEducatorNotes = [
+  {
+    id: 'en1',
+    educatorId: 'ed1',
+    noteText: 'Ashten has shown exceptional leadership during the school startup process. Strong vision for authentic Montessori implementation.',
+    createdBy: 'Rachel Kelley-Cohen',
+    createdDate: '2023-06-15',
+    isPrivate: false
+  },
+  {
+    id: 'en2',
+    educatorId: 'ed1',
+    noteText: 'Confidential: Expressed concerns about funding timeline and facility search challenges.',
+    createdBy: 'Daniela Vasan',
+    createdDate: '2023-08-22',
+    isPrivate: true
+  },
+  {
+    id: 'en3',
+    educatorId: 'ed2',
+    noteText: 'Gabrielle brings valuable equity perspective to leadership team. Excellent at community outreach.',
+    createdBy: 'Rachel Kelley-Cohen',
+    createdDate: '2023-06-15',
+    isPrivate: false
+  }
+];
+
 // School Notes data
 const sampleSchoolNotes = [
   {
@@ -1567,6 +1678,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
 
 const EducatorDetails = ({ educator, onBack }) => {
   const [activeTab, setActiveTab] = useState('summary');
+  const [selectedSSJForm, setSelectedSSJForm] = useState(null);
 
   const tabs = [
     { id: 'summary', label: 'Summary' },
@@ -1581,6 +1693,14 @@ const EducatorDetails = ({ educator, onBack }) => {
     { id: 'notes', label: 'Notes' },
     { id: 'linked-emails', label: 'Linked emails/meetings' }
   ];
+
+  // Get SSJ forms for this educator
+  const educatorSSJForms = sampleSSJFilloutForms.filter(form => form.educatorId === educator.id);
+  
+  // Get the selected form details
+  const selectedForm = selectedSSJForm ? 
+    educatorSSJForms.find(form => form.id === selectedSSJForm) : 
+    null;
 
   const DetailRow = ({ label, value, span = false }) => (
     <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
@@ -1767,7 +1887,336 @@ const EducatorDetails = ({ educator, onBack }) => {
           </div>
         )}
 
-        {activeTab !== 'summary' && activeTab !== 'schools' && activeTab !== 'demographics' && activeTab !== 'contact-info' && (
+        {activeTab === 'online-forms' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">SSJ Fillout Forms</h3>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Entry Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Assigned Partner
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {educatorSSJForms.map(form => (
+                    <tr key={form.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {form.entryDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {form.location}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {form.assignedPartner}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <StatusBadge status={form.oneOnOneStatus} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {educatorSSJForms.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No SSJ forms found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'early-cultivation' && (
+          <div className="grid grid-cols-12 gap-8">
+            {/* Left Column - Form Selection */}
+            <div className="col-span-3">
+              <h3 className="text-lg font-semibold mb-4">SSJ Forms</h3>
+              <div className="space-y-2">
+                {educatorSSJForms.map(form => (
+                  <button
+                    key={form.id}
+                    onClick={() => setSelectedSSJForm(form.id)}
+                    className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                      selectedSSJForm === form.id
+                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                        : 'bg-white border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    {form.entryDate}
+                  </button>
+                ))}
+                {educatorSSJForms.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No SSJ forms found
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column - Form Details */}
+            <div className="col-span-9">
+              {selectedForm ? (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Form Details - {selectedForm.entryDate}
+                  </h3>
+                  <div className="bg-white border rounded-lg p-6">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                      <DetailRow label="Entry Date" value={selectedForm.entryDate} />
+                      <DetailRow label="Location" value={selectedForm.location} />
+                      <DetailRow label="Routed To" value={selectedForm.routedTo} />
+                      <DetailRow label="SendGrid Sent Data" value={selectedForm.sendGridSentData} />
+                      <DetailRow label="Assigned Partner" value={selectedForm.assignedPartner} />
+                      <DetailRow label="Assigned Partner Override" value={selectedForm.assignedPartnerOverride} />
+                      <DetailRow label="One on One Status" value={selectedForm.oneOnOneStatus} />
+                      <DetailRow label="Person Responsible for Follow Up" value={selectedForm.personResponsibleForFollowUp} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <h3 className="text-lg font-semibold mb-2">Select an SSJ Form</h3>
+                  <p>Choose a form from the left to view cultivation details</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'events' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Event Attendance</h3>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Event Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Registration Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Attendance Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleEventAttendance
+                    .filter(event => event.educatorId === educator.id)
+                    .map(event => (
+                    <tr key={event.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {event.eventName}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {event.eventDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {event.location}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <StatusBadge status={event.registrationStatus} />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <StatusBadge status={event.attendanceStatus} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {sampleEventAttendance.filter(event => event.educatorId === educator.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No event attendance records found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'guides' && (
+          <div className="text-center py-8 text-gray-500">
+            <h3 className="text-lg font-semibold mb-2">Guides</h3>
+            <p>This section will be implemented later</p>
+          </div>
+        )}
+
+        {activeTab === 'certs' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Montessori Certifications</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Certification
+              </button>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Certification Level
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Certifier
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Year
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleMontessoriCerts
+                    .filter(cert => cert.educatorId === educator.id)
+                    .map(cert => (
+                    <tr key={cert.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {cert.certificationLevel}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {cert.certifier}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {cert.year}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <StatusBadge status={cert.status} />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button 
+                          onClick={() => alert(`Edit certification ${cert.id}`)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => alert(`Delete certification ${cert.id}`)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {sampleMontessoriCerts.filter(cert => cert.educatorId === educator.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No certifications found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'notes' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">Educator Notes</h3>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Note
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {sampleEducatorNotes
+                .filter(note => note.educatorId === educator.id)
+                .map(note => (
+                <div key={note.id} className="bg-white border rounded-lg p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0 h-8 w-8">
+                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-sm font-medium text-gray-600">
+                            {note.createdBy.split(' ').map(n => n[0]).join('')}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {note.createdBy}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {note.createdDate}
+                        </div>
+                      </div>
+                      {note.isPrivate && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          Private
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button 
+                        onClick={() => alert(`Edit note ${note.id}`)}
+                        className="text-blue-600 hover:text-blue-900 text-sm"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => alert(`Delete note ${note.id}`)}
+                        className="text-red-600 hover:text-red-900 text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-900">
+                    {note.noteText}
+                  </div>
+                </div>
+              ))}
+              
+              {sampleEducatorNotes.filter(note => note.educatorId === educator.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No notes found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'linked-emails' && (
+          <div className="text-center py-8 text-gray-500">
+            <h3 className="text-lg font-semibold mb-2">Linked Emails/Meetings</h3>
+            <p>This section will be implemented later</p>
+          </div>
+        )}
+
+        {activeTab !== 'summary' && activeTab !== 'schools' && activeTab !== 'demographics' && activeTab !== 'contact-info' && activeTab !== 'online-forms' && activeTab !== 'early-cultivation' && activeTab !== 'events' && activeTab !== 'guides' && activeTab !== 'certs' && activeTab !== 'notes' && activeTab !== 'linked-emails' && (
           <div className="text-center py-8 text-gray-500">
             {tabs.find(t => t.id === activeTab)?.label} content would go here
           </div>
