@@ -259,7 +259,24 @@ const sampleEducators = [
     email: 'ashten@yellowrosemontessori.org',
     currentSchool: 'Yellow Rose',
     role: 'Founder',
-    discoveryStatus: 'Complete'
+    discoveryStatus: 'Complete',
+    montessoriCertified: true,
+    pronouns: 'she/her/hers',
+    phone: '(512) 555-0123',
+    // Demographics
+    raceEthnicity: ['White', 'Hispanic, Latino, or Spanish Origin'],
+    gender: 'Female/Woman',
+    householdIncome: 'Upper Income',
+    lgbtqia: false,
+    primaryLanguage: 'English',
+    otherLanguages: ['Spanish'],
+    // Contact Info
+    personalEmail: 'ashten.sommer@gmail.com',
+    wildflowerEmail: 'ashten@yellowrosemontessori.org',
+    workEmail: null,
+    primaryPhone: '(512) 555-0123',
+    secondaryPhone: null,
+    homeAddress: '1234 Oak Street, Austin, TX 78704'
   },
   {
     id: 'ed2',
@@ -268,7 +285,24 @@ const sampleEducators = [
     email: 'gabrielle@yellowrosemontessori.org',
     currentSchool: 'Yellow Rose',
     role: 'Founder',
-    discoveryStatus: 'Complete'
+    discoveryStatus: 'Complete',
+    montessoriCertified: true,
+    pronouns: 'they/them',
+    phone: '(512) 555-0456',
+    // Demographics
+    raceEthnicity: ['African-American'],
+    gender: 'Non-binary',
+    householdIncome: 'Middle Income',
+    lgbtqia: true,
+    primaryLanguage: 'English',
+    otherLanguages: [],
+    // Contact Info
+    personalEmail: 'gabrielle.tyree@gmail.com',
+    wildflowerEmail: 'gabrielle@yellowrosemontessori.org',
+    workEmail: null,
+    primaryPhone: '(512) 555-0456',
+    secondaryPhone: '(512) 555-0789',
+    homeAddress: '5678 Elm Avenue, Austin, TX 78745'
   }
 ];
 
@@ -1532,6 +1566,34 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
 };
 
 const EducatorDetails = ({ educator, onBack }) => {
+  const [activeTab, setActiveTab] = useState('summary');
+
+  const tabs = [
+    { id: 'summary', label: 'Summary' },
+    { id: 'schools', label: 'Schools' },
+    { id: 'demographics', label: 'Demographics' },
+    { id: 'contact-info', label: 'Contact Info' },
+    { id: 'online-forms', label: 'Online Forms' },
+    { id: 'early-cultivation', label: 'Early Cultivation' },
+    { id: 'events', label: 'Events' },
+    { id: 'guides', label: 'Guides' },
+    { id: 'certs', label: 'Certs' },
+    { id: 'notes', label: 'Notes' },
+    { id: 'linked-emails', label: 'Linked emails/meetings' }
+  ];
+
+  const DetailRow = ({ label, value, span = false }) => (
+    <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
+      <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+      <div className="text-sm text-gray-900">
+        {value === true ? <CheckCircle className="w-4 h-4 text-green-600" /> : 
+         value === false ? <XCircle className="w-4 h-4 text-red-600" /> :
+         Array.isArray(value) ? value.join(', ') :
+         value || '-'}
+      </div>
+    </div>
+  );
+
   return (
     <div className="h-full flex flex-col bg-white">
       <div className="border-b bg-gray-50 px-6 py-4">
@@ -1544,52 +1606,172 @@ const EducatorDetails = ({ educator, onBack }) => {
           </button>
           <h1 className="text-2xl font-bold text-gray-900">Educator details</h1>
         </div>
+        
+        <div className="flex space-x-8 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6">
-        <div className="space-y-8">
-          <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-              <span className="text-xl font-medium text-gray-600">
-                {educator.firstName[0]}{educator.lastName[0]}
-              </span>
+        {activeTab === 'summary' && (
+          <div className="space-y-8">
+            <div className="flex items-start space-x-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                <span className="text-xl font-medium text-gray-600">
+                  {educator.firstName[0]}{educator.lastName[0]}
+                </span>
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-gray-900">{educator.firstName} {educator.lastName}</h2>
+                <div className="mt-1 space-y-1">
+                  <div className="text-blue-600">{educator.email}</div>
+                  <div className="text-gray-600">{educator.role}</div>
+                  <div className="text-gray-600">{educator.pronouns}</div>
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">{educator.firstName} {educator.lastName}</h2>
-              <div className="mt-1 space-y-1">
-                <div className="text-blue-600">{educator.email}</div>
-                <div className="text-gray-600">{educator.role}</div>
+
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t pt-6">
+              <DetailRow label="First Name" value={educator.firstName} />
+              <DetailRow label="Last Name" value={educator.lastName} />
+              <DetailRow label="Email" value={educator.email} />
+              <DetailRow label="Current School" value={educator.currentSchool} />
+              <DetailRow label="Role" value={educator.role} />
+              <DetailRow label="Discovery Status" value={<StatusBadge status={educator.discoveryStatus} />} />
+              <DetailRow label="Montessori Certified" value={educator.montessoriCertified} />
+              <DetailRow label="Pronouns" value={educator.pronouns} />
+              <DetailRow label="Phone" value={educator.phone} />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'schools' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold">School Affiliations</h3>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      School
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role(s)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Start Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Currently Active
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleEducatorsXSchools
+                    .filter(exs => exs.educatorId === educator.id)
+                    .map(relationship => (
+                    <tr key={relationship.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {sampleSchools.find(s => s.id === relationship.schoolId)?.name || 'Unknown School'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex flex-wrap gap-1">
+                          {relationship.roles.map((role, index) => (
+                            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              {role}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {relationship.startDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {relationship.endDate || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {relationship.currentlyActive ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {sampleEducatorsXSchools.filter(exs => exs.educatorId === educator.id).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No school affiliations found for this educator.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'demographics' && (
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Demographics</h3>
+              <div className="bg-white border rounded-lg p-6">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <DetailRow label="Race & Ethnicity" value={educator.raceEthnicity} />
+                  <DetailRow label="Gender" value={educator.gender} />
+                  <DetailRow label="Pronouns" value={educator.pronouns} />
+                  <DetailRow label="LGBTQIA+" value={educator.lgbtqia} />
+                  <DetailRow label="Household Income" value={educator.householdIncome} />
+                  <DetailRow label="Primary Language" value={educator.primaryLanguage} />
+                  <DetailRow label="Other Languages" value={educator.otherLanguages} span />
+                </div>
               </div>
             </div>
           </div>
+        )}
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t pt-6">
+        {activeTab === 'contact-info' && (
+          <div className="space-y-8">
             <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">First Name</div>
-              <div className="text-sm text-gray-900">{educator.firstName}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Last Name</div>
-              <div className="text-sm text-gray-900">{educator.lastName}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Email</div>
-              <div className="text-sm text-gray-900">{educator.email}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Current School</div>
-              <div className="text-sm text-gray-900">{educator.currentSchool}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Role</div>
-              <div className="text-sm text-gray-900">{educator.role}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 mb-1">Discovery Status</div>
-              <StatusBadge status={educator.discoveryStatus} />
+              <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
+              <div className="bg-white border rounded-lg p-6">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <DetailRow label="Personal Email" value={educator.personalEmail} />
+                  <DetailRow label="Wildflower Email" value={educator.wildflowerEmail} />
+                  <DetailRow label="Work Email" value={educator.workEmail} />
+                  <DetailRow label="Primary Phone" value={educator.primaryPhone} />
+                  <DetailRow label="Secondary Phone" value={educator.secondaryPhone} />
+                  <DetailRow label="Home Address" value={educator.homeAddress} span />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {activeTab !== 'summary' && activeTab !== 'schools' && activeTab !== 'demographics' && activeTab !== 'contact-info' && (
+          <div className="text-center py-8 text-gray-500">
+            {tabs.find(t => t.id === activeTab)?.label} content would go here
+          </div>
+        )}
       </div>
     </div>
   );
