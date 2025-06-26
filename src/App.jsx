@@ -776,7 +776,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     { id: 'grants-loans', label: 'Grants and Loans' },
     { id: 'linked-mtgs', label: 'Linked mtgs/emails' },
     { id: 'notes-actions', label: 'Notes/Action steps' }
-  ]
+  ];
 
   // Get membership fee records for this school
   const membershipFeeRecords = sampleMembershipFeeRecords.filter(record => record.schoolId === school.id);
@@ -3033,7 +3033,7 @@ const clearAllFilters = () => {
 
   const getCurrentError = () => {
     switch (mainTab) {
-      case 'schools': return error; // ← Add this
+      case 'schools': return schoolsError; // ← Add this
       case 'educators': return null;
       case 'charters': return null;
       default: return null;
@@ -3139,8 +3139,6 @@ return (
     </button>
   )}
 </div>
-  <Filter className="w-4 h-4" />
-</button>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
