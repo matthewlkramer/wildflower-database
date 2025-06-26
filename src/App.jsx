@@ -102,6 +102,94 @@ const sampleSchools = [
   }
 ];
 
+// School Notes data
+const sampleSchoolNotes = [
+  {
+    id: 'sn1',
+    schoolId: 'rec1',
+    noteText: 'Initial founder meeting went very well. Strong vision for authentic Montessori implementation with focus on outdoor learning components.',
+    createdBy: 'Rachel Kelley-Cohen',
+    createdDate: '2023-02-15',
+    isPrivate: false
+  },
+  {
+    id: 'sn2',
+    schoolId: 'rec1',
+    noteText: 'Facility search proving challenging in Austin market. May need to consider alternative locations or modify timeline.',
+    createdBy: 'Daniela Vasan',
+    createdDate: '2023-07-08',
+    isPrivate: false
+  },
+  {
+    id: 'sn3',
+    schoolId: 'rec1',
+    noteText: 'Confidential: Board concerns about fundraising timeline and potential delays due to permit issues.',
+    createdBy: 'Rachel Kelley-Cohen',
+    createdDate: '2023-09-12',
+    isPrivate: true
+  },
+  {
+    id: 'sn4',
+    schoolId: 'rec2',
+    noteText: 'Celebrating 5 years of successful operation! School has exceeded enrollment targets and maintains excellent parent satisfaction scores.',
+    createdBy: 'Sara Hernandez',
+    createdDate: '2023-09-01',
+    isPrivate: false
+  },
+  {
+    id: 'sn5',
+    schoolId: 'rec2',
+    noteText: 'Exploring expansion opportunities. Sarah Johnson has expressed interest in opening a second location in Cambridge.',
+    createdBy: 'Sara Hernandez',
+    createdDate: '2023-10-15',
+    isPrivate: false
+  }
+];
+
+// Action Steps data
+const sampleActionSteps = [
+  {
+    id: 'as1',
+    schoolId: 'rec1',
+    item: 'Complete facility lease review with Building4Good attorney',
+    assignee: 'Ashten Sommer',
+    status: 'Incomplete',
+    dueDate: '2023-12-01'
+  },
+  {
+    id: 'as2',
+    schoolId: 'rec1',
+    item: 'Finalize enrollment projections for Year 1',
+    assignee: 'Gabrielle Tyree',
+    status: 'Complete',
+    dueDate: '2023-10-15'
+  },
+  {
+    id: 'as3',
+    schoolId: 'rec1',
+    item: 'Schedule Building4Good consultation for facility modifications',
+    assignee: 'Rachel Kelley-Cohen',
+    status: 'Incomplete',
+    dueDate: '2023-11-30'
+  },
+  {
+    id: 'as4',
+    schoolId: 'rec2',
+    item: 'Submit annual compliance report to state department',
+    assignee: 'Sarah Johnson',
+    status: 'Complete',
+    dueDate: '2023-09-30'
+  },
+  {
+    id: 'as5',
+    schoolId: 'rec2',
+    item: 'Develop expansion classroom timeline and budget',
+    assignee: 'Sarah Johnson',
+    status: 'Incomplete',
+    dueDate: '2023-12-15'
+  }
+];
+
 // Membership fee annual records
 const sampleMembershipFeeRecords = [
   {
@@ -1285,7 +1373,155 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           </div>
         )}
 
-        {activeTab !== 'summary' && activeTab !== 'tls' && activeTab !== 'locations' && activeTab !== 'governance' && activeTab !== 'guides' && activeTab !== 'ssj-oss' && activeTab !== 'membership-fees' && activeTab !== 'grants-loans' && (
+        {activeTab === 'notes-actions' && (
+          <div className="grid grid-cols-2 gap-8">
+            {/* Left Half - School Notes */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">School Notes</h3>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Note
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {sampleSchoolNotes
+                  .filter(note => note.schoolId === school.id)
+                  .map(note => (
+                  <div key={note.id} className="bg-white border rounded-lg p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0 h-8 w-8">
+                          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-sm font-medium text-gray-600">
+                              {note.createdBy.split(' ').map(n => n[0]).join('')}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {note.createdBy}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {note.createdDate}
+                          </div>
+                        </div>
+                        {note.isPrivate && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Private
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          onClick={() => alert(`Edit note ${note.id}`)}
+                          className="text-blue-600 hover:text-blue-900 text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => alert(`Delete note ${note.id}`)}
+                          className="text-red-600 hover:text-red-900 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-900">
+                      {note.noteText}
+                    </div>
+                  </div>
+                ))}
+                
+                {sampleSchoolNotes.filter(note => note.schoolId === school.id).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No notes found for this school.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Half - Action Steps */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">Action Steps</h3>
+                <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Action
+                </button>
+              </div>
+              
+              <div className="bg-white border rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Item
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Assignee
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Due Date
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {sampleActionSteps
+                      .filter(action => action.schoolId === school.id)
+                      .map(action => (
+                      <tr key={action.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div className="text-sm font-medium text-gray-900">
+                            {action.item}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {action.assignee}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <StatusBadge status={action.status} />
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {action.dueDate}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                          <button 
+                            onClick={() => alert(`Edit action ${action.id}`)}
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => alert(`Delete action ${action.id}`)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
+                {sampleActionSteps.filter(action => action.schoolId === school.id).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No action steps found for this school.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab !== 'summary' && activeTab !== 'tls' && activeTab !== 'locations' && activeTab !== 'governance' && activeTab !== 'guides' && activeTab !== 'ssj-oss' && activeTab !== 'membership-fees' && activeTab !== 'grants-loans' && activeTab !== 'notes-actions' && (
           <div className="text-center py-8 text-gray-500">
             {tabs.find(t => t.id === activeTab)?.label} content would go here
           </div>
