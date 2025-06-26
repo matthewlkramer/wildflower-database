@@ -3024,9 +3024,9 @@ const WildflowerDatabase = () => {
               columns={getCurrentColumns()}
               onRowClick={handleRowClick}
               searchTerm={searchTerm}
-              loading={getCurrentLoading()} // ← Add this
-              error={getCurrentError()}     // ← Add this
-              onRetry={() => {}}           // ← Add this (we'll implement refetch later)
+              // loading={getCurrentLoading()} // ← Add this
+              // error={getCurrentError()}     // ← Add this
+              // onRetry={() => {}}           // ← Add this (we'll implement refetch later)
             />
             </div>
           </div>
