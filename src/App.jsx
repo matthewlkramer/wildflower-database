@@ -1,3 +1,5 @@
+import { useSchools, useEducators } from './hooks/useAirtableData';
+import { transformSchoolsData } from './utils/dataTransformers';
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, Plus, ExternalLink, ArrowLeft, CheckCircle, XCircle, FileText } from 'lucide-react';
 import './App.css';
@@ -2862,6 +2864,7 @@ const WildflowerDatabase = () => {
   const [mainTab, setMainTab] = useState('schools');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
+  const { data: rawSchoolsData, loading, error } = useSchools();
 
   const mainTabs = [
     { id: 'schools', label: 'Schools', count: sampleSchools.length },
@@ -3014,5 +3017,12 @@ const WildflowerDatabase = () => {
     </div>
   );
 };
+
+useEffect(() => {
+  console.log('Loading:', loading);
+  console.log('Error:', error);
+  console.log('Raw schools data:', rawSchoolsData);
+  console.log('Transformed schools:', transformSchoolsData(rawSchoolsData));
+}, [rawSchoolsData, loading, error]);
 
 export default WildflowerDatabase;
