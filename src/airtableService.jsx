@@ -128,7 +128,7 @@ class AirtableService {
   
     // Add filter for active schools only (default behavior)
     if (!includeInactive) {
-      options.filterByFormula = "OR({Status} = 'Open', {Status} = 'Emerging')";
+      options.filterByFormula = "OR({School Status} = 'Open', {School Status} = 'Emerging')";
     }
   
     console.log('🔄 Fetching schools with options:', options);
