@@ -2912,8 +2912,8 @@ const schoolsData = useMemo(() => {
 const getCurrentData = () => {
   switch (mainTab) {
     case 'schools': 
-      // Make sure we return an array, even if data is still loading
-      return Array.isArray(schoolsData) ? schoolsData : [];
+      // Temporarily use sample data while debugging
+      return sampleSchools;
     case 'educators': 
       return sampleEducators;
     case 'charters': 
@@ -3031,6 +3031,10 @@ const getCurrentData = () => {
             </div>
             
             <div className="flex-1 overflow-auto">
+const currentData = getCurrentData();
+console.log('Data being passed to DataTable:', currentData);
+console.log('Data type:', typeof currentData);
+console.log('Is array:', Array.isArray(currentData));
 	    <DataTable 
               data={getCurrentData()}
               columns={getCurrentColumns()}
