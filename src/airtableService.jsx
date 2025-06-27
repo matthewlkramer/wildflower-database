@@ -15,7 +15,7 @@ async fetchRecords(tableName, options = {}) {
   try {
     const { 
       view, 
-      maxRecords = 200,
+      maxRecords = 10000,
       pageSize = 100,
       sort,
       filterByFormula,
@@ -24,7 +24,10 @@ async fetchRecords(tableName, options = {}) {
     
     let allRecords = [];
     let offset = null;
-    
+      let pageCount = 0;
+
+      console.log(`🔄 Starting to fetch records from ${tableName}...`);
+
     do {
       const params = new URLSearchParams();
       if (view) params.append('view', view);
@@ -36,35 +39,53 @@ async fetchRecords(tableName, options = {}) {
       if (offset) params.append('offset', offset);
 
       const url = `${this.baseUrl}/${encodeURIComponent(tableName)}?${params}`;
+      console.log(`📄 Fetching page ${pageCount + 1} from ${tableName}...`);
       const response = await fetch(url, { headers: this.headers });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json();
-      allRecords = allRecords.concat(data.records || []);
-      offset = data.offset; // Airtable provides offset for next page
-      
-      console.log(`📄 Fetched ${data.records?.length || 0} records, total so far: ${allRecords.length}`);
-      
-      // Stop if we have enough records or no more pages
-      if (!offset || allRecords.length >= maxRecords) {
-        break;
-      }
-    } while (offset);
-    
-    // Trim to maxRecords if we got too many
-    if (allRecords.length > maxRecords) {
-      allRecords = allRecords.slice(0, maxRecords);
+        const data = await response.json();
+        const recordsInThisPage = data.records || [];
+
+        allRecords = allRecords.concat(recordsInThisPage);
+        offset = data.offset; // Airtable provides offset for next page
+        pageCount++;
+
+            console.log(`📄 Page ${pageCount}: Fetched ${recordsInThisPage.length} records, total so far: ${allRecords.length}`);
+
+            // Stop if no more pages or we've reached maxRecords
+            if (!offset || allRecords.length >= maxRecords) {
+                if (!offset) {
+                    console.log('✅ No more pages available');
+                }
+                if (allRecords.length >= maxRecords) {
+                    console.log(`✅ Reached maxRecords limit: ${maxRecords}`);
+                }
+                break;
+            }
+
+            // Safety check to prevent infinite loops
+            if (pageCount > 100) {
+                console.warn('⚠️ Stopping after 100 pages to prevent infinite loop');
+                break;
+            }
+
+        } while (offset);
+
+        // Trim to maxRecords if we got too many
+        if (allRecords.length > maxRecords) {
+            console.log(`✂️ Trimming results from ${allRecords.length} to ${maxRecords}`);
+            allRecords = allRecords.slice(0, maxRecords);
+        }
+
+        console.log(`✅ Final result for ${tableName}: ${allRecords.length} records from ${pageCount} pages`);
+        return this.transformRecords(allRecords);
+    } catch (error) {
+        console.error(`❌ Error fetching records from ${tableName}:`, error);
+        throw error;
     }
-    
-    console.log(`✅ Final result: ${allRecords.length} records`);
-    return this.transformRecords(allRecords);
-  } catch (error) {
-    console.error(`Error fetching records from ${tableName}:`, error);
-    throw error;
-  }
 }
 
   // Transform Airtable records to a more usable format
@@ -145,7 +166,6 @@ async fetchRecords(tableName, options = {}) {
   async fetchSchools(includeInactive = false) {
     const options = {
       sort: { field: 'Name', direction: 'asc' },
-      maxRecords: 200  // ← Add this line	
     };
   
     // Add filter for active schools only (default behavior)
@@ -176,7 +196,16 @@ async fetchRecords(tableName, options = {}) {
     return this.fetchRecords(TABLES.EDUCATORS_X_SCHOOLS, {
       sort: { field: 'Start Date', direction: 'desc' }
     });
-  }
+    }
+
+    // Add a generic method to fetch all records from any table (for your hooks)
+    async getAllRecords(tableName, options = {}) {
+        console.log(`🔄 Getting ALL records from ${tableName}...`);
+        return this.fetchRecords(tableName, {
+            maxRecords: 10000, // Allow up to 10,000 records
+            ...options
+        });
+    }
 
   // Fetch school notes for a specific school
   async fetchSchoolNotes(schoolId) {
