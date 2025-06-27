@@ -179,7 +179,7 @@ export const transformEducatorData = (airtableRecord) => {
     fullName: airtableRecord['Full Name'] || '',
     firstName: airtableRecord['First Name'] || '',
     lastName: airtableRecord['Last Name'] || '',
-    email: airtableRecord['Current Primary Email Address'] '',
+    email: airtableRecord['Current Primary Email Address'] || '',
     currentSchool: airtableRecord['Currently Active School'] ? 
       (Array.isArray(airtableRecord['Currently Active School']) ? 
         airtableRecord['Currently Active School'][0] : 
