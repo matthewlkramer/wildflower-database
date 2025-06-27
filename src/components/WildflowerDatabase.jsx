@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 
 // Import components
@@ -14,6 +14,7 @@ import { useFilters } from '../hooks/useFilters';
 import { useSchoolFilters } from '../hooks/useSchoolFilters';
 import { useTableColumns } from '../hooks/useTableColumns';
 import { useTabCounts } from '../hooks/useTabCounts';
+import { useEducatorFilters } from '../hooks/useEducatorFilters';
 
 // Import constants
 import { TABS } from '../utils/constants';
@@ -37,16 +38,17 @@ const WildflowerDatabase = () => {
   } = useFilters();
 
   // Data fetching
-  const schoolsResult = useUnifiedData(TABS.SCHOOLS, { includeInactive: true });
-  const educatorsResult = useUnifiedData(TABS.EDUCATORS);
-  const chartersResult = useUnifiedData(TABS.CHARTERS);
+    const schoolsResult = useUnifiedData(TABS.SCHOOLS, { includeInactive: true });
+    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true }); // Get all data
+    const chartersResult = useUnifiedData(TABS.CHARTERS);
 
-console.log('?? Main component - Schools result:', schoolsResult);
+console.log('🔍 Main component - Schools result:', schoolsResult);
 
 // School-specific filters - this is where the active/inactive filtering happens
-const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
+    const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
+    const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
 
-console.log('?? Main component - Filtered schools:', filteredSchools?.length);
+console.log('🔍 Main component - Filtered schools:', filteredSchools?.length);
 
     // Get current data based on active tab
     const getCurrentData = () => {
@@ -54,7 +56,7 @@ console.log('?? Main component - Filtered schools:', filteredSchools?.length);
             case TABS.SCHOOLS:
                 return filteredSchools || [];
             case TABS.EDUCATORS:
-                return educatorsResult.data || [];
+                return filteredEducators || [];
             case TABS.CHARTERS:
                 return chartersResult.data || [];
             default:
@@ -134,19 +136,31 @@ console.log('?? Main component - Filtered schools:', filteredSchools?.length);
             <div className="p-6 border-b">
               <div className="flex items-center justify-between">
                 <div></div>
-                <div className="flex items-center space-x-4">
-                  {/* Status Filter Toggle - only show for schools tab */}
-                  {mainTab === TABS.SCHOOLS && (
-                    <label className="flex items-center space-x-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={includeInactiveSchools}
-                        onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="text-gray-700">Include inactive schools</span>
-                    </label>
-                  )}
+                              <div className="flex items-center space-x-4">
+                                  {/* Status Filter Toggle - show for schools and educators */}
+                                  {mainTab === TABS.SCHOOLS && (
+                                      <label className="flex items-center space-x-2 text-sm">
+                                          <input
+                                              type="checkbox"
+                                              checked={includeInactiveSchools}
+                                              onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
+                                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                          />
+                                          <span className="text-gray-700">Include inactive schools</span>
+                                      </label>
+                                  )}
+
+                                  {mainTab === TABS.EDUCATORS && (
+                                      <label className="flex items-center space-x-2 text-sm">
+                                          <input
+                                              type="checkbox"
+                                              checked={includeInactiveEducators}
+                                              onChange={(e) => setIncludeInactiveEducators(e.target.checked)}
+                                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                          />
+                                          <span className="text-gray-700">Include inactive educators</span>
+                                      </label>
+                                  )}
                   
                   <div className="flex items-center space-x-2">
                     <button 

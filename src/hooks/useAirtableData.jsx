@@ -1,6 +1,6 @@
-// hooks/useAirtableData.js
 import { useState, useEffect, useCallback } from 'react';
 import { airtableService } from '../airtableService';
+
 
 // Generic hook for fetching data
 export const useAirtableData = (fetchFunction, dependencies = []) => {
@@ -71,8 +71,126 @@ export const useSchools = (includeInactive = false) => {
 };
 
 // Hook for fetching educators
-export const useEducators = () => {
-  return useAirtableData(() => airtableService.fetchEducators());
+export const useEducators = (includeInactive = false) => {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchAllEducators = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                console.log('🔄 Fetching educators with includeInactive:', includeInactive);
+
+                // Fetch educators and educators x schools data
+                const [educatorsData, educatorsXSchoolsData] = await Promise.all([
+                    airtableService.fetchEducators(includeInactive),
+                    airtableService.fetchEducatorsXSchools()
+                ]);
+
+                console.log('📊 Raw educators data:', {
+                    totalEducators: educatorsData.length,
+                    firstEducator: educatorsData[0],
+                    educatorFields: educatorsData[0] ? Object.keys(educatorsData[0]) : [],
+                    totalRelationships: educatorsXSchoolsData.length
+                });
+
+                // If not including inactive, filter out educators with no active school relationships
+                let filteredEducators = educatorsData;
+
+                if (!includeInactive) {
+                    // Get educators who have active relationships
+                    const activeEducatorIds = new Set(
+                        educatorsXSchoolsData
+                            .filter(rel => rel['Currently Active'] === true)
+                            .map(rel => {
+                                // Handle different ways the Educator field might be structured
+                                if (Array.isArray(rel.Educator)) {
+                                    return rel.Educator[0]; // If it's an array, take first element
+                                }
+                                return rel.Educator; // If it's a direct reference
+                            })
+                            .filter(Boolean)
+                    );
+
+                    console.log('👥 Active educator IDs from relationships:', activeEducatorIds.size);
+
+                    // Filter to only include educators who either:
+                    // 1. Have active school relationships, OR
+                    // 2. Have no school relationships at all (new educators)
+                    filteredEducators = educatorsData.filter(educator => {
+                        const hasAnyRelationship = educatorsXSchoolsData.some(rel => {
+                            const relEducatorId = Array.isArray(rel.Educator) ? rel.Educator[0] : rel.Educator;
+                            return relEducatorId === educator.id;
+                        });
+                        const hasActiveRelationship = activeEducatorIds.has(educator.id);
+
+                        // Include if: has active relationship OR has no relationships at all
+                        const shouldInclude = hasActiveRelationship || !hasAnyRelationship;
+
+                        if (!shouldInclude) {
+                            console.log('🚫 Filtering out educator:', educator['First Name'], educator['Last Name'], 'has relationships but none active');
+                        }
+
+                        return shouldInclude;
+                    });
+
+                    console.log('✅ After relationship filtering:', filteredEducators.length, 'educators');
+                }
+
+                // Transform the data to match expected format
+                const transformedEducators = filteredEducators.map(educator => {
+                    // Debug the first few records to see field mapping
+                    if (filteredEducators.indexOf(educator) < 3) {
+                        console.log('🔍 Educator field mapping for:', educator.id, educator);
+                    }
+
+                    return {
+                        id: educator.id,
+                        firstName: educator['First Name'] || educator.firstName || 'Unknown',
+                        lastName: educator['Last Name'] || educator.lastName || 'Unknown',
+                        email: educator['Contact Email'] || educator.email || educator['Email'] || '',
+                        phone: educator['Primary phone'] || educator.phone || '',
+                        pronouns: educator['Pronouns'] || educator.pronouns || '',
+                        discoveryStatus: educator['Discovery status'] || educator.discoveryStatus || '',
+                        montessoriCertified: educator['Montessori Certified'] || educator.montessoriCertified || false,
+                        currentSchool: educator['Current School'] || educator.currentSchool || '',
+                        role: educator['Role'] || educator.role || '',
+                        raceEthnicity: educator['Race & Ethnicity'] || educator.raceEthnicity || [],
+                        gender: educator['Gender'] || educator.gender || '',
+                        householdIncome: educator['Household Income'] || educator.householdIncome || '',
+                        lgbtqia: educator['LGBTQIA+'] || educator.lgbtqia || false,
+                        primaryLanguage: educator['Primary Language'] || educator.primaryLanguage || '',
+                        otherLanguages: educator['Other Languages'] || educator.otherLanguages || [],
+                        // Contact Info
+                        personalEmail: educator['Personal Email'] || educator.personalEmail || '',
+                        wildflowerEmail: educator['Wildflower Email'] || educator.wildflowerEmail || '',
+                        workEmail: educator['Work Email'] || educator.workEmail || '',
+                        primaryPhone: educator['Primary Phone'] || educator.primaryPhone || educator['Primary phone'] || '',
+                        secondaryPhone: educator['Secondary Phone'] || educator.secondaryPhone || '',
+                        homeAddress: educator['Home Address'] || educator.homeAddress || '',
+                        individualType: educator['Individual type'] || educator.individualType || ''
+                    };
+                });
+
+                console.log('✅ Transformed educators:', transformedEducators.length);
+                console.log('📊 Sample transformed educator:', transformedEducators[0]);
+
+                setData(transformedEducators);
+            } catch (err) {
+                console.error('❌ Error fetching educators:', err);
+                setError(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAllEducators();
+    }, [includeInactive]);
+
+    return { data, loading, error };
 };
 
 // Hook for fetching charters
