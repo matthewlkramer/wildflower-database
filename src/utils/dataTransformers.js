@@ -179,7 +179,7 @@ export const transformEducatorData = (airtableRecord) => {
     fullName: airtableRecord['Full Name'] || '',
     firstName: airtableRecord['First Name'] || '',
     lastName: airtableRecord['Last Name'] || '',
-    email: airtableRecord['Contact Email'] || airtableRecord['Primary Personal Email'] || '',
+    email: airtableRecord['Current Primary Email Address'] '',
     currentSchool: airtableRecord['Currently Active School'] ? 
       (Array.isArray(airtableRecord['Currently Active School']) ? 
         airtableRecord['Currently Active School'][0] : 
@@ -205,9 +205,6 @@ export const transformEducatorData = (airtableRecord) => {
     otherLanguages: airtableRecord['Other languages'] || [],
     
     // Contact Info
-    personalEmail: airtableRecord['Primary Personal Email'] || '',
-    wildflowerEmail: airtableRecord['Wildflowerschools.org Email'] || '',
-    workEmail: airtableRecord['Primary Work Email (non-WF)'] || null,
     primaryPhone: airtableRecord['Primary phone'] || '',
     secondaryPhone: airtableRecord['Secondary phone'] || null,
     homeAddress: airtableRecord['Home Address'] || ''

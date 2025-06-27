@@ -19,11 +19,6 @@ export const useEducatorFilters = (educators) => {
             return educators;
         }
 
-        // The filtering is already done in the hook based on:
-        // 1. Discovery status != "Paused"
-        // 2. Individual type != "Community member"  
-        // 3. Has active school relationships OR no relationships
-
         console.log('✅ Active educators already filtered:', educators.length);
         return educators;
     }, [educators, includeInactiveEducators]);

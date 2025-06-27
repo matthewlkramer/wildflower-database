@@ -1,5 +1,3 @@
-// src/airtableService.jsx (Updated with educator filtering)
-
 import { AIRTABLE_CONFIG, TABLES } from './airtableConfig.jsx';
 
 class AirtableService {
@@ -51,7 +49,7 @@ class AirtableService {
                 const recordsInThisPage = data.records || [];
 
                 allRecords = allRecords.concat(recordsInThisPage);
-                offset = data.offset; // Airtable provides offset for next page
+                offset = data.offset;
                 pageCount++;
 
                 console.log(`📄 Page ${pageCount}: Fetched ${recordsInThisPage.length} records, total so far: ${allRecords.length}`);
@@ -162,7 +160,7 @@ class AirtableService {
         }
     }
 
-    // Fetch schools with related data
+    // Fetch schools
     async fetchSchools(includeInactive = false) {
         const options = {
             sort: { field: 'Name', direction: 'asc' },
@@ -177,7 +175,7 @@ class AirtableService {
         return this.fetchRecords(TABLES.SCHOOLS, options);
     }
 
-    // UPDATED: Fetch educators with filtering support
+    // Fetch educators
     async fetchEducators(includeInactive = false) {
         console.log('🔄 Fetching educators with includeInactive:', includeInactive);
 
@@ -191,10 +189,7 @@ class AirtableService {
             // 1. Discovery status = "Paused" 
             // 2. Individual type = "Community member"
             // Note: We'll handle the "no active school relationships" filter in the hook
-            options.filterByFormula = `AND(
-        {Discovery status} != 'Paused',
-        {Individual type} != 'Community member'
-      )`;
+            options.filterByFormula = `AND({Discovery status} != 'Paused',{Individual type} != 'Community member')`;
         }
 
         console.log('🔄 Fetching educators with options:', options);
@@ -279,6 +274,31 @@ class AirtableService {
             sort: { field: 'School year', direction: 'desc' }
         });
     }
+
+    // Fetch 990s for a specific school
+    async fetchNineNineties(schoolId) {
+        return this.fetchRecords(TABLES.NINE_NINETIES, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: '990 Reporting Year', direction: 'desc' }
+        });
+    }
+
+    // Fetch family surveys for a specific school
+    async fetchFamilySurveys(schoolId) {
+        return this.fetchRecords(TABLES.FAMILY_SURVEYS, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Survey Year', direction: 'desc' }
+        });
+    }
+
+    // Fetch assessment data for a specific school
+    async fetchAssessmentData(schoolId) {
+        return this.fetchRecords(TABLES.ASSESSMENT_DATA, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Year', direction: 'desc' }
+        });
+    }
+
 
     // Fetch SSJ forms for a specific educator
     async fetchEducatorSSJForms(educatorId) {

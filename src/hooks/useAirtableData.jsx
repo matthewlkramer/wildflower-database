@@ -179,6 +179,7 @@ export const useEducators = (includeInactive = false) => {
                         raceEthnicity: educator['Race & Ethnicity'] || [],
                         raceEthnicityOther: educator['Race & Ethnicity Other'] || '',
                         gender: educator['Gender'] || '',
+                        genderOther: educator['Gender - Other'] || '',
                         householdIncome: educator['Household Income'] || '',
                         incomeBackground: educator['Income Background'] || [],
                         lgbtqia: educator['LGBTQIA'] || '',
@@ -191,12 +192,13 @@ export const useEducators = (includeInactive = false) => {
                         targetGeo: educator['Target geo combined'] || '',
                         targetCity: educator['Target city'] || '',
                         targetState: educator['Target state'] || '',
-                        targetIntl: educator['Target intl'] || '',
+                        targetIntl: educator['Target - international'] || '',
 
                         // Additional fields
                         holaspirit: educator['Active Holaspirit'] || false,
                         tcUserId: educator['TC User ID'] || '',
                         createdTime: educator['Created'] || educator.createdTime,
+                        selfReflection: educator['Self-reflection'] || '',
 
                         // School relationship info
                         currentActiveSchool: educator['Currently Active School'] || '',
@@ -246,7 +248,10 @@ export const useSchoolData = (schoolId) => {
     locations: [],
     membershipFees: [],
     guideAssignments: [],
-    governanceDocs: []
+    governanceDocs: [],
+    nineNineties: [],
+    familySurveys: [],
+    assessmentData: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -266,7 +271,10 @@ export const useSchoolData = (schoolId) => {
         locations,
         membershipFees,
         guideAssignments,
-        governanceDocs
+        governanceDocs,
+        nineNineties,
+        familySurveys,
+        assessmentData
       ] = await Promise.all([
         airtableService.fetchSchoolNotes(schoolId),
         airtableService.fetchSchoolGrants(schoolId),
@@ -275,7 +283,10 @@ export const useSchoolData = (schoolId) => {
         airtableService.fetchSchoolLocations(schoolId),
         airtableService.fetchSchoolMembershipFees(schoolId),
         airtableService.fetchSchoolGuideAssignments(schoolId),
-        airtableService.fetchSchoolGovernanceDocs(schoolId)
+        airtableService.fetchSchoolGovernanceDocs(schoolId),
+        airtableService.fetchSchoolNineNineties(schoolId),
+        airtableService.fetchSchoolFamilySurveys(schoolId),
+        airtableService.fetchSchoolAssessmentData(schoolId)
       ]);
 
       setSchoolData({
@@ -286,7 +297,10 @@ export const useSchoolData = (schoolId) => {
         locations,
         membershipFees,
         guideAssignments,
-        governanceDocs
+        governanceDocs,
+        nineNineties,
+        familySurveys,
+        assessmentData
       });
     } catch (err) {
       setError(err);

@@ -23,5 +23,8 @@ export const TABLES = {
   MONTESSORI_CERTS: 'Montessori Certs',
   GUIDES_ASSIGNMENTS: 'Guides Assignments',
   GOVERNANCE_DOCS: 'Governance docs',
-  EMAIL_ADDRESSES: 'Email Addresses'
+  EMAIL_ADDRESSES: 'Email Addresses',
+  NINE_NINETIES: '990s',
+  FAMILY_SURVEYS: 'Family Survey',
+  ASSESSMENT_DATA: 'Assessment data'
 };

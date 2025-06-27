@@ -9,8 +9,8 @@ export const useTableColumns = (dataType) => {
                 return [
                     {
                         key: 'fullName',
-                        label: 'Full Name',
-                        render: (value, item) => `${item.firstName} ${item.lastName}`
+                        label: 'Name',
+                        render: (value, item) => `${item.fullName}`
                     },
                     {
                         key: 'currentSchool',
@@ -19,7 +19,7 @@ export const useTableColumns = (dataType) => {
                     },
                     {
                         key: 'role',
-                        label: 'Role',
+                        label: 'Role(s)',
                         render: (value) => value || '-'
                     },
                     {
@@ -71,7 +71,7 @@ export const useTableColumns = (dataType) => {
 
             case 'charters':
                 return [
-                    { key: 'name', label: 'Charter Name' },
+                    { key: 'name', label: 'Name' },
                     { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
                     { key: 'initialTargetCommunity', label: 'Target Community' }
                 ];
