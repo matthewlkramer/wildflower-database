@@ -20,36 +20,44 @@ import { useEducatorFilters } from '../hooks/useEducatorFilters';
 import { TABS } from '../utils/constants';
 
 const WildflowerDatabase = () => {
-  const [mainTab, setMainTab] = useState(TABS.SCHOOLS);
+    const [mainTab, setMainTab] = useState(TABS.SCHOOLS);
 
-  // Navigation
-  const { selectedItem, navigateToItem, navigateBack, navigateToEducator } = useNavigation();
+    // Navigation
+    const { selectedItem, navigateToItem, navigateBack, navigateToEducator } = useNavigation();
 
-  // Filters
-  const {
-    searchTerm,
-    setSearchTerm,
-    showFilters,
-    setShowFilters,
-    columnFilters,
-    handleColumnFilterChange,
-    clearAllFilters,
-    hasActiveFilters
-  } = useFilters();
+    // Filters
+    const {
+        searchTerm,
+        setSearchTerm,
+        showFilters,
+        setShowFilters,
+        columnFilters,
+        handleColumnFilterChange,
+        clearAllFilters,
+        hasActiveFilters
+    } = useFilters();
 
-  // Data fetching
+    // Data fetching - FIXED: Get all data first, then filter
     const schoolsResult = useUnifiedData(TABS.SCHOOLS, { includeInactive: true });
-    const { includeInactiveEducators, setIncludeInactiveEducators } = useEducatorFilters();
-    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: includeInactiveEducators }); // Get all data
+    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true }); // Always get all data
     const chartersResult = useUnifiedData(TABS.CHARTERS);
 
-console.log('🔍 Main component - Schools result:', schoolsResult);
+    console.log('🔍 Raw educators result:', {
+        loading: educatorsResult.loading,
+        error: educatorsResult.error,
+        dataLength: educatorsResult.data?.length,
+        firstEducator: educatorsResult.data?.[0]
+    });
 
-// School-specific filters - this is where the active/inactive filtering happens
+    // Apply filters to the data
     const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
-    const { filteredEducators } = useEducatorFilters(educatorsResult.data);
+    const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
 
-console.log('🔍 Main component - Filtered schools:', filteredSchools?.length);
+    console.log('🔍 Filtered data:', {
+        schools: filteredSchools?.length,
+        educators: filteredEducators?.length,
+        includeInactiveEducators
+    });
 
     // Get current data based on active tab
     const getCurrentData = () => {
@@ -65,161 +73,192 @@ console.log('🔍 Main component - Filtered schools:', filteredSchools?.length);
         }
     };
 
-  // Table columns
-  const columns = useTableColumns(mainTab);
+    // Table columns
+    const columns = useTableColumns(mainTab);
 
-  // Tab counts
+    // Tab counts - FIXED: Use filtered educators length
     const mainTabs = useTabCounts(
         filteredSchools || [],
         schoolsResult.loading,
-        educatorsResult.data || [],
+        filteredEducators || [], // Use filtered educators for count
         chartersResult.data || [],
         includeInactiveSchools
     );
 
-  // Event handlers
-  const handleRowClick = (item) => {
-    console.log('Row clicked, item:', item);
-    navigateToItem(mainTab, item);
-  };
+    // Event handlers
+    const handleRowClick = (item) => {
+        console.log('Row clicked, item:', item);
+        navigateToItem(mainTab, item);
+    };
 
-  const handleEducatorOpen = (educatorId) => {
-    navigateToEducator(educatorId, educatorsResult.data);
-  };
+    const handleEducatorOpen = (educatorId) => {
+        navigateToEducator(educatorId, educatorsResult.data);
+    };
 
-  // If viewing details, render the appropriate detail component
-  if (selectedItem) {
-    switch (selectedItem.type) {
-      case TABS.SCHOOLS:
-        return <SchoolDetails school={selectedItem.data} onBack={navigateBack} onEducatorOpen={handleEducatorOpen} />;
-      case TABS.EDUCATORS:
-        return <EducatorDetails educator={selectedItem.data} onBack={navigateBack} />;
-      case TABS.CHARTERS:
-        return <CharterDetails charter={selectedItem.data} onBack={navigateBack} />;
-      default:
-        return null;
-    }
-  }
-
-  return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
-              <p className="text-gray-600">Manage schools, educators, and network data</p>
-            </div>
-            
-            {/* Main tabs */}
-            <div className="flex space-x-8">
-              {mainTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setMainTab(tab.id)}
-                  className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
-                    mainTab === tab.id
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  {tab.label} ({tab.count})
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
-          <div className="bg-white rounded-lg shadow h-full flex flex-col">
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
-                <div></div>
-                              <div className="flex items-center space-x-4">
-                                  {/* Status Filter Toggle - show for schools and educators */}
-                                  {mainTab === TABS.SCHOOLS && (
-                                      <label className="flex items-center space-x-2 text-sm">
-                                          <input
-                                              type="checkbox"
-                                              checked={includeInactiveSchools}
-                                              onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
-                                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                          />
-                                          <span className="text-gray-700">Include inactive schools</span>
-                                      </label>
-                                  )}
-
-                                  {mainTab === TABS.EDUCATORS && (
-                                      <label className="flex items-center space-x-2 text-sm">
-                                          <input
-                                              type="checkbox"
-                                              checked={includeInactiveEducators}
-                                              onChange={(e) => setIncludeInactiveEducators(e.target.checked)}
-                                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                          />
-                                          <span className="text-gray-700">Include inactive educators</span>
-                                      </label>
-                                  )}
-                  
-                  <div className="flex items-center space-x-2">
-                    <button 
-                      onClick={() => setShowFilters(!showFilters)}
-                      className={`p-2 transition-colors ${
-                        showFilters 
-                          ? 'text-blue-600 bg-blue-50' 
-                          : 'text-gray-400 hover:text-gray-600'
-                      }`}
-                    >
-                      <Filter className="w-4 h-4" />
-                    </button>
-                    
-                    {(showFilters && hasActiveFilters) && (
-                      <button
-                        onClick={clearAllFilters}
-                        className="text-xs text-gray-500 hover:text-gray-700 underline"
-                      >
-                        Clear filters
-                      </button>
-                    )}
-                  </div>
-                  
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-                  
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add
-                  </button>
+    // Show loading state
+    if (educatorsResult.loading && mainTab === TABS.EDUCATORS) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading educators data...</p>
                 </div>
-              </div>
             </div>
-            
-            <div className="flex-1 overflow-auto">
-              <DataTable 
-                data={getCurrentData()}
-                columns={columns}
-                onRowClick={handleRowClick}
-                searchTerm={searchTerm}
-                showFilters={showFilters}
-                columnFilters={columnFilters}
-                onColumnFilterChange={handleColumnFilterChange}
-              />
+        );
+    }
+
+    // Show error state
+    if (educatorsResult.error && mainTab === TABS.EDUCATORS) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-red-600 mb-4">Error loading educators data</p>
+                    <p className="text-gray-600">{educatorsResult.error.message}</p>
+                </div>
             </div>
-          </div>
+        );
+    }
+
+    // If viewing details, render the appropriate detail component
+    if (selectedItem) {
+        switch (selectedItem.type) {
+            case TABS.SCHOOLS:
+                return <SchoolDetails school={selectedItem.data} onBack={navigateBack} onEducatorOpen={handleEducatorOpen} />;
+            case TABS.EDUCATORS:
+                return <EducatorDetails educator={selectedItem.data} onBack={navigateBack} />;
+            case TABS.CHARTERS:
+                return <CharterDetails charter={selectedItem.data} onBack={navigateBack} />;
+            default:
+                return null;
+        }
+    }
+
+    return (
+        <div className="h-screen flex flex-col bg-gray-50">
+            <div className="bg-white shadow-sm border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between py-4">
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
+                            <p className="text-gray-600">Manage schools, educators, and network data</p>
+                        </div>
+
+                        {/* Main tabs */}
+                        <div className="flex space-x-8">
+                            {mainTabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setMainTab(tab.id)}
+                                    className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${mainTab === tab.id
+                                            ? 'bg-blue-100 text-blue-700'
+                                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    {tab.label} ({tab.count})
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex-1 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
+                    <div className="bg-white rounded-lg shadow h-full flex flex-col">
+                        <div className="p-6 border-b">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    {/* Debug info for educators tab */}
+                                    {mainTab === TABS.EDUCATORS && process.env.NODE_ENV === 'development' && (
+                                        <div className="text-xs text-gray-500">
+                                            Debug: {getCurrentData().length} educators shown,
+                                            Raw: {educatorsResult.data?.length || 0},
+                                            Include inactive: {includeInactiveEducators ? 'Yes' : 'No'}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex items-center space-x-4">
+                                    {/* Status Filter Toggle - show for schools and educators */}
+                                    {mainTab === TABS.SCHOOLS && (
+                                        <label className="flex items-center space-x-2 text-sm">
+                                            <input
+                                                type="checkbox"
+                                                checked={includeInactiveSchools}
+                                                onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
+                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <span className="text-gray-700">Include inactive schools</span>
+                                        </label>
+                                    )}
+
+                                    {mainTab === TABS.EDUCATORS && (
+                                        <label className="flex items-center space-x-2 text-sm">
+                                            <input
+                                                type="checkbox"
+                                                checked={includeInactiveEducators}
+                                                onChange={(e) => setIncludeInactiveEducators(e.target.checked)}
+                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <span className="text-gray-700">Include inactive educators</span>
+                                        </label>
+                                    )}
+
+                                    <div className="flex items-center space-x-2">
+                                        <button
+                                            onClick={() => setShowFilters(!showFilters)}
+                                            className={`p-2 transition-colors ${showFilters
+                                                    ? 'text-blue-600 bg-blue-50'
+                                                    : 'text-gray-400 hover:text-gray-600'
+                                                }`}
+                                        >
+                                            <Filter className="w-4 h-4" />
+                                        </button>
+
+                                        {(showFilters && hasActiveFilters) && (
+                                            <button
+                                                onClick={clearAllFilters}
+                                                className="text-xs text-gray-500 hover:text-gray-700 underline"
+                                            >
+                                                Clear filters
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                        <input
+                                            type="text"
+                                            placeholder="Search..."
+                                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-auto">
+                            <DataTable
+                                data={getCurrentData()}
+                                columns={columns}
+                                onRowClick={handleRowClick}
+                                searchTerm={searchTerm}
+                                showFilters={showFilters}
+                                columnFilters={columnFilters}
+                                onColumnFilterChange={handleColumnFilterChange}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default WildflowerDatabase;
