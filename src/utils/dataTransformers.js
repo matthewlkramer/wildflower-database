@@ -176,6 +176,7 @@ export const transformEducatorData = (airtableRecord) => {
 
   return {
     id: airtableRecord.id,
+    fullName: airtableRecord['Full Name'] || '',
     firstName: airtableRecord['First Name'] || '',
     lastName: airtableRecord['Last Name'] || '',
     email: airtableRecord['Contact Email'] || airtableRecord['Primary Personal Email'] || '',

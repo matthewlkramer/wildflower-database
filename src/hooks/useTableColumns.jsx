@@ -5,9 +5,48 @@ import { TABS } from '../utils/constants';
 export const useTableColumns = (dataType) => {
     return useMemo(() => {
         switch (dataType) {
-            case TABS.SCHOOLS:
+            case 'educators':
                 return [
-                    { key: 'shortName', label: 'Name' },
+                    {
+                        key: 'fullName',
+                        label: 'Full Name',
+                        render: (value, item) => `${item.firstName} ${item.lastName}`
+                    },
+                    {
+                        key: 'currentSchool',
+                        label: 'Current School',
+                        render: (value) => value || '-'
+                    },
+                    {
+                        key: 'role',
+                        label: 'Role',
+                        render: (value) => value || '-'
+                    },
+                    {
+                        key: 'email',
+                        label: 'Email',
+                        render: (value) => value || '-'
+                    },
+                    {
+                        key: 'raceEthnicity',
+                        label: 'Race & Ethnicity',
+                        render: (value) => Array.isArray(value) ? value.join(', ') : value || '-'
+                    },
+                    {
+                        key: 'discoveryStatus',
+                        label: 'Discovery Status',
+                        render: (value) => value ? <StatusBadge status={value} /> : '-'
+                    },
+                    {
+                        key: 'individualType',
+                        label: 'Type',
+                        render: (value) => value || '-'
+                    }
+                ];
+
+            case 'schools':
+                return [
+                    { key: 'shortName', label: 'Short Name' },
                     { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
                     { key: 'governanceModel', label: 'Governance' },
                     { key: 'agesServed', label: 'Ages Served', render: (value) => Array.isArray(value) ? value.join(', ') : value },
@@ -15,38 +54,24 @@ export const useTableColumns = (dataType) => {
                         key: 'location',
                         label: 'Location',
                         render: (value, item) => {
-                            // Priority 1: Active location (city, state)
                             if (item.activeLocationCity && item.activeLocationState) {
                                 return `${item.activeLocationCity}, ${item.activeLocationState}`;
                             }
-                            // Priority 2: Target geo combined
                             if (item.targetCity && item.targetState) {
                                 return `${item.targetCity}, ${item.targetState}`;
                             }
-                            // Priority 3: Just target city if available
                             if (item.targetCity) {
                                 return item.targetCity;
                             }
-                            // Priority 4: Blank
                             return '-';
                         }
                     },
                     { key: 'membershipStatus', label: 'Membership', render: (value) => <StatusBadge status={value} /> }
                 ];
 
-            case TABS.EDUCATORS:
+            case 'charters':
                 return [
-                    { key: 'fullName', label: 'Name', render: (value, item) => `${item.firstName} ${item.lastName}` },
-                    { key: 'currentSchool', label: 'Current School' },
-                    { key: 'role', label: 'Role(s)' },
-                    { key: 'email', label: 'Email' },
-                    { key: 'raceEthnicity', label: 'Race & Ethnicity', render: (value) => Array.isArray(value) ? value.join(', ') : value || '-' },
-                    { key: 'discoveryStatus', label: 'Discovery Status', render: (value) => <StatusBadge status={value} /> }
-                ];
-
-            case TABS.CHARTERS:
-                return [
-                    { key: 'name', label: 'Name' },
+                    { key: 'name', label: 'Charter Name' },
                     { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
                     { key: 'initialTargetCommunity', label: 'Target Community' }
                 ];
@@ -56,4 +81,3 @@ export const useTableColumns = (dataType) => {
         }
     }, [dataType]);
 };
-

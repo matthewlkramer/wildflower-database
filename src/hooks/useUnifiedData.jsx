@@ -85,30 +85,38 @@ const useUnifiedSchools = (options = {}) => {
   };
 };
 
-const useUnifiedEducators = () => {
-  const educatorsHookResult = useEducators();
-  
-  // Extract data safely
-  const rawEducatorsData = educatorsHookResult?.educators || educatorsHookResult?.data || educatorsHookResult || [];
-  const loading = educatorsHookResult?.loading || false;
-  const error = educatorsHookResult?.error || null;
+const useUnifiedEducators = (options = {}) => {
+    const { includeInactive = false } = options;
+    const educatorsHookResult = useEducators(includeInactive);
 
-  const data = useMemo(() => {
-    if (!loading && !error && Array.isArray(rawEducatorsData) && rawEducatorsData.length > 0) {
-      console.log('✅ Using real educators data:', rawEducatorsData.length, 'educators');
-      return rawEducatorsData;
-    }
-    
-    console.log('⚠️ Using sample educators data');
-    return sampleEducators;
-  }, [rawEducatorsData, loading, error]);
+    // Extract data safely
+    const rawEducatorsData = educatorsHookResult?.data || [];
+    const loading = educatorsHookResult?.loading || false;
+    const error = educatorsHookResult?.error || null;
 
-  return {
-    data,
-    loading,
-    error,
-    isUsingFallback: loading || error || !Array.isArray(rawEducatorsData) || rawEducatorsData.length === 0
-  };
+    const data = useMemo(() => {
+        console.log('🔍 Processing educators data:', {
+            rawDataLength: rawEducatorsData?.length,
+            loading,
+            error,
+            firstItem: rawEducatorsData?.[0]
+        });
+
+        if (!loading && !error && Array.isArray(rawEducatorsData) && rawEducatorsData.length > 0) {
+            console.log('✅ Using real educators data:', rawEducatorsData.length, 'educators');
+            return rawEducatorsData;
+        }
+
+        console.log('⚠️ Using empty educators array - Real data not available');
+        return [];
+    }, [rawEducatorsData, loading, error]);
+
+    return {
+        data,
+        loading,
+        error,
+        isUsingFallback: data.length === 0 && !loading
+    };
 };
 
 const useUnifiedCharters = () => {

@@ -20,11 +20,11 @@ const EducatorSummary = ({ educator }) => {
             <div className="flex items-start space-x-4">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                     <span className="text-xl font-medium text-gray-600">
-                        {educator.firstName[0]}{educator.lastName[0]}
+                        {educator.fullName ? educator.fullName[0] : ''}
                     </span>
                 </div>
                 <div className="flex-1">
-                    <h2 className="text-xl font-bold text-gray-900">{educator.firstName} {educator.lastName}</h2>
+                    <h2 className="text-xl font-bold text-gray-900">{educator.fullName}</h2>
                     <div className="mt-1 space-y-1">
                         <div className="text-blue-600">{educator.email || 'No email address'}</div>
                         <div className="text-gray-600">{educator.role || 'No current role'}</div>
@@ -34,6 +34,7 @@ const EducatorSummary = ({ educator }) => {
             </div>
 
             <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t pt-6">
+                <DetailRow label="Full Name" value={educator.fullName} />
                 <DetailRow label="First Name" value={educator.firstName} />
                 <DetailRow label="Last Name" value={educator.lastName} />
                 <DetailRow label="Email" value={educator.email} type="email" />
