@@ -1,5 +1,3 @@
-// utils/dataTransformers.js
-
 // Transform Airtable school record to match your React app format
 export const transformSchoolData = (airtableRecord, relatedData = {}) => {
   if (!airtableRecord) return null;

@@ -39,14 +39,15 @@ const WildflowerDatabase = () => {
 
   // Data fetching
     const schoolsResult = useUnifiedData(TABS.SCHOOLS, { includeInactive: true });
-    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true }); // Get all data
+    const { includeInactiveEducators, setIncludeInactiveEducators } = useEducatorFilters();
+    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: includeInactiveEducators }); // Get all data
     const chartersResult = useUnifiedData(TABS.CHARTERS);
 
 console.log('🔍 Main component - Schools result:', schoolsResult);
 
 // School-specific filters - this is where the active/inactive filtering happens
     const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
-    const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
+    const { filteredEducators } = useEducatorFilters(educatorsResult.data);
 
 console.log('🔍 Main component - Filtered schools:', filteredSchools?.length);
 
