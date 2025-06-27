@@ -84,7 +84,7 @@ export const useEducators = (includeInactive = false) => {
             try {
                 console.log('🔄 Fetching educators with includeInactive:', includeInactive);
 
-                // Fetch educators and educators x schools data
+                // Fetch educators and relationships
                 const [educatorsData, educatorsXSchoolsData] = await Promise.all([
                     airtableService.fetchEducators(includeInactive),
                     airtableService.fetchEducatorsXSchools()
@@ -92,12 +92,12 @@ export const useEducators = (includeInactive = false) => {
 
                 console.log('📊 Raw educators data:', {
                     totalEducators: educatorsData.length,
+                    totalRelationships: educatorsXSchoolsData.length,
                     firstEducator: educatorsData[0],
-                    educatorFields: educatorsData[0] ? Object.keys(educatorsData[0]) : [],
-                    totalRelationships: educatorsXSchoolsData.length
+                    educatorFields: educatorsData[0] ? Object.keys(educatorsData[0]) : []
                 });
 
-                // If not including inactive, filter out educators with no active school relationships
+                // Filter educators based on relationships if not including inactive
                 let filteredEducators = educatorsData;
 
                 if (!includeInactive) {
@@ -106,20 +106,16 @@ export const useEducators = (includeInactive = false) => {
                         educatorsXSchoolsData
                             .filter(rel => rel['Currently Active'] === true)
                             .map(rel => {
-                                // Handle different ways the Educator field might be structured
                                 if (Array.isArray(rel.Educator)) {
-                                    return rel.Educator[0]; // If it's an array, take first element
+                                    return rel.Educator[0];
                                 }
-                                return rel.Educator; // If it's a direct reference
+                                return rel.Educator;
                             })
                             .filter(Boolean)
                     );
 
                     console.log('👥 Active educator IDs from relationships:', activeEducatorIds.size);
 
-                    // Filter to only include educators who either:
-                    // 1. Have active school relationships, OR
-                    // 2. Have no school relationships at all (new educators)
                     filteredEducators = educatorsData.filter(educator => {
                         const hasAnyRelationship = educatorsXSchoolsData.some(rel => {
                             const relEducatorId = Array.isArray(rel.Educator) ? rel.Educator[0] : rel.Educator;
@@ -127,7 +123,6 @@ export const useEducators = (includeInactive = false) => {
                         });
                         const hasActiveRelationship = activeEducatorIds.has(educator.id);
 
-                        // Include if: has active relationship OR has no relationships at all
                         const shouldInclude = hasActiveRelationship || !hasAnyRelationship;
 
                         if (!shouldInclude) {
@@ -140,38 +135,81 @@ export const useEducators = (includeInactive = false) => {
                     console.log('✅ After relationship filtering:', filteredEducators.length, 'educators');
                 }
 
-                // Transform the data to match expected format
+                // Transform the data using the clean email structure
                 const transformedEducators = filteredEducators.map(educator => {
                     // Debug the first few records to see field mapping
                     if (filteredEducators.indexOf(educator) < 3) {
-                        console.log('🔍 Educator field mapping for:', educator.id, educator);
+                        console.log('🔍 Educator field mapping for:', educator.id, {
+                            name: `${educator['First Name']} ${educator['Last Name']}`,
+                            currentPrimaryEmailAddress: educator['Current Primary Email Address'],
+                            emailAddressesCount: educator['Email Addresses']?.length || 0,
+                            individualType: educator['Individual Type'],
+                            discoveryStatus: educator['Discovery status']
+                        });
                     }
 
                     return {
                         id: educator.id,
-                        firstName: educator['First Name'] || educator.firstName || 'Unknown',
-                        lastName: educator['Last Name'] || educator.lastName || 'Unknown',
-                        email: educator['Contact Email'] || educator.email || educator['Email'] || '',
-                        phone: educator['Primary phone'] || educator.phone || '',
-                        pronouns: educator['Pronouns'] || educator.pronouns || '',
-                        discoveryStatus: educator['Discovery status'] || educator.discoveryStatus || '',
-                        montessoriCertified: educator['Montessori Certified'] || educator.montessoriCertified || false,
-                        currentSchool: educator['Current School'] || educator.currentSchool || '',
-                        role: educator['Role'] || educator.role || '',
-                        raceEthnicity: educator['Race & Ethnicity'] || educator.raceEthnicity || [],
-                        gender: educator['Gender'] || educator.gender || '',
-                        householdIncome: educator['Household Income'] || educator.householdIncome || '',
-                        lgbtqia: educator['LGBTQIA+'] || educator.lgbtqia || false,
-                        primaryLanguage: educator['Primary Language'] || educator.primaryLanguage || '',
-                        otherLanguages: educator['Other Languages'] || educator.otherLanguages || [],
-                        // Contact Info
-                        personalEmail: educator['Personal Email'] || educator.personalEmail || '',
-                        wildflowerEmail: educator['Wildflower Email'] || educator.wildflowerEmail || '',
-                        workEmail: educator['Work Email'] || educator.workEmail || '',
-                        primaryPhone: educator['Primary Phone'] || educator.primaryPhone || educator['Primary phone'] || '',
-                        secondaryPhone: educator['Secondary Phone'] || educator.secondaryPhone || '',
-                        homeAddress: educator['Home Address'] || educator.homeAddress || '',
-                        individualType: educator['Individual type'] || educator.individualType || ''
+                        firstName: educator['First Name'] || 'Unknown',
+                        lastName: educator['Last Name'] || 'Unknown',
+
+                        // Email handling - simplified to use only the two remaining fields
+                        email: Array.isArray(educator['Current Primary Email Address'])
+                            ? educator['Current Primary Email Address'][0]
+                            : educator['Current Primary Email Address'] || '',
+
+                        // Store reference to linked email records (for future use if needed)
+                        emailAddresses: educator['Email Addresses'] || [],
+
+                        // Contact info
+                        phone: educator['Primary phone'] || '',
+                        secondaryPhone: educator['Secondary phone'] || '',
+                        homeAddress: educator['Home Address'] || '',
+
+                        // Personal info
+                        pronouns: educator['Pronouns'] || '',
+                        nickname: educator['Nickname'] || '',
+
+                        // Professional info
+                        discoveryStatus: educator['Discovery status'] || '',
+                        individualType: educator['Individual Type'] || '',
+                        montessoriCertified: educator['Montessori Certified'] || false,
+
+                        // Current school info (using lookup fields)
+                        currentSchool: Array.isArray(educator['Currently Active School'])
+                            ? educator['Currently Active School'][0]
+                            : educator['Currently Active School'] || '',
+                        role: Array.isArray(educator['Current Role'])
+                            ? educator['Current Role'][0]
+                            : educator['Current Role'] || '',
+
+                        // Demographics
+                        raceEthnicity: educator['Race & Ethnicity'] || [],
+                        gender: educator['Gender'] || '',
+                        householdIncome: educator['Household Income'] || '',
+                        lgbtqia: educator['LGBTQIA'] || '',
+                        primaryLanguage: Array.isArray(educator['Primary Language'])
+                            ? educator['Primary Language'][0]
+                            : educator['Primary Language'] || '',
+                        otherLanguages: educator['Other languages'] || [],
+
+                        // Location/targeting
+                        targetGeo: educator['Target geo combined'] || '',
+                        targetCity: educator['Target city'] || '',
+                        targetState: educator['Target state'] || '',
+
+                        // Additional fields
+                        tags: educator['Tags'] || [],
+                        holaspirit: educator['Active Holaspirit'] || false,
+                        tcUserId: educator['TC User ID'] || '',
+                        createdTime: educator['Created'] || educator.createdTime,
+
+                        // School relationship info
+                        allSchools: educator['All Schools'] || [],
+                        schoolStatuses: educator['School Statuses'] || [],
+                        activeSchoolAffiliationStatus: Array.isArray(educator['Active School Affiliation Status'])
+                            ? educator['Active School Affiliation Status'][0]
+                            : educator['Active School Affiliation Status'] || ''
                     };
                 });
 

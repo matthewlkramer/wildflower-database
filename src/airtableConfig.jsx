@@ -22,5 +22,6 @@ export const TABLES = {
   EVENT_ATTENDANCE: 'Event attendance',
   MONTESSORI_CERTS: 'Montessori Certs',
   GUIDES_ASSIGNMENTS: 'Guides Assignments',
-  GOVERNANCE_DOCS: 'Governance docs'
+  GOVERNANCE_DOCS: 'Governance docs',
+  EMAIL_ADDRESSES: 'Email Addresses'
 };
