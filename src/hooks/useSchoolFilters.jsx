@@ -14,7 +14,8 @@ export const useSchoolFilters = (schools) => {
         return schools.filter(school =>
             school.status !== 'Permanently Closed' &&
             school.status !== 'Disaffiliated' &&
-            school.status !== 'Disaffiliating'
+            school.status !== 'Disaffiliating' &&
+            school.status !== 'Paused'
         );
     }, [schools, includeInactiveSchools]);
 
