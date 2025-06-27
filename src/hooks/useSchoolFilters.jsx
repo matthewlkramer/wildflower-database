@@ -4,19 +4,36 @@ export const useSchoolFilters = (schools) => {
     const [includeInactiveSchools, setIncludeInactiveSchools] = useState(false);
 
     const filteredSchools = useMemo(() => {
-        if (!schools) return [];
+        console.log('?? Filtering schools:', {
+            totalSchools: schools?.length,
+            includeInactive: includeInactiveSchools,
+            sampleSchoolsData: schools?.slice(0, 3)
+        });
+
+        if (!schools || !Array.isArray(schools)) {
+            console.log('? No schools data or not array');
+            return [];
+        }
 
         if (includeInactiveSchools) {
+            console.log('? Including all schools:', schools.length);
             return schools;
         }
 
-        // Filter out inactive schools
-        return schools.filter(school =>
-            school.status !== 'Permanently Closed' &&
-            school.status !== 'Disaffiliated' &&
-            school.status !== 'Disaffiliating' &&
-            school.status !== 'Paused'
-        );
+        // Filter to only show active schools (Open and Emerging)
+        const activeSchools = schools.filter(school => {
+            const status = school.status;
+            const isActive = status === 'Open' || status === 'Emerging';
+
+            if (!isActive) {
+                console.log('?? Filtering out school:', school.name, 'with status:', status);
+            }
+
+            return isActive;
+        });
+
+        console.log('? Active schools filtered:', activeSchools.length, 'out of', schools.length);
+        return activeSchools;
     }, [schools, includeInactiveSchools]);
 
     return {
@@ -25,4 +42,3 @@ export const useSchoolFilters = (schools) => {
         filteredSchools
     };
 };
-

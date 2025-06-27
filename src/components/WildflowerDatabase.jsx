@@ -1,4 +1,3 @@
-// src/components/WildflowerDatabase.jsx
 import React, { useState } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 
@@ -42,34 +41,38 @@ const WildflowerDatabase = () => {
   const educatorsResult = useUnifiedData(TABS.EDUCATORS);
   const chartersResult = useUnifiedData(TABS.CHARTERS);
 
-  // School-specific filters
-  const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
+console.log('?? Main component - Schools result:', schoolsResult);
 
-  // Get current data based on active tab
-  const getCurrentData = () => {
-    switch (mainTab) {
-      case TABS.SCHOOLS: 
-        return filteredSchools;
-      case TABS.EDUCATORS: 
-        return educatorsResult.data;
-      case TABS.CHARTERS: 
-        return chartersResult.data;
-      default: 
-        return [];
-    }
-  };
+// School-specific filters - this is where the active/inactive filtering happens
+const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
+
+console.log('?? Main component - Filtered schools:', filteredSchools?.length);
+
+    // Get current data based on active tab
+    const getCurrentData = () => {
+        switch (mainTab) {
+            case TABS.SCHOOLS:
+                return filteredSchools || [];
+            case TABS.EDUCATORS:
+                return educatorsResult.data || [];
+            case TABS.CHARTERS:
+                return chartersResult.data || [];
+            default:
+                return [];
+        }
+    };
 
   // Table columns
   const columns = useTableColumns(mainTab);
 
   // Tab counts
-  const mainTabs = useTabCounts(
-    filteredSchools, 
-    schoolsResult.loading, 
-    educatorsResult.data, 
-    chartersResult.data, 
-    includeInactiveSchools
-  );
+    const mainTabs = useTabCounts(
+        filteredSchools || [],
+        schoolsResult.loading,
+        educatorsResult.data || [],
+        chartersResult.data || [],
+        includeInactiveSchools
+    );
 
   // Event handlers
   const handleRowClick = (item) => {

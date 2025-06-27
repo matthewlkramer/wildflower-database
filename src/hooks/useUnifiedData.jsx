@@ -1,4 +1,4 @@
-// src/hooks/useUnifiedData.jsx
+
 import { useMemo } from 'react';
 import { useSchools, useEducators } from './useAirtableData';
 import { transformSchoolsData } from '../utils/dataTransformers';
@@ -24,40 +24,58 @@ import {
 import { TABS } from '../utils/constants';
 
 const useUnifiedData = (dataType, options = {}) => {
-  // Handle different data types
-  switch (dataType) {
-    case TABS.SCHOOLS:
-      return useUnifiedSchools(options);
-    case TABS.EDUCATORS:
-      return useUnifiedEducators(options);
-    case TABS.CHARTERS:
-      return useUnifiedCharters(options);
-    default:
-      return { data: [], loading: false, error: null, isUsingFallback: true };
-  }
+    switch (dataType) {
+        case TABS.SCHOOLS:
+            return useUnifiedSchools(options);
+        case TABS.EDUCATORS:
+            return useUnifiedEducators(options);
+        case TABS.CHARTERS:
+            return useUnifiedCharters(options);
+        default:
+            return { data: [], loading: false, error: null, isUsingFallback: true };
+    }
 };
 
 const useUnifiedSchools = (options = {}) => {
-  const { includeInactive = false } = options;
-  const schoolsHookResult = useSchools(includeInactive);
-  
-  // Extract data safely from the hook result
-  const rawSchoolsData = schoolsHookResult?.schools || schoolsHookResult?.data || schoolsHookResult || [];
-  const loading = schoolsHookResult?.loading || false;
-  const error = schoolsHookResult?.error || null;
+    const { includeInactive = false } = options;
 
-  const transformedData = useMemo(() => {
-    // If we have real data and it's an array, transform it
-    if (!loading && !error && Array.isArray(rawSchoolsData) && rawSchoolsData.length > 0) {
-      console.log('✅ Using real schools data:', rawSchoolsData.length, 'schools');
-      return transformSchoolsData(rawSchoolsData);
-    }
-    
-    // Otherwise use sample data
-    console.log('⚠️ Using sample schools data - Real data not ready');
-    console.log('  Loading:', loading, 'Error:', error, 'Data length:', rawSchoolsData?.length);
-    return sampleSchools;
-  }, [rawSchoolsData, loading, error]);
+    // Get real data from Airtable
+    const schoolsHookResult = useSchools(includeInactive);
+
+    // Debug logging
+    console.log('🔍 Schools Hook Result:', schoolsHookResult);
+
+    // Extract data more carefully
+    const rawSchoolsData = schoolsHookResult?.data || schoolsHookResult || [];
+    const loading = schoolsHookResult?.loading || false;
+    const error = schoolsHookResult?.error || null;
+
+    const transformedData = useMemo(() => {
+        console.log('🔄 Processing schools data:', {
+            rawDataLength: rawSchoolsData?.length,
+            isArray: Array.isArray(rawSchoolsData),
+            loading,
+            error,
+            firstItem: rawSchoolsData?.[0]
+        });
+
+        // Only use real data if we have it and it's not loading
+        if (!loading && !error && Array.isArray(rawSchoolsData) && rawSchoolsData.length > 0) {
+            console.log('✅ Using REAL schools data:', rawSchoolsData.length, 'schools');
+
+            // Transform the data
+            const transformed = transformSchoolsData(rawSchoolsData);
+            console.log('🔄 Transformed data:', transformed.length, 'schools');
+
+            return transformed;
+        }
+
+        console.log('⚠️ Using sample data - Real data not available');
+        console.log('  Reasons: loading =', loading, ', error =', error, ', dataLength =', rawSchoolsData?.length);
+
+        // Return empty array instead of sample data to avoid confusion
+        return [];
+    }, [rawSchoolsData, loading, error]);
 
   return {
     data: transformedData,
