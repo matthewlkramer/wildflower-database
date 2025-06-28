@@ -21,7 +21,7 @@ import {
   sampleGrants,
   sampleLoans
 } from '../data/sampleData';
-import { TABS } from '../utils/constants';
+import { TABS } from '../utils/constants.js';
 
 const useUnifiedData = (dataType, options = {}) => {
     switch (dataType) {

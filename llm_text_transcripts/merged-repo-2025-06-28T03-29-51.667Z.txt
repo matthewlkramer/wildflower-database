@@ -1,0 +1,4827 @@
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\ADDEDUCATORSTINTMODAL.JSX CODE IS BELOW
+import React, { useState, useMemo } from 'react';
+import { X, Search } from 'lucide-react';
+
+const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducators }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedEducator, setSelectedEducator] = useState(null);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [currentlyActive, setCurrentlyActive] = useState(true);
+  const [selectedRoles, setSelectedRoles] = useState([]);
+
+  const roleOptions = [
+    'Founder',
+    'Teacher Leader',
+    'Head of School',
+    'Assistant Teacher',
+    'Support Staff',
+    'Board Member'
+  ];
+
+  const filteredEducators = useMemo(() => {
+    return allEducators.filter(educator =>
+      `${educator.firstName} ${educator.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      educator.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allEducators, searchTerm]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!selectedEducator || selectedRoles.length === 0) return;
+
+    const newStint = {
+      educatorId: selectedEducator.id,
+      schoolId: schoolId,
+      startDate: startDate,
+      endDate: null,
+      currentlyActive: currentlyActive,
+      roles: selectedRoles,
+      educatorName: `${selectedEducator.firstName} ${selectedEducator.lastName}`
+    };
+
+    onSubmit(newStint);
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setSearchTerm('');
+    setSelectedEducator(null);
+    setStartDate(new Date().toISOString().split('T')[0]);
+    setCurrentlyActive(true);
+    setSelectedRoles([]);
+    onClose();
+  };
+
+  const toggleRole = (role) => {
+    setSelectedRoles(prev =>
+      prev.includes(role)
+        ? prev.filter(r => r !== role)
+        : [...prev, role]
+    );
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Add Educator Stint</h3>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Educator Search */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Select Educator
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search educators..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            {searchTerm && (
+              <div className="mt-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg">
+                {filteredEducators.map(educator => (
+                  <button
+                    key={educator.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedEducator(educator);
+                      setSearchTerm(`${educator.firstName} ${educator.lastName}`);
+                    }}
+                    className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${
+                      selectedEducator?.id === educator.id ? 'bg-blue-50' : ''
+                    }`}
+                  >
+                    <div className="font-medium">{educator.firstName} {educator.lastName}</div>
+                    <div className="text-sm text-gray-500">{educator.email}</div>
+                  </button>
+                ))}
+                {filteredEducators.length === 0 && (
+                  <div className="px-3 py-2 text-gray-500">No educators found</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Start Date */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Start Date
+            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          {/* Currently Active */}
+          <div>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={currentlyActive}
+                onChange={(e) => setCurrentlyActive(e.target.checked)}
+                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700">Currently Active</span>
+            </label>
+          </div>
+
+          {/* Roles */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Roles (select at least one)
+            </label>
+            <div className="space-y-2">
+              {roleOptions.map(role => (
+                <label key={role} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedRoles.includes(role)}
+                    onChange={() => toggleRole(role)}
+                    className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm">{role}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!selectedEducator || selectedRoles.length === 0}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Add Stint
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AddEducatorStintModal;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\AIRTABLECONFIG.JSX CODE IS BELOW
+export const AIRTABLE_CONFIG = {
+  BASE_ID: 'appJBT9a4f3b7hWQ2',
+  API_KEY: 'patPJ0FQbeJOXZV6q.47a003922253003392f41b305cb163caba0c18ec6be85ee4bb1219d89c453048',
+  BASE_URL: 'https://api.airtable.com/v0'
+};
+
+// Table names mapping from your Airtable (these must match exactly)
+export const TABLES = {
+  SCHOOLS: 'Schools',
+  EDUCATORS: 'Educators', 
+  CHARTERS: 'Charters',
+  EDUCATORS_X_SCHOOLS: 'Educators x Schools',
+  LOCATIONS: 'Locations',
+  SCHOOL_NOTES: 'School notes',
+  EDUCATOR_NOTES: 'Educator notes',
+  GRANTS: 'Grants',
+  LOANS: 'Loans',
+  ACTION_STEPS: 'Action steps',
+  MEMBERSHIP_FEE_OVERVIEW: 'Membership fee overview',
+  MEMBERSHIP_FEE_UPDATES: 'Membership fee change log',
+  SSJ_FILLOUT_FORMS: 'SSJ Fillout Forms',
+  EVENT_ATTENDANCE: 'Event attendance',
+  MONTESSORI_CERTS: 'Montessori Certs',
+  GUIDES_ASSIGNMENTS: 'Guides Assignments',
+  GOVERNANCE_DOCS: 'Governance docs',
+  EMAIL_ADDRESSES: 'Email Addresses',
+  NINE_NINETIES: '990s',
+  FAMILY_SURVEYS: 'Family Survey',
+  ASSESSMENT_DATA: 'Assessment data'
+};
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\AIRTABLESERVICE.JSX CODE IS BELOW
+import { AIRTABLE_CONFIG, TABLES } from './airtableConfig.jsx';
+
+class AirtableService {
+    constructor() {
+        this.baseUrl = `${AIRTABLE_CONFIG.BASE_URL}/${AIRTABLE_CONFIG.BASE_ID}`;
+        this.headers = {
+            'Authorization': `Bearer ${AIRTABLE_CONFIG.API_KEY}`,
+            'Content-Type': 'application/json'
+        };
+    }
+
+    // Generic method to fetch records from any table
+    async fetchRecords(tableName, options = {}) {
+        try {
+            const {
+                view,
+                maxRecords = 10000,
+                pageSize = 100,
+                sort,
+                filterByFormula,
+                fields
+            } = options;
+
+            let allRecords = [];
+            let offset = null;
+            let pageCount = 0;
+
+            console.log(`🔄 Starting to fetch records from ${tableName}...`);
+
+            do {
+                const params = new URLSearchParams();
+                if (view) params.append('view', view);
+                if (pageSize) params.append('pageSize', pageSize);
+                if (sort) params.append('sort[0][field]', sort.field);
+                if (sort) params.append('sort[0][direction]', sort.direction || 'asc');
+                if (filterByFormula) params.append('filterByFormula', filterByFormula);
+                if (fields) fields.forEach(field => params.append('fields[]', field));
+                if (offset) params.append('offset', offset);
+
+                const url = `${this.baseUrl}/${encodeURIComponent(tableName)}?${params}`;
+                console.log(`📄 Fetching page ${pageCount + 1} from ${tableName}...`);
+                const response = await fetch(url, { headers: this.headers });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const recordsInThisPage = data.records || [];
+
+                allRecords = allRecords.concat(recordsInThisPage);
+                offset = data.offset;
+                pageCount++;
+
+                console.log(`📄 Page ${pageCount}: Fetched ${recordsInThisPage.length} records, total so far: ${allRecords.length}`);
+
+                // Stop if no more pages or we've reached maxRecords
+                if (!offset || allRecords.length >= maxRecords) {
+                    if (!offset) {
+                        console.log('✅ No more pages available');
+                    }
+                    if (allRecords.length >= maxRecords) {
+                        console.log(`✅ Reached maxRecords limit: ${maxRecords}`);
+                    }
+                    break;
+                }
+
+                // Safety check to prevent infinite loops
+                if (pageCount > 100) {
+                    console.warn('⚠️ Stopping after 100 pages to prevent infinite loop');
+                    break;
+                }
+
+            } while (offset);
+
+            // Trim to maxRecords if we got too many
+            if (allRecords.length > maxRecords) {
+                console.log(`✂️ Trimming results from ${allRecords.length} to ${maxRecords}`);
+                allRecords = allRecords.slice(0, maxRecords);
+            }
+
+            console.log(`✅ Final result for ${tableName}: ${allRecords.length} records from ${pageCount} pages`);
+            return this.transformRecords(allRecords);
+        } catch (error) {
+            console.error(`❌ Error fetching records from ${tableName}:`, error);
+            throw error;
+        }
+    }
+
+    // Transform Airtable records to a more usable format
+    transformRecords(records) {
+        return records.map(record => ({
+            id: record.id,
+            ...record.fields,
+            createdTime: record.createdTime
+        }));
+    }
+
+    // Create a new record
+    async createRecord(tableName, fields) {
+        try {
+            const url = `${this.baseUrl}/${encodeURIComponent(tableName)}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: this.headers,
+                body: JSON.stringify({ fields })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return this.transformRecords([data])[0];
+        } catch (error) {
+            console.error(`Error creating record in ${tableName}:`, error);
+            throw error;
+        }
+    }
+
+    // Update a record
+    async updateRecord(tableName, recordId, fields) {
+        try {
+            const url = `${this.baseUrl}/${encodeURIComponent(tableName)}/${recordId}`;
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: this.headers,
+                body: JSON.stringify({ fields })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return this.transformRecords([data])[0];
+        } catch (error) {
+            console.error(`Error updating record ${recordId} in ${tableName}:`, error);
+            throw error;
+        }
+    }
+
+    // Delete a record
+    async deleteRecord(tableName, recordId) {
+        try {
+            const url = `${this.baseUrl}/${encodeURIComponent(tableName)}/${recordId}`;
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: this.headers
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return true;
+        } catch (error) {
+            console.error(`Error deleting record ${recordId} from ${tableName}:`, error);
+            throw error;
+        }
+    }
+
+    // Fetch schools
+    async fetchSchools(includeInactive = false) {
+        const options = {
+            sort: { field: 'Name', direction: 'asc' },
+        };
+
+        // Add filter for active schools only (default behavior)
+        if (!includeInactive) {
+            options.filterByFormula = "OR({School Status} = 'Open', {School Status} = 'Emerging')";
+        }
+
+        console.log('🔄 Fetching schools with options:', options);
+        return this.fetchRecords(TABLES.SCHOOLS, options);
+    }
+
+    // Fetch educators
+    async fetchEducators(includeInactive = false) {
+        console.log('🔄 Fetching educators with includeInactive:', includeInactive);
+
+        const options = {
+            sort: { field: 'Last Name', direction: 'asc' },
+        };
+
+        // Add filter for active educators only (default behavior)
+        if (!includeInactive) {
+            // Filter out:
+            // 1. Discovery status = "Paused" 
+            // 2. Individual type = "Community member"
+            // Note: We'll handle the "no active school relationships" filter in the hook
+            options.filterByFormula = `AND({Discovery status} != 'Paused',{Individual type} != 'Community member')`;
+        }
+
+        console.log('🔄 Fetching educators with options:', options);
+        return this.fetchRecords(TABLES.EDUCATORS, options);
+    }
+
+    // Fetch charters
+    async fetchCharters() {
+        return this.fetchRecords(TABLES.CHARTERS, {
+            sort: { field: 'Initial target community', direction: 'asc' }
+        });
+    }
+
+    // Fetch relationships between educators and schools
+    async fetchEducatorsXSchools() {
+        return this.fetchRecords(TABLES.EDUCATORS_X_SCHOOLS, {
+            sort: { field: 'Start Date', direction: 'desc' }
+        });
+    }
+
+    // Add a generic method to fetch all records from any table (for your hooks)
+    async getAllRecords(tableName, options = {}) {
+        console.log(`🔄 Getting ALL records from ${tableName}...`);
+        return this.fetchRecords(tableName, {
+            maxRecords: 10000, // Allow up to 10,000 records
+            ...options
+        });
+    }
+
+    // Fetch school notes for a specific school
+    async fetchSchoolNotes(schoolId) {
+        return this.fetchRecords(TABLES.SCHOOL_NOTES, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Date created', direction: 'desc' }
+        });
+    }
+
+    // Fetch educator notes for a specific educator
+    async fetchEducatorNotes(educatorId) {
+        return this.fetchRecords(TABLES.EDUCATOR_NOTES, {
+            filterByFormula: `FIND("${educatorId}", {Educator})`,
+            sort: { field: 'Date', direction: 'desc' }
+        });
+    }
+
+    // Fetch grants for a specific school
+    async fetchSchoolGrants(schoolId) {
+        return this.fetchRecords(TABLES.GRANTS, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Issue Date', direction: 'desc' }
+        });
+    }
+
+    // Fetch loans for a specific school
+    async fetchSchoolLoans(schoolId) {
+        return this.fetchRecords(TABLES.LOANS, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Effective Issue Date', direction: 'desc' }
+        });
+    }
+
+    // Fetch action steps for a specific school
+    async fetchSchoolActionSteps(schoolId) {
+        return this.fetchRecords(TABLES.ACTION_STEPS, {
+            filterByFormula: `FIND("${schoolId}", {Schools})`,
+            sort: { field: 'Due date', direction: 'asc' }
+        });
+    }
+
+    // Fetch locations for a specific school
+    async fetchSchoolLocations(schoolId) {
+        return this.fetchRecords(TABLES.LOCATIONS, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Start of time at location', direction: 'desc' }
+        });
+    }
+
+    // Fetch membership fee records for a specific school
+    async fetchSchoolMembershipFees(schoolId) {
+        return this.fetchRecords(TABLES.MEMBERSHIP_FEE_OVERVIEW, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'School year', direction: 'desc' }
+        });
+    }
+
+    // Fetch 990s for a specific school
+    async fetchNineNineties(schoolId) {
+        return this.fetchRecords(TABLES.NINE_NINETIES, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: '990 Reporting Year', direction: 'desc' }
+        });
+    }
+
+    // Fetch family surveys for a specific school
+    async fetchFamilySurveys(schoolId) {
+        return this.fetchRecords(TABLES.FAMILY_SURVEYS, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Survey Year', direction: 'desc' }
+        });
+    }
+
+    // Fetch assessment data for a specific school
+    async fetchAssessmentData(schoolId) {
+        return this.fetchRecords(TABLES.ASSESSMENT_DATA, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Year', direction: 'desc' }
+        });
+    }
+
+
+    // Fetch SSJ forms for a specific educator
+    async fetchEducatorSSJForms(educatorId) {
+        return this.fetchRecords(TABLES.SSJ_FILLOUT_FORMS, {
+            filterByFormula: `FIND("${educatorId}", {Educator})`,
+            sort: { field: 'Entry Date', direction: 'desc' }
+        });
+    }
+
+    // Fetch event attendance for a specific educator
+    async fetchEducatorEventAttendance(educatorId) {
+        return this.fetchRecords(TABLES.EVENT_ATTENDANCE, {
+            filterByFormula: `FIND("${educatorId}", {Event Participant})`,
+            sort: { field: 'Registration Date', direction: 'desc' }
+        });
+    }
+
+    // Fetch Montessori certifications for a specific educator
+    async fetchEducatorMontessoriCerts(educatorId) {
+        return this.fetchRecords(TABLES.MONTESSORI_CERTS, {
+            filterByFormula: `FIND("${educatorId}", {Educator})`,
+            sort: { field: 'Year Certified', direction: 'desc' }
+        });
+    }
+
+    // Fetch guide assignments for a specific school
+    async fetchSchoolGuideAssignments(schoolId) {
+        return this.fetchRecords(TABLES.GUIDES_ASSIGNMENTS, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Start date', direction: 'desc' }
+        });
+    }
+
+    // Fetch governance documents for a specific school
+    async fetchSchoolGovernanceDocs(schoolId) {
+        return this.fetchRecords(TABLES.GOVERNANCE_DOCS, {
+            filterByFormula: `FIND("${schoolId}", {School})`,
+            sort: { field: 'Date', direction: 'desc' }
+        });
+    }
+}
+
+export const airtableService = new AirtableService();
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\APP.CSS CODE IS BELOW
+@import 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\APP.JSX CODE IS BELOW
+// src/App.jsx
+import React from 'react';
+import WildflowerDatabase from './components/WildflowerDatabase.jsx';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <WildflowerDatabase />
+    </div>
+  );
+}
+
+export default App;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\CHARTERS\CHARTERDETAILS.JSX CODE IS BELOW
+import React from 'react';
+import { ArrowLeft } from 'lucide-react';
+
+const CharterDetails = ({ charter, onBack }) => {
+    return (
+        <div className="h-full flex flex-col bg-white">
+            <div className="border-b bg-gray-50 px-6 py-4">
+                <div className="flex items-center mb-4">
+                    <button
+                        onClick={onBack}
+                        className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <h1 className="text-2xl font-bold text-gray-900">{charter.name}</h1>
+                </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
+                <p>Charter details coming soon...</p>
+            </div>
+        </div>
+    );
+};
+
+export default CharterDetails;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\EDUCATORS\EDUCATORDETAILS.JSX CODE IS BELOW
+import React from 'react';
+import { ArrowLeft } from 'lucide-react';
+
+const EducatorDetails = ({ educator, onBack }) => {
+    return (
+        <div className="h-full flex flex-col bg-white">
+            <div className="border-b bg-gray-50 px-6 py-4">
+                <div className="flex items-center mb-4">
+                    <button
+                        onClick={onBack}
+                        className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        {educator.firstName} {educator.lastName}
+                    </h1>
+                </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
+                <p>Educator details coming soon...</p>
+            </div>
+        </div>
+    );
+};
+
+export default EducatorDetails;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\EDUCATORS\EDUCATORSUMMARY.JSX CODE IS BELOW
+import React, { useState } from 'react';
+import DetailRow from '../shared/DetailRow';
+import StatusBadge from '../shared/StatusBadge';
+
+const EducatorSummary = ({ educator }) => {
+    const [isEditing, setIsEditing] = useState(false);
+
+    return (
+        <div className="space-y-8">
+            {/* Edit Button */}
+            <div className="flex justify-end">
+                <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                >
+                    {isEditing ? 'Save' : 'Edit'}
+                </button>
+            </div>
+
+            <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <span className="text-xl font-medium text-gray-600">
+                        {educator.fullName ? educator.fullName[0] : ''}
+                    </span>
+                </div>
+                <div className="flex-1">
+                    <h2 className="text-xl font-bold text-gray-900">{educator.fullName}</h2>
+                    <div className="mt-1 space-y-1">
+                        <div className="text-blue-600">{educator.email || 'No email address'}</div>
+                        <div className="text-gray-600">{educator.role || 'No current role'}</div>
+                        <div className="text-gray-600">{educator.pronouns}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t pt-6">
+                <DetailRow label="Full Name" value={educator.fullName} />
+                <DetailRow label="First Name" value={educator.firstName} />
+                <DetailRow label="Last Name" value={educator.lastName} />
+                <DetailRow label="Email" value={educator.email} type="email" />
+                <DetailRow label="Current School" value={educator.currentSchool} />
+                <DetailRow label="Role" value={educator.role} />
+                <DetailRow label="Discovery Status" value={<StatusBadge status={educator.discoveryStatus} />} />
+                <DetailRow label="Individual Type" value={educator.individualType} />
+                <DetailRow label="Montessori Certified" value={educator.montessoriCertified} type="boolean" />
+                <DetailRow label="Pronouns" value={educator.pronouns} />
+                <DetailRow label="Phone" value={educator.phone} type="phone" />
+                <DetailRow label="Target Location" value={educator.targetGeo} />
+                <DetailRow label="Tags" value={educator.tags?.join(', ')} />
+            </div>
+        </div>
+    );
+};
+
+export default EducatorSummary;
+
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLDETAILS.JSX CODE IS BELOW
+// src/components/schools/SchoolDetails.jsx
+import React, { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import TabContainer from '../shared/TabContainer';
+import SchoolSummary from './SchoolSummary';
+import SchoolTLs from './SchoolTLs';
+import SchoolLocations from './SchoolLocations';
+// Import other school tab components...
+
+const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
+  const [activeTab, setActiveTab] = useState('summary');
+
+  const tabs = [
+    { id: 'summary', label: 'Summary' },
+    { id: 'tls', label: 'TLs' },
+    { id: 'locations', label: 'Locations' },
+    { id: 'governance', label: 'Governance' },
+    { id: 'guides', label: 'Guides' },
+    { id: 'ssj-oss', label: 'SSJ / OSS' },
+    { id: 'membership-fees', label: 'Membership fees' },
+    { id: 'grants-loans', label: 'Grants and Loans' },
+    { id: 'linked-mtgs', label: 'Linked mtgs/emails' },
+    { id: 'notes-actions', label: 'Notes/Action steps' }
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'summary':
+        return <SchoolSummary school={school} />;
+      case 'tls':
+        return <SchoolTLs school={school} onEducatorOpen={onEducatorOpen} />;
+      case 'locations':
+        return <SchoolLocations school={school} />;
+      // Add other cases...
+      default:
+        return (
+          <div className="text-center py-8 text-gray-500">
+            {tabs.find(t => t.id === activeTab)?.label} content would go here
+          </div>
+        );
+    }
+  };
+
+  return (
+    <TabContainer
+      title={school.name}
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      onBack={onBack}
+    >
+      {renderTabContent()}
+    </TabContainer>
+  );
+};
+
+export default SchoolDetails;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLLOCATIONS.JSX CODE IS BELOW
+import React, { useState } from 'react';
+import { Plus, CheckCircle, XCircle } from 'lucide-react';
+import { useSchoolLocations } from '../../hooks/useUnifiedData';
+import { useAirtableMutations } from '../../hooks/useAirtableData';
+import LocationEditModal from '../../LocationEditModal';
+
+const SchoolLocations = ({ school }) => {
+    const [showLocationEditModal, setShowLocationEditModal] = useState(false);
+    const [selectedLocation, setSelectedLocation] = useState(null);
+
+    const { data: schoolLocations, refetch: refetchLocations } = useSchoolLocations(school.id);
+    const { updateRecord, deleteRecord, loading: mutationLoading } = useAirtableMutations();
+
+    const handleEditLocation = (location) => {
+        setSelectedLocation(location);
+        setShowLocationEditModal(true);
+    };
+
+    const handleEndLocationPeriod = async (locationId) => {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            await updateRecord('Locations', locationId, {
+                'End Date': today,
+                'Current Mailing Address': false,
+                'Current Physical Address': false,
+                'Currently Active': false
+            });
+
+            refetchLocations();
+            alert('Location period ended successfully');
+        } catch (error) {
+            console.error('Error ending location period:', error);
+            alert('Failed to end location period. Please try again.');
+        }
+    };
+
+    const handleDeleteLocation = async (locationId, address) => {
+        if (window.confirm(`Are you sure you want to delete the location "${address}"? This action cannot be undone.`)) {
+            try {
+                await deleteRecord('Locations', locationId);
+                refetchLocations();
+                alert('Location deleted successfully');
+            } catch (error) {
+                console.error('Error deleting location:', error);
+                alert('Failed to delete location. Please try again.');
+            }
+        }
+    };
+
+    const handleUpdateLocation = async (updatedLocation) => {
+        try {
+            await updateRecord('Locations', updatedLocation.id, {
+                'Address': updatedLocation.address,
+                'Location Type': updatedLocation.locationType,
+                'Start Date': updatedLocation.startDate,
+                'End Date': updatedLocation.endDate || null,
+                'Current Mailing Address': updatedLocation.currentMailingAddress,
+                'Current Physical Address': updatedLocation.currentPhysicalAddress,
+                'Currently Active': updatedLocation.currentlyActive
+            });
+
+            refetchLocations();
+            alert('Location updated successfully');
+        } catch (error) {
+            console.error('Error updating location:', error);
+            alert('Failed to update location. Please try again.');
+        }
+    };
+
+    const handleAddLocation = () => {
+        // You can implement this to show an "Add Location" modal
+        // For now, we'll just show an alert
+        alert('Add Location functionality would be implemented here');
+    };
+
+    return (
+        <div>
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">Locations</h3>
+                <button
+                    onClick={handleAddLocation}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Location
+                </button>
+            </div>
+
+            <div className="bg-white border rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Address
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Start Date
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                End Date
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Current Mailing Address
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Current Physical Address
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {schoolLocations.map(location => (
+                            <tr key={location.id} className="hover:bg-gray-50">
+                                <td className="px-6 py-4">
+                                    <div className="text-sm font-medium text-gray-900">
+                                        {location.address}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        {location.locationType}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {location.startDate || '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {location.endDate || '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {location.currentMailingAddress ? (
+                                        <CheckCircle className="w-5 h-5 text-green-600" />
+                                    ) : (
+                                        <XCircle className="w-5 h-5 text-red-600" />
+                                    )}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {location.currentPhysicalAddress ? (
+                                        <CheckCircle className="w-5 h-5 text-green-600" />
+                                    ) : (
+                                        <XCircle className="w-5 h-5 text-red-600" />
+                                    )}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div className="flex space-x-2">
+                                        <button
+                                            onClick={() => handleEditLocation(location)}
+                                            className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                                            disabled={mutationLoading}
+                                        >
+                                            Edit
+                                        </button>
+                                        {location.currentlyActive && (
+                                            <button
+                                                onClick={() => handleEndLocationPeriod(location.id)}
+                                                className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700"
+                                                disabled={mutationLoading}
+                                            >
+                                                {mutationLoading ? 'Ending...' : 'End period'}
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => handleDeleteLocation(location.id, location.address)}
+                                            className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
+                                            disabled={mutationLoading}
+                                        >
+                                            {mutationLoading ? 'Deleting...' : 'Delete'}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                {schoolLocations.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                        No locations added for this school yet.
+                    </div>
+                )}
+            </div>
+
+            {/* Location Edit Modal */}
+            <LocationEditModal
+                isOpen={showLocationEditModal}
+                onClose={() => {
+                    setShowLocationEditModal(false);
+                    setSelectedLocation(null);
+                }}
+                onSubmit={handleUpdateLocation}
+                location={selectedLocation}
+            />
+        </div>
+    );
+};
+
+export default SchoolLocations;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLSUMMARY.JSX CODE IS BELOW
+import React, { useState } from 'react';
+import { FileText } from 'lucide-react';
+import DetailRow from '../shared/DetailRow';
+import StatusBadge from '../shared/StatusBadge';
+
+const SchoolSummary = ({ school }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    // Add edit functionality here...
+
+    return (
+        <div className="space-y-8">
+            {/* Edit Button */}
+            <div className="flex justify-end">
+                <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                >
+                    {isEditing ? 'Save' : 'Edit'}
+                </button>
+            </div>
+
+            {/* Header Section */}
+            <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                {/* School Logo */}
+                <div className="row-span-3 flex items-center justify-center">
+                    <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-16 h-16 text-gray-400" />
+                    </div>
+                </div>
+
+                {/* Basic Info */}
+                <DetailRow label="School Name" value={school.name} />
+                <DetailRow label="Short Name" value={school.shortName} />
+                <DetailRow label="Ages Served" value={school.agesServed?.join(', ')} />
+
+                <DetailRow label="Governance Model" value={school.governanceModel} />
+                <DetailRow label="Founders" value={school.founders?.join(', ')} />
+                <DetailRow label="Current TLs" value={school.currentTLs?.join(', ')} />
+
+                <DetailRow label="School Open Date" value={school.schoolOpenDate || school.opened} />
+                <DetailRow label="School Status" value={<StatusBadge status={school.status} />} />
+                <DetailRow label="Membership Status" value={<StatusBadge status={school.membershipStatus} />} />
+            </div>
+
+            {/* Additional Info */}
+            <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+                <DetailRow label="Program Focus" value={school.programFocus} />
+                <DetailRow label="Max Capacity Enrollments" value={school.maxCapacityEnrollments} />
+                <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
+                <DetailRow label="Public Funding" value={school.publicFunding} />
+                <DetailRow label="Flexible Tuition" value={school.flexibleTuition} />
+                <DetailRow label="School Calendar" value={school.schoolCalendar} />
+                <DetailRow label="School Schedule" value={school.schoolSchedule} />
+            </div>
+        </div>
+    );
+};
+
+export default SchoolSummary;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLTLS.JSX CODE IS BELOW
+import React, { useState } from 'react';
+import { Plus, CheckCircle, XCircle } from 'lucide-react';
+import { useEducatorsXSchools } from '../../hooks/useUnifiedData';
+import { useAirtableMutations } from '../../hooks/useAirtableData';
+import AddEducatorStintModal from '../../AddEducatorStintModal';
+import CreateEducatorModal from '../../CreateEducatorModal';
+
+const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
+    const [showAddStintModal, setShowAddStintModal] = useState(false);
+    const [showCreateEducatorModal, setShowCreateEducatorModal] = useState(false);
+
+    const { data: educatorsXSchools, refetch: refetchEducatorsXSchools } = useEducatorsXSchools();
+    const { createRecord, updateRecord, deleteRecord, loading: mutationLoading } = useAirtableMutations();
+
+    // Filter relationships for this school
+    const schoolEducators = educatorsXSchools.filter(exs => exs.schoolId === school.id);
+
+    const handleEndStint = async (stintId) => {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            await updateRecord('Educators x Schools', stintId, {
+                'End Date': today,
+                'Currently Active': false
+            });
+
+            refetchEducatorsXSchools();
+            alert('Stint ended successfully');
+        } catch (error) {
+            console.error('Error ending stint:', error);
+            alert('Failed to end stint. Please try again.');
+        }
+    };
+
+    const handleDeleteStint = async (stintId, educatorName) => {
+        if (window.confirm(`Are you sure you want to delete the connection between ${educatorName} and this school? This action cannot be undone.`)) {
+            try {
+                await deleteRecord('Educators x Schools', stintId);
+                refetchEducatorsXSchools();
+                alert('Stint deleted successfully');
+            } catch (error) {
+                console.error('Error deleting stint:', error);
+                alert('Failed to delete stint. Please try again.');
+            }
+        }
+    };
+
+    const handleAddStint = async (newStint) => {
+        try {
+            await createRecord('Educators x Schools', {
+                'Educator': [newStint.educatorId],
+                'School': [newStint.schoolId],
+                'Start Date': newStint.startDate,
+                'Currently Active': newStint.currentlyActive,
+                'Roles': newStint.roles
+            });
+
+            refetchEducatorsXSchools();
+            alert('Educator stint added successfully');
+        } catch (error) {
+            console.error('Error adding stint:', error);
+            alert('Failed to add stint. Please try again.');
+        }
+    };
+
+    const handleCreateEducator = async ({ educator, stint }) => {
+        try {
+            // First create the educator
+            const newEducatorRecord = await createRecord('Educators', {
+                'First Name': educator.firstName,
+                'Last Name': educator.lastName,
+                'Contact Email': educator.email,
+                'Primary phone': educator.phone,
+                'Pronouns': educator.pronouns,
+                'Discovery status': educator.discoveryStatus,
+                'Montessori Certified': educator.montessoriCertified
+            });
+
+            // Then create the educator x school relationship
+            await createRecord('Educators x Schools', {
+                'Educator': [newEducatorRecord.id],
+                'School': [stint.schoolId],
+                'Start Date': stint.startDate,
+                'Currently Active': stint.currentlyActive,
+                'Roles': stint.roles
+            });
+
+            refetchEducatorsXSchools();
+            alert('Educator created and added to school successfully');
+        } catch (error) {
+            console.error('Error creating educator:', error);
+            alert('Failed to create educator. Please try again.');
+        }
+    };
+
+    return (
+        <div>
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">Teacher Leaders & Staff</h3>
+                <div className="flex space-x-2">
+                    <button
+                        onClick={() => setShowAddStintModal(true)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add stint for educator in database
+                    </button>
+                    <button
+                        onClick={() => setShowCreateEducatorModal(true)}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create new educator in database
+                    </button>
+                </div>
+            </div>
+
+            <div className="bg-white border rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Educator
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Role(s)
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Start Date
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                End Date
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Currently Active
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {schoolEducators.map(relationship => (
+                            <tr key={relationship.id} className="hover:bg-gray-50">
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                        <div className="flex-shrink-0 h-8 w-8">
+                                            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                                <span className="text-sm font-medium text-gray-600">
+                                                    {relationship.educatorName?.split(' ').map(n => n[0]).join('') || '??'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="ml-4">
+                                            <div className="text-sm font-medium text-gray-900">
+                                                {relationship.educatorName || 'Unknown Educator'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex flex-wrap gap-1">
+                                        {relationship.roles?.map((role, index) => (
+                                            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {role}
+                                            </span>
+                                        )) || (
+                                                <span className="text-sm text-gray-500">No roles assigned</span>
+                                            )}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {relationship.startDate || '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {relationship.endDate || '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {relationship.currentlyActive ? (
+                                        <CheckCircle className="w-5 h-5 text-green-600" />
+                                    ) : (
+                                        <XCircle className="w-5 h-5 text-red-600" />
+                                    )}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div className="flex space-x-2">
+                                        <button
+                                            onClick={() => onEducatorOpen && onEducatorOpen(relationship.educatorId)}
+                                            className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                                        >
+                                            Open
+                                        </button>
+                                        {relationship.currentlyActive && (
+                                            <button
+                                                onClick={() => handleEndStint(relationship.id)}
+                                                disabled={mutationLoading}
+                                                className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 disabled:bg-yellow-300 disabled:cursor-not-allowed"
+                                            >
+                                                {mutationLoading ? 'Ending...' : 'End stint'}
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => handleDeleteStint(relationship.id, relationship.educatorName)}
+                                            disabled={mutationLoading}
+                                            className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed"
+                                        >
+                                            {mutationLoading ? 'Deleting...' : 'Delete stint'}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                {schoolEducators.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                        No educators assigned to this school yet.
+                    </div>
+                )}
+            </div>
+
+            {/* Modals */}
+            <AddEducatorStintModal
+                isOpen={showAddStintModal}
+                onClose={() => setShowAddStintModal(false)}
+                onSubmit={handleAddStint}
+                schoolId={school.id}
+                allEducators={allEducators}
+            />
+
+            <CreateEducatorModal
+                isOpen={showCreateEducatorModal}
+                onClose={() => setShowCreateEducatorModal(false)}
+                onSubmit={handleCreateEducator}
+                schoolId={school.id}
+            />
+        </div>
+    );
+};
+
+export default SchoolTLs;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\DATATABLE.JSX CODE IS BELOW
+import React, { useMemo } from 'react';
+import MultiSelectDropdown from './MultiSelectDropdown';
+
+const DataTable = ({ 
+  data, 
+  columns, 
+  onRowClick, 
+  searchTerm, 
+  showFilters, 
+  columnFilters, 
+  onColumnFilterChange 
+}) => {
+  // Define which columns should use multi-select
+  const multiSelectColumns = {
+    'status': true,
+    'agesServed': true,
+    'governanceModel': true,
+    'membershipStatus': true
+  };
+
+  // Get unique values for multi-select columns
+  const getUniqueValues = (columnKey) => {
+    const values = new Set();
+    data.forEach(item => {
+      const value = item[columnKey];
+      if (Array.isArray(value)) {
+        value.forEach(v => v && values.add(v));
+      } else if (value) {
+        values.add(value);
+      }
+    });
+    return Array.from(values).sort();
+  };
+
+  // Apply both search and column filters
+  const filteredData = useMemo(() => {
+    let result = data;
+    
+    // Apply search term filter
+    if (searchTerm) {
+      result = result.filter(item => 
+        Object.values(item).some(value => {
+          if (Array.isArray(value)) {
+            return value.some(v => v && v.toString().toLowerCase().includes(searchTerm.toLowerCase()));
+          }
+          return value && value.toString().toLowerCase().includes(searchTerm.toLowerCase());
+        })
+      );
+    }
+    
+    // Apply column filters
+    Object.entries(columnFilters).forEach(([columnKey, filterValue]) => {
+      if (filterValue) {
+        if (multiSelectColumns[columnKey] && Array.isArray(filterValue) && filterValue.length > 0) {
+          // Multi-select filter logic
+          result = result.filter(item => {
+            const itemValue = item[columnKey];
+            if (Array.isArray(itemValue)) {
+              // Check if any of the item's values match any selected filter values
+              return itemValue.some(val => filterValue.includes(val));
+            } else {
+              // Check if the item's value matches any selected filter values
+              return filterValue.includes(itemValue);
+            }
+          });
+        } else if (typeof filterValue === 'string' && filterValue.trim()) {
+          // Text filter logic
+          result = result.filter(item => {
+            const itemValue = item[columnKey];
+            if (itemValue == null) return false;
+            if (Array.isArray(itemValue)) {
+              return itemValue.some(val => 
+                val && val.toString().toLowerCase().includes(filterValue.toLowerCase())
+              );
+            }
+            return itemValue.toString().toLowerCase().includes(filterValue.toLowerCase());
+          });
+        }
+      }
+    });
+    
+    return result;
+  }, [data, searchTerm, columnFilters]);
+
+  const handleColumnFilterChange = (columnKey, value) => {
+    if (onColumnFilterChange) {
+      onColumnFilterChange(columnKey, value);
+    }
+  };
+
+  const renderFilterInput = (col) => {
+    if (multiSelectColumns[col.key]) {
+      const options = getUniqueValues(col.key);
+      const selectedValues = columnFilters[col.key] || [];
+      
+      return (
+        <MultiSelectDropdown
+          options={options}
+          selectedValues={selectedValues}
+          onChange={(values) => handleColumnFilterChange(col.key, values)}
+          placeholder={`Filter ${col.label}...`}
+        />
+      );
+    } else {
+      return (
+        <input
+          type="text"
+          placeholder={`Filter ${col.label}...`}
+          value={columnFilters[col.key] || ''}
+          onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
+          className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+        />
+      );
+    }
+  };
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white">
+        <thead className="bg-gray-50">
+          <tr>
+            {columns.map((col) => (
+              <th key={col.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {col.label}
+              </th>
+            ))}
+          </tr>
+          
+          {/* Filter Row */}
+          {showFilters && (
+            <tr className="bg-gray-100">
+              {columns.map((col) => (
+                <th key={`filter-${col.key}`} className="px-6 py-2">
+                  {renderFilterInput(col)}
+                </th>
+              ))}
+            </tr>
+          )}
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {filteredData.map((item) => (
+            <tr 
+              key={item.id} 
+              className="hover:bg-gray-50 cursor-pointer transition-colors"
+              onClick={() => onRowClick && onRowClick(item)}
+            >
+              {columns.map((col) => (
+                <td key={col.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {col.render ? col.render(item[col.key], item) : item[col.key] || '-'}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      {filteredData.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          No results found. Try adjusting your filters or search term.
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DataTable;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\DETAILROW.JSX CODE IS BELOW
+import React from 'react';
+import { CheckCircle, XCircle, ExternalLink } from 'lucide-react';
+
+const DetailRow = ({ label, value, span = false, type = 'text' }) => {
+    const renderValue = () => {
+        // Handle null/undefined values
+        if (value === null || value === undefined || value === '') {
+            return <span className="text-gray-400">-</span>;
+        }
+
+        // Handle boolean values
+        if (typeof value === 'boolean') {
+            return value ? (
+                <CheckCircle className="w-4 h-4 text-green-600" />
+            ) : (
+                <XCircle className="w-4 h-4 text-red-600" />
+            );
+        }
+
+        // Handle arrays
+        if (Array.isArray(value)) {
+            if (value.length === 0) {
+                return <span className="text-gray-400">-</span>;
+            }
+            return value.join(', ');
+        }
+
+        // Handle numbers
+        if (typeof value === 'number') {
+            return value.toLocaleString();
+        }
+
+        // Handle different types of content
+        switch (type) {
+            case 'url':
+            case 'link':
+                return (
+                    <a
+                        href={value}
+                        className="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {value}
+                        <ExternalLink className="w-3 h-3 ml-1" />
+                    </a>
+                );
+
+            case 'email':
+                return (
+                    <a
+                        href={`mailto:${value}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                        {value}
+                    </a>
+                );
+
+            case 'phone':
+                return (
+                    <a
+                        href={`tel:${value}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                        {value}
+                    </a>
+                );
+
+            case 'currency':
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                }).format(value);
+
+            case 'date':
+                if (!value) return <span className="text-gray-400">-</span>;
+                try {
+                    const date = new Date(value);
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch (error) {
+                    return value;
+                }
+
+            case 'percentage':
+                return `${value}%`;
+
+            case 'multiline':
+                return (
+                    <div className="whitespace-pre-wrap max-w-md">
+                        {value}
+                    </div>
+                );
+
+            case 'badge':
+                // This would be used for status badges, but we'll keep it simple for now
+                return (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        {value}
+                    </span>
+                );
+
+            case 'text':
+            default:
+                return value;
+        }
+    };
+
+    return (
+        <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
+            <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+            <div className="text-sm text-gray-900">
+                {renderValue()}
+            </div>
+        </div>
+    );
+};
+
+// Helper component for editing mode
+export const EditableDetailRow = ({
+    label,
+    field,
+    value,
+    onChange,
+    type = 'text',
+    options = null,
+    placeholder = '',
+    span = false,
+    required = false
+}) => {
+    const handleChange = (newValue) => {
+        if (onChange) {
+            onChange(field, newValue);
+        }
+    };
+
+    const renderInput = () => {
+        switch (type) {
+            case 'boolean':
+                return (
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={value || false}
+                            onChange={(e) => handleChange(e.target.checked)}
+                            className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm">{value ? 'Yes' : 'No'}</span>
+                    </label>
+                );
+
+            case 'select':
+                return (
+                    <select
+                        value={value || ''}
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        required={required}
+                    >
+                        <option value="">Select...</option>
+                        {options?.map(option => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+                );
+
+            case 'textarea':
+            case 'multiline':
+                return (
+                    <textarea
+                        value={value || ''}
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        rows={3}
+                        placeholder={placeholder}
+                        required={required}
+                    />
+                );
+
+            case 'array':
+                return (
+                    <input
+                        type="text"
+                        value={Array.isArray(value) ? value.join(', ') : (value || '')}
+                        onChange={(e) => handleChange(e.target.value.split(',').map(v => v.trim()).filter(v => v))}
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder={placeholder || "Separate multiple values with commas"}
+                        required={required}
+                    />
+                );
+
+            case 'number':
+                return (
+                    <input
+                        type="number"
+                        value={value || ''}
+                        onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder={placeholder}
+                        required={required}
+                    />
+                );
+
+            case 'currency':
+                return (
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                        <input
+                            type="number"
+                            value={value || ''}
+                            onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
+                            className="w-full pl-8 pr-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder={placeholder}
+                            required={required}
+                            min="0"
+                            step="0.01"
+                        />
+                    </div>
+                );
+
+            case 'date':
+                return (
+                    <input
+                        type="date"
+                        value={value || ''}
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        required={required}
+                    />
+                );
+
+            case 'email':
+                return (
+                    <input
+                        type="email"
+                        value={value || ''}
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder={placeholder || "email@example.com"}
+                        required={required}
+                    />
+                );
+
+            case 'phone':
+                return (
+                    <input
+                        type="tel"
+                        value={value || ''}
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder={placeholder || "(555) 123-4567"}
+                        required={required}
+                    />
+                );
+
+            case 'url':
+                return (
+                    <input
+                        type="url"
+                        value={value || ''}
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder={placeholder || "https://example.com"}
+                        required={required}
+                    />
+                );
+
+            case 'percentage':
+                return (
+                    <div className="relative">
+                        <input
+                            type="number"
+                            value={value || ''}
+                            onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
+                            className="w-full pr-8 pl-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder={placeholder}
+                            required={required}
+                            min="0"
+                            max="100"
+                            step="0.1"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
+                    </div>
+                );
+
+            case 'text':
+            default:
+                return (
+                    <input
+                        type="text"
+                        value={value || ''}
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder={placeholder}
+                        required={required}
+                    />
+                );
+        }
+    };
+
+    return (
+        <div className={`py-2 ${span ? 'col-span-2' : ''}`}>
+            <div className="text-sm font-medium text-gray-600 mb-1">
+                {label}
+                {required && <span className="text-red-500 ml-1">*</span>}
+            </div>
+            {renderInput()}
+        </div>
+    );
+};
+
+export default DetailRow;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\MULTISELECTDROPDOWN.JSX CODE IS BELOW
+// src/components/shared/MultiSelectDropdown.jsx
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronDown, X } from 'lucide-react';
+
+const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleToggleOption = (value) => {
+    const newSelected = selectedValues.includes(value)
+      ? selectedValues.filter(v => v !== value)
+      : [...selectedValues, value];
+    onChange(newSelected);
+  };
+
+  const handleClearAll = (e) => {
+    e.stopPropagation();
+    onChange([]);
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-left flex items-center justify-between"
+      >
+        <span className="truncate">
+          {selectedValues.length === 0 
+            ? placeholder 
+            : selectedValues.length === 1 
+              ? selectedValues[0] 
+              : `${selectedValues.length} selected`
+          }
+        </span>
+        <div className="flex items-center space-x-1">
+          {selectedValues.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              className="p-0.5 hover:bg-gray-200 rounded"
+              title="Clear all"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+          <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </div>
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+          {options.map((option) => (
+            <label
+              key={option}
+              className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={selectedValues.includes(option)}
+                onChange={() => handleToggleOption(option)}
+                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm">{option}</span>
+            </label>
+          ))}
+          {options.length === 0 && (
+            <div className="px-3 py-2 text-sm text-gray-500">No options available</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MultiSelectDropdown;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\STATUSBADGE.JSX CODE IS BELOW
+// src/components/shared/StatusBadge.jsx
+import React from 'react';
+
+const StatusBadge = ({ status }) => {
+  const getStatusColor = () => {
+    switch (status) {
+      case 'Open': return 'bg-green-100 text-green-800';
+      case 'Emerging': return 'bg-yellow-100 text-yellow-800';
+      case 'Member School': return 'bg-blue-100 text-blue-800';
+      case 'Complete': return 'bg-green-100 text-green-800';
+      case 'Completed': return 'bg-green-100 text-green-800';
+      case 'Applying': return 'bg-orange-100 text-orange-800';
+      case 'Active': return 'bg-green-100 text-green-800';
+      case 'Attended': return 'bg-green-100 text-green-800';
+      case 'Registered': return 'bg-blue-100 text-blue-800';
+      case 'Scheduled': return 'bg-yellow-100 text-yellow-800';
+      case 'No Show': return 'bg-red-100 text-red-800';
+      case 'Incomplete': return 'bg-yellow-100 text-yellow-800';
+      case 'Issued': return 'bg-green-100 text-green-800';
+      case 'Planned': return 'bg-blue-100 text-blue-800';
+      case 'Paid Off': return 'bg-green-100 text-green-800';
+      case 'Interest Only Period': return 'bg-yellow-100 text-yellow-800';
+      case 'Principal Repayment': return 'bg-blue-100 text-blue-800';
+      case 'In Progress': return 'bg-yellow-100 text-yellow-800';
+      case 'Not Started': return 'bg-gray-100 text-gray-800';
+      case 'Permanently Closed': return 'bg-red-100 text-red-800';
+      case 'Disaffiliated': return 'bg-red-100 text-red-800';
+      case 'Disaffiliating': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor()}`}>
+      {status}
+    </span>
+  );
+};
+
+export default StatusBadge;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\TABCONTAINER.JSX CODE IS BELOW
+import React from 'react';
+import { ArrowLeft } from 'lucide-react';
+
+const TabContainer = ({ title, tabs, activeTab, onTabChange, onBack, children }) => {
+    return (
+        <div className="h-full flex flex-col bg-white">
+            <div className="border-b bg-gray-50 px-6 py-4">
+                <div className="flex items-center mb-4">
+                    <button
+                        onClick={onBack}
+                        className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+                </div>
+
+                <div className="flex space-x-8 overflow-x-auto">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => onTabChange(tab.id)}
+                            className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.id
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+                {children}
+            </div>
+        </div>
+    );
+};
+
+export default TabContainer;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\WILDFLOWERDATABASE.JSX CODE IS BELOW
+﻿import React, { useState } from 'react';
+import { Search, Filter, Plus } from 'lucide-react';
+
+// Import components
+import DataTable from './shared/DataTable';
+import SchoolDetails from './schools/SchoolDetails';
+import EducatorDetails from './educators/EducatorDetails';
+import CharterDetails from './charters/CharterDetails';
+
+// Import hooks
+import useUnifiedData from '../hooks/useUnifiedData';
+import { useNavigation } from '../hooks/useNavigation';
+import { useFilters } from '../hooks/useFilters';
+import { useSchoolFilters } from '../hooks/useSchoolFilters';
+import { useTableColumns } from '../hooks/useTableColumns';
+import { useTabCounts } from '../hooks/useTabCounts';
+import { useEducatorFilters } from '../hooks/useEducatorFilters';
+
+// Import constants
+import { TABS } from '../utils/constants';
+
+const WildflowerDatabase = () => {
+    const [mainTab, setMainTab] = useState(TABS.SCHOOLS);
+
+    // Navigation
+    const { selectedItem, navigateToItem, navigateBack, navigateToEducator } = useNavigation();
+
+    // Filters
+    const {
+        searchTerm,
+        setSearchTerm,
+        showFilters,
+        setShowFilters,
+        columnFilters,
+        handleColumnFilterChange,
+        clearAllFilters,
+        hasActiveFilters
+    } = useFilters();
+
+    // Data fetching - FIXED: Get all data first, then filter
+    const schoolsResult = useUnifiedData(TABS.SCHOOLS, { includeInactive: true });
+    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true }); // Always get all data
+    const chartersResult = useUnifiedData(TABS.CHARTERS);
+
+    console.log('🔍 Raw educators result:', {
+        loading: educatorsResult.loading,
+        error: educatorsResult.error,
+        dataLength: educatorsResult.data?.length,
+        firstEducator: educatorsResult.data?.[0]
+    });
+
+    // Apply filters to the data
+    const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
+    const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
+
+    console.log('🔍 Filtered data:', {
+        schools: filteredSchools?.length,
+        educators: filteredEducators?.length,
+        includeInactiveEducators
+    });
+
+    // Get current data based on active tab
+    const getCurrentData = () => {
+        switch (mainTab) {
+            case TABS.SCHOOLS:
+                return filteredSchools || [];
+            case TABS.EDUCATORS:
+                return filteredEducators || [];
+            case TABS.CHARTERS:
+                return chartersResult.data || [];
+            default:
+                return [];
+        }
+    };
+
+    // Table columns
+    const columns = useTableColumns(mainTab);
+
+    // Tab counts - FIXED: Use filtered educators length
+    const mainTabs = useTabCounts(
+        filteredSchools || [],
+        schoolsResult.loading,
+        filteredEducators || [], // Use filtered educators for count
+        chartersResult.data || [],
+        includeInactiveSchools
+    );
+
+    // Event handlers
+    const handleRowClick = (item) => {
+        console.log('Row clicked, item:', item);
+        navigateToItem(mainTab, item);
+    };
+
+    const handleEducatorOpen = (educatorId) => {
+        navigateToEducator(educatorId, educatorsResult.data);
+    };
+
+    // Show loading state
+    if (educatorsResult.loading && mainTab === TABS.EDUCATORS) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading educators data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Show error state
+    if (educatorsResult.error && mainTab === TABS.EDUCATORS) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-red-600 mb-4">Error loading educators data</p>
+                    <p className="text-gray-600">{educatorsResult.error.message}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // If viewing details, render the appropriate detail component
+    if (selectedItem) {
+        switch (selectedItem.type) {
+            case TABS.SCHOOLS:
+                return <SchoolDetails school={selectedItem.data} onBack={navigateBack} onEducatorOpen={handleEducatorOpen} />;
+            case TABS.EDUCATORS:
+                return <EducatorDetails educator={selectedItem.data} onBack={navigateBack} />;
+            case TABS.CHARTERS:
+                return <CharterDetails charter={selectedItem.data} onBack={navigateBack} />;
+            default:
+                return null;
+        }
+    }
+
+    return (
+        <div className="h-screen flex flex-col bg-gray-50">
+            <div className="bg-white shadow-sm border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between py-4">
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
+                            <p className="text-gray-600">Manage schools, educators, and network data</p>
+                        </div>
+
+                        {/* Main tabs */}
+                        <div className="flex space-x-8">
+                            {mainTabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setMainTab(tab.id)}
+                                    className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${mainTab === tab.id
+                                            ? 'bg-blue-100 text-blue-700'
+                                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    {tab.label} ({tab.count})
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex-1 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
+                    <div className="bg-white rounded-lg shadow h-full flex flex-col">
+                        <div className="p-6 border-b">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    {/* Debug info for educators tab */}
+                                    {mainTab === TABS.EDUCATORS && process.env.NODE_ENV === 'development' && (
+                                        <div className="text-xs text-gray-500">
+                                            Debug: {getCurrentData().length} educators shown,
+                                            Raw: {educatorsResult.data?.length || 0},
+                                            Include inactive: {includeInactiveEducators ? 'Yes' : 'No'}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex items-center space-x-4">
+                                    {/* Status Filter Toggle - show for schools and educators */}
+                                    {mainTab === TABS.SCHOOLS && (
+                                        <label className="flex items-center space-x-2 text-sm">
+                                            <input
+                                                type="checkbox"
+                                                checked={includeInactiveSchools}
+                                                onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
+                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <span className="text-gray-700">Include inactive schools</span>
+                                        </label>
+                                    )}
+
+                                    {mainTab === TABS.EDUCATORS && (
+                                        <label className="flex items-center space-x-2 text-sm">
+                                            <input
+                                                type="checkbox"
+                                                checked={includeInactiveEducators}
+                                                onChange={(e) => setIncludeInactiveEducators(e.target.checked)}
+                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <span className="text-gray-700">Include inactive educators</span>
+                                        </label>
+                                    )}
+
+                                    <div className="flex items-center space-x-2">
+                                        <button
+                                            onClick={() => setShowFilters(!showFilters)}
+                                            className={`p-2 transition-colors ${showFilters
+                                                    ? 'text-blue-600 bg-blue-50'
+                                                    : 'text-gray-400 hover:text-gray-600'
+                                                }`}
+                                        >
+                                            <Filter className="w-4 h-4" />
+                                        </button>
+
+                                        {(showFilters && hasActiveFilters) && (
+                                            <button
+                                                onClick={clearAllFilters}
+                                                className="text-xs text-gray-500 hover:text-gray-700 underline"
+                                            >
+                                                Clear filters
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                        <input
+                                            type="text"
+                                            placeholder="Search..."
+                                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-auto">
+                            <DataTable
+                                data={getCurrentData()}
+                                columns={columns}
+                                onRowClick={handleRowClick}
+                                searchTerm={searchTerm}
+                                showFilters={showFilters}
+                                columnFilters={columnFilters}
+                                onColumnFilterChange={handleColumnFilterChange}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default WildflowerDatabase;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\CREATEEDUCATORMODAL.JSX CODE IS BELOW
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
+
+const CreateEducatorModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    role: '',
+    discoveryStatus: 'Not Started',
+    montessoriCertified: false,
+    pronouns: '',
+    phone: '',
+    currentSchool: ''
+  });
+
+  const [schoolAssignment, setSchoolAssignment] = useState({
+    roles: [],
+    startDate: new Date().toISOString().split('T')[0],
+    currentlyActive: true
+  });
+
+  const roleOptions = [
+    'Founder',
+    'Teacher Leader',
+    'Head of School',
+    'Assistant Teacher',
+    'Support Staff',
+    'Board Member'
+  ];
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSchoolAssignmentChange = (field, value) => {
+    setSchoolAssignment(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const toggleRole = (role) => {
+    setSchoolAssignment(prev => ({
+      ...prev,
+      roles: prev.roles.includes(role)
+        ? prev.roles.filter(r => r !== role)
+        : [...prev.roles, role]
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.firstName || !formData.lastName || !formData.email || schoolAssignment.roles.length === 0) {
+      return;
+    }
+
+    const newEducatorId = `ed_${Date.now()}`;
+    
+    const newEducator = {
+      id: newEducatorId,
+      ...formData
+    };
+
+    const schoolStint = {
+      educatorId: newEducatorId,
+      schoolId: schoolId,
+      startDate: schoolAssignment.startDate,
+      endDate: null,
+      currentlyActive: schoolAssignment.currentlyActive,
+      roles: schoolAssignment.roles,
+      educatorName: `${formData.firstName} ${formData.lastName}`
+    };
+
+    onSubmit({ educator: newEducator, stint: schoolStint });
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      role: '',
+      discoveryStatus: 'Not Started',
+      montessoriCertified: false,
+      pronouns: '',
+      phone: '',
+      currentSchool: ''
+    });
+    setSchoolAssignment({
+      roles: [],
+      startDate: new Date().toISOString().split('T')[0],
+      currentlyActive: true
+    });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Create New Educator</h3>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Information */}
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">Basic Information</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  First Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Pronouns
+                </label>
+                <input
+                  type="text"
+                  value={formData.pronouns}
+                  onChange={(e) => handleInputChange('pronouns', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., she/her, they/them"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Discovery Status
+                </label>
+                <select
+                  value={formData.discoveryStatus}
+                  onChange={(e) => handleInputChange('discoveryStatus', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="Not Started">Not Started</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Complete">Complete</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="mt-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.montessoriCertified}
+                  onChange={(e) => handleInputChange('montessoriCertified', e.target.checked)}
+                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Montessori Certified</span>
+              </label>
+            </div>
+          </div>
+
+          {/* School Assignment */}
+          <div className="border-t pt-4">
+            <h4 className="text-md font-medium text-gray-900 mb-3">School Assignment</h4>
+            
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={schoolAssignment.startDate}
+                  onChange={(e) => handleSchoolAssignmentChange('startDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div className="flex items-end">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={schoolAssignment.currentlyActive}
+                    onChange={(e) => handleSchoolAssignmentChange('currentlyActive', e.target.checked)}
+                    className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Currently Active</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Roles (select at least one) *
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {roleOptions.map(role => (
+                  <label key={role} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={schoolAssignment.roles.includes(role)}
+                      onChange={() => toggleRole(role)}
+                      className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm">{role}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex space-x-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!formData.firstName || !formData.lastName || !formData.email || schoolAssignment.roles.length === 0}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Create Educator & Add to School
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default CreateEducatorModal;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USEAIRTABLEDATA.JSX CODE IS BELOW
+import { useState, useEffect, useCallback } from 'react';
+import { airtableService } from '../airtableService';
+
+
+// Generic hook for fetching data
+export const useAirtableData = (fetchFunction, dependencies = []) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await fetchFunction();
+      setData(result);
+    } catch (err) {
+      setError(err);
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, dependencies);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const refetch = useCallback(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { data, loading, error, refetch };
+};
+
+export const useSchools = (includeInactive = false) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchSchools = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('🔄 Fetching schools, includeInactive:', includeInactive);
+      
+      const rawSchools = await airtableService.fetchSchools(includeInactive);
+      console.log('✅ Raw schools received:', rawSchools);
+      
+      setData(rawSchools || []);
+      
+    } catch (err) {
+      console.error('❌ Error fetching schools:', err);
+      setError(err);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSchools();
+  }, [includeInactive]); // Re-fetch when includeInactive changes
+
+  return { 
+    data, 
+    loading, 
+    error, 
+    refetch: fetchSchools 
+  };
+};
+
+// Hook for fetching educators
+export const useEducators = (includeInactive = false) => {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchAllEducators = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                console.log('🔄 Fetching educators with includeInactive:', includeInactive);
+
+                // Fetch educators and relationships
+                const [educatorsData, educatorsXSchoolsData] = await Promise.all([
+                    airtableService.fetchEducators(includeInactive),
+                    airtableService.fetchEducatorsXSchools()
+                ]);
+
+                console.log('📊 Raw educators data:', {
+                    totalEducators: educatorsData.length,
+                    totalRelationships: educatorsXSchoolsData.length,
+                    firstEducator: educatorsData[0],
+                    educatorFields: educatorsData[0] ? Object.keys(educatorsData[0]) : []
+                });
+
+                // Filter educators based on relationships if not including inactive
+                let filteredEducators = educatorsData;
+
+                if (!includeInactive) {
+                    // Get educators who have active relationships
+                    const activeEducatorIds = new Set(
+                        educatorsXSchoolsData
+                            .filter(rel => rel['Currently Active'] === true)
+                            .map(rel => {
+                                if (Array.isArray(rel.Educator)) {
+                                    return rel.Educator[0];
+                                }
+                                return rel.Educator;
+                            })
+                            .filter(Boolean)
+                    );
+
+                    console.log('👥 Active educator IDs from relationships:', activeEducatorIds.size);
+
+                    filteredEducators = educatorsData.filter(educator => {
+                        const hasAnyRelationship = educatorsXSchoolsData.some(rel => {
+                            const relEducatorId = Array.isArray(rel.Educator) ? rel.Educator[0] : rel.Educator;
+                            return relEducatorId === educator.id;
+                        });
+                        const hasActiveRelationship = activeEducatorIds.has(educator.id);
+
+                        const shouldInclude = hasActiveRelationship || !hasAnyRelationship;
+
+                        if (!shouldInclude) {
+                            console.log('🚫 Filtering out educator:', educator['First Name'], educator['Last Name'], 'has relationships but none active');
+                        }
+
+                        return shouldInclude;
+                    });
+
+                    console.log('✅ After relationship filtering:', filteredEducators.length, 'educators');
+                }
+
+                // Transform the data using the clean email structure
+                const transformedEducators = filteredEducators.map(educator => {
+
+                    return {
+                        id: educator.id,
+                        fullName: educator[`Full Name`] || `Unknown`,
+                        firstName: educator['First Name'] || '-',
+                        lastName: educator['Last Name'] || '-',
+
+                        // Email handling - simplified to use only the two remaining fields
+                        email: Array.isArray(educator['Current Primary Email Address'])
+                            ? educator['Current Primary Email Address'][0]
+                            : educator['Current Primary Email Address'] || '',
+
+                        // Store reference to linked email records (for future use if needed)
+                        emailAddresses: educator['Email Addresses'] || [],
+
+                        // Contact info
+                        phone: educator['Primary phone'] || '',
+                        secondaryPhone: educator['Secondary phone'] || '',
+                        homeAddress: educator['Home Address'] || '',
+
+                        // Personal info
+                        pronouns: educator['Pronouns'] || '',
+                        pronounsOther: educator['Pronouns Other'] || '',
+                        nickname: educator['Nickname'] || '',
+
+                        // Professional info
+                        discoveryStatus: educator['Discovery status'] || '',
+                        individualType: educator['Individual Type'] || '',
+                        montessoriCertified: educator['Montessori Certified'] || false,
+
+                        // Current school info (using lookup fields)
+                        currentSchool: Array.isArray(educator['Currently Active School'])
+                            ? educator['Currently Active School'][0]
+                            : educator['Currently Active School'] || '',
+                        role: Array.isArray(educator['Current Role'])
+                            ? educator['Current Role'][0]
+                            : educator['Current Role'] || '',
+
+                        // Demographics
+                        raceEthnicity: educator['Race & Ethnicity'] || [],
+                        raceEthnicityOther: educator['Race & Ethnicity Other'] || '',
+                        gender: educator['Gender'] || '',
+                        genderOther: educator['Gender - Other'] || '',
+                        householdIncome: educator['Household Income'] || '',
+                        incomeBackground: educator['Income Background'] || [],
+                        lgbtqia: educator['LGBTQIA'] || '',
+                        primaryLanguage: Array.isArray(educator['Primary Language'])
+                            ? educator['Primary Language'][0]
+                            : educator['Primary Language'] || '',
+                        otherLanguages: educator['Other languages'] || [],
+
+                        // Location/targeting
+                        targetGeo: educator['Target geo combined'] || '',
+                        targetCity: educator['Target city'] || '',
+                        targetState: educator['Target state'] || '',
+                        targetIntl: educator['Target - international'] || '',
+
+                        // Additional fields
+                        holaspirit: educator['Active Holaspirit'] || false,
+                        tcUserId: educator['TC User ID'] || '',
+                        createdTime: educator['Created'] || educator.createdTime,
+                        selfReflection: educator['Self-reflection'] || '',
+
+                        // School relationship info
+                        currentActiveSchool: educator['Currently Active School'] || '',
+                        allSchools: educator['All Schools'] || [],
+                        schoolStatuses: educator['School Statuses'] || [],
+                        activeSchoolAffiliationStatus: Array.isArray(educator['Active School Affiliation Status'])
+                            ? educator['Active School Affiliation Status'][0]
+                            : educator['Active School Affiliation Status'] || ''
+                    };
+                });
+
+                console.log('✅ Transformed educators:', transformedEducators.length);
+                console.log('📊 Sample transformed educator:', transformedEducators[0]);
+
+                setData(transformedEducators);
+            } catch (err) {
+                console.error('❌ Error fetching educators:', err);
+                setError(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAllEducators();
+    }, [includeInactive]);
+
+    return { data, loading, error };
+};
+
+// Hook for fetching charters
+export const useCharters = () => {
+  return useAirtableData(() => airtableService.fetchCharters());
+};
+
+// Hook for fetching educator-school relationships
+export const useEducatorsXSchools = () => {
+  return useAirtableData(() => airtableService.fetchEducatorsXSchools());
+};
+
+// Hook for fetching school-specific data
+export const useSchoolData = (schoolId) => {
+  const [schoolData, setSchoolData] = useState({
+    notes: [],
+    grants: [],
+    loans: [],
+    actionSteps: [],
+    locations: [],
+    membershipFees: [],
+    guideAssignments: [],
+    governanceDocs: [],
+    nineNineties: [],
+    familySurveys: [],
+    assessmentData: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchSchoolData = useCallback(async () => {
+    if (!schoolId) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const [
+        notes,
+        grants,
+        loans,
+        actionSteps,
+        locations,
+        membershipFees,
+        guideAssignments,
+        governanceDocs,
+        nineNineties,
+        familySurveys,
+        assessmentData
+      ] = await Promise.all([
+        airtableService.fetchSchoolNotes(schoolId),
+        airtableService.fetchSchoolGrants(schoolId),
+        airtableService.fetchSchoolLoans(schoolId),
+        airtableService.fetchSchoolActionSteps(schoolId),
+        airtableService.fetchSchoolLocations(schoolId),
+        airtableService.fetchSchoolMembershipFees(schoolId),
+        airtableService.fetchSchoolGuideAssignments(schoolId),
+        airtableService.fetchSchoolGovernanceDocs(schoolId),
+        airtableService.fetchSchoolNineNineties(schoolId),
+        airtableService.fetchSchoolFamilySurveys(schoolId),
+        airtableService.fetchSchoolAssessmentData(schoolId)
+      ]);
+
+      setSchoolData({
+        notes,
+        grants,
+        loans,
+        actionSteps,
+        locations,
+        membershipFees,
+        guideAssignments,
+        governanceDocs,
+        nineNineties,
+        familySurveys,
+        assessmentData
+      });
+    } catch (err) {
+      setError(err);
+      console.error('Error fetching school data:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [schoolId]);
+
+  useEffect(() => {
+    fetchSchoolData();
+  }, [fetchSchoolData]);
+
+  const refetch = useCallback(() => {
+    fetchSchoolData();
+  }, [fetchSchoolData]);
+
+  return { schoolData, loading, error, refetch };
+};
+
+// Hook for fetching educator-specific data
+export const useEducatorData = (educatorId) => {
+  const [educatorData, setEducatorData] = useState({
+    notes: [],
+    ssjForms: [],
+    eventAttendance: [],
+    montessoriCerts: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchEducatorData = useCallback(async () => {
+    if (!educatorId) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const [
+        notes,
+        ssjForms,
+        eventAttendance,
+        montessoriCerts
+      ] = await Promise.all([
+        airtableService.fetchEducatorNotes(educatorId),
+        airtableService.fetchEducatorSSJForms(educatorId),
+        airtableService.fetchEducatorEventAttendance(educatorId),
+        airtableService.fetchEducatorMontessoriCerts(educatorId)
+      ]);
+
+      setEducatorData({
+        notes,
+        ssjForms,
+        eventAttendance,
+        montessoriCerts
+      });
+    } catch (err) {
+      setError(err);
+      console.error('Error fetching educator data:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [educatorId]);
+
+  useEffect(() => {
+    fetchEducatorData();
+  }, [fetchEducatorData]);
+
+  const refetch = useCallback(() => {
+    fetchEducatorData();
+  }, [fetchEducatorData]);
+
+  return { educatorData, loading, error, refetch };
+};
+
+// Hook for creating/updating records
+export const useAirtableMutations = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const createRecord = useCallback(async (tableName, fields) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await airtableService.createRecord(tableName, fields);
+      return result;
+    } catch (err) {
+      setError(err);
+      console.error('Error creating record:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateRecord = useCallback(async (tableName, recordId, fields) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await airtableService.updateRecord(tableName, recordId, fields);
+      return result;
+    } catch (err) {
+      setError(err);
+      console.error('Error updating record:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const deleteRecord = useCallback(async (tableName, recordId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await airtableService.deleteRecord(tableName, recordId);
+      return result;
+    } catch (err) {
+      setError(err);
+      console.error('Error deleting record:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return {
+    createRecord,
+    updateRecord,
+    deleteRecord,
+    loading,
+    error
+  };
+};
+
+// Hook for managing search and filtering
+export const useDataFiltering = (data, searchTerm) => {
+  const [filteredData, setFilteredData] = useState(data);
+
+  useEffect(() => {
+    if (!searchTerm || !data) {
+      setFilteredData(data);
+      return;
+    }
+
+    const filtered = data.filter(item => {
+      const searchableFields = Object.values(item).join(' ').toLowerCase();
+      return searchableFields.includes(searchTerm.toLowerCase());
+    });
+
+    setFilteredData(filtered);
+  }, [data, searchTerm]);
+
+  return filteredData;
+};
+
+// Hook for fetching school locations
+export const useSchoolLocations = (schoolId) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchLocations = useCallback(async () => {
+    if (!schoolId) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      const locations = await airtableService.fetchSchoolLocations(schoolId);
+      setData(locations || []);
+    } catch (err) {
+      setError(err);
+      console.error('Error fetching locations:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [schoolId]);
+
+  useEffect(() => {
+    fetchLocations();
+  }, [fetchLocations]);
+
+  return { data, loading, error, refetch: fetchLocations };
+};
+
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USEEDUCATORFILTERS.JSX CODE IS BELOW
+﻿import { useState } from 'react';
+
+export const useEducatorFilters = () => {
+    const [includeInactiveEducators, setIncludeInactiveEducators] = useState(false);
+    return { includeInactiveEducators, setIncludeInactiveEducators };
+};
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USEFILTERS.JSX CODE IS BELOW
+import { useState, useCallback, useMemo } from 'react';
+
+export const useFilters = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
+    const [columnFilters, setColumnFilters] = useState({});
+
+    const handleColumnFilterChange = useCallback((columnKey, value) => {
+        setColumnFilters(prev => ({
+            ...prev,
+            [columnKey]: value
+        }));
+    }, []);
+
+    const clearAllFilters = useCallback(() => {
+        setColumnFilters({});
+        setSearchTerm('');
+    }, []);
+
+    const hasActiveFilters = useMemo(() => {
+        return searchTerm.trim() || Object.keys(columnFilters).some(key => {
+            const filter = columnFilters[key];
+            if (Array.isArray(filter)) return filter.length > 0;
+            return filter && filter.trim();
+        });
+    }, [searchTerm, columnFilters]);
+
+    return {
+        searchTerm,
+        setSearchTerm,
+        showFilters,
+        setShowFilters,
+        columnFilters,
+        setColumnFilters,
+        handleColumnFilterChange,
+        clearAllFilters,
+        hasActiveFilters
+    };
+};
+
+
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USENAVIGATION.JSX CODE IS BELOW
+import { useState, useCallback } from 'react';
+
+export const useNavigation = () => {
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const navigateToItem = useCallback((type, data) => {
+    console.log('Navigating to:', type, data.name || data.firstName);
+    setSelectedItem({ type, data });
+  }, []);
+
+  const navigateBack = useCallback(() => {
+    setSelectedItem(null);
+  }, []);
+
+  const navigateToEducator = useCallback((educatorId, allEducators) => {
+    const educator = allEducators.find(ed => ed.id === educatorId);
+    if (educator) {
+      setSelectedItem({ type: 'educators', data: educator });
+    }
+  }, []);
+
+  return { 
+    selectedItem, 
+    navigateToItem, 
+    navigateBack, 
+    navigateToEducator 
+  };
+};
+
+
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USESCHOOLFILTERS.JSX CODE IS BELOW
+import { useState, useMemo } from 'react';
+
+export const useSchoolFilters = (schools) => {
+    const [includeInactiveSchools, setIncludeInactiveSchools] = useState(false);
+
+    const filteredSchools = useMemo(() => {
+        console.log('?? Filtering schools:', {
+            totalSchools: schools?.length,
+            includeInactive: includeInactiveSchools,
+            sampleSchoolsData: schools?.slice(0, 3)
+        });
+
+        if (!schools || !Array.isArray(schools)) {
+            console.log('? No schools data or not array');
+            return [];
+        }
+
+        if (includeInactiveSchools) {
+            console.log('? Including all schools:', schools.length);
+            return schools;
+        }
+
+        // Filter to only show active schools (Open and Emerging)
+        const activeSchools = schools.filter(school => {
+            const status = school.status;
+            const isActive = status === 'Open' || status === 'Emerging';
+
+            if (!isActive) {
+                console.log('?? Filtering out school:', school.name, 'with status:', status);
+            }
+
+            return isActive;
+        });
+
+        console.log('? Active schools filtered:', activeSchools.length, 'out of', schools.length);
+        return activeSchools;
+    }, [schools, includeInactiveSchools]);
+
+    return {
+        includeInactiveSchools,
+        setIncludeInactiveSchools,
+        filteredSchools
+    };
+};
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USETABCOUNTS.JSX CODE IS BELOW
+import { useMemo } from 'react';
+
+export const useTabCounts = (schoolsData, schoolsLoading, educatorsData, chartersData, includeInactiveSchools) => {
+    return useMemo(() => {
+        const schoolCount = schoolsLoading ? '...' : `${schoolsData?.length || 0}${includeInactiveSchools ? '' : ' active'}`;
+
+        return [
+            {
+                id: 'schools',
+                label: 'Schools',
+                count: schoolCount
+            },
+            {
+                id: 'educators',
+                label: 'Educators',
+                count: educatorsData?.length || 0
+            },
+            {
+                id: 'charters',
+                label: 'Charters',
+                count: chartersData?.length || 0
+            }
+        ];
+    }, [schoolsData?.length, schoolsLoading, educatorsData?.length, chartersData?.length, includeInactiveSchools]);
+};
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USETABLECOLUMNS.JSX CODE IS BELOW
+import { useMemo } from 'react';
+import StatusBadge from '../components/shared/StatusBadge';
+import { TABS } from '../utils/constants';
+
+export const useTableColumns = (dataType) => {
+    return useMemo(() => {
+        switch (dataType) {
+            case 'educators':
+                return [
+                    {
+                        key: 'fullName',
+                        label: 'Name',
+                        render: (value, item) => `${item.fullName}`
+                    },
+                    {
+                        key: 'currentSchool',
+                        label: 'Current School',
+                        render: (value) => value || '-'
+                    },
+                    {
+                        key: 'role',
+                        label: 'Role(s)',
+                        render: (value) => value || '-'
+                    },
+                    {
+                        key: 'email',
+                        label: 'Email',
+                        render: (value) => value || '-'
+                    },
+                    {
+                        key: 'raceEthnicity',
+                        label: 'Race & Ethnicity',
+                        render: (value) => Array.isArray(value) ? value.join(', ') : value || '-'
+                    },
+                    {
+                        key: 'discoveryStatus',
+                        label: 'Discovery Status',
+                        render: (value) => value ? <StatusBadge status={value} /> : '-'
+                    },
+                    {
+                        key: 'individualType',
+                        label: 'Type',
+                        render: (value) => value || '-'
+                    }
+                ];
+
+            case 'schools':
+                return [
+                    { key: 'shortName', label: 'Short Name' },
+                    { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
+                    { key: 'governanceModel', label: 'Governance' },
+                    { key: 'agesServed', label: 'Ages Served', render: (value) => Array.isArray(value) ? value.join(', ') : value },
+                    {
+                        key: 'location',
+                        label: 'Location',
+                        render: (value, item) => {
+                            if (item.activeLocationCity && item.activeLocationState) {
+                                return `${item.activeLocationCity}, ${item.activeLocationState}`;
+                            }
+                            if (item.targetCity && item.targetState) {
+                                return `${item.targetCity}, ${item.targetState}`;
+                            }
+                            if (item.targetCity) {
+                                return item.targetCity;
+                            }
+                            return '-';
+                        }
+                    },
+                    { key: 'membershipStatus', label: 'Membership', render: (value) => <StatusBadge status={value} /> }
+                ];
+
+            case 'charters':
+                return [
+                    { key: 'name', label: 'Name' },
+                    { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
+                    { key: 'initialTargetCommunity', label: 'Target Community' }
+                ];
+
+            default:
+                return [];
+        }
+    }, [dataType]);
+};
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USEUNIFIEDDATA.JSX CODE IS BELOW
+
+import { useMemo } from 'react';
+import { useSchools, useEducators } from './useAirtableData';
+import { transformSchoolsData } from '../utils/dataTransformers';
+import { 
+  sampleSchools, 
+  sampleEducators, 
+  sampleCharters,
+  sampleEducatorsXSchools,
+  sampleLocations,
+  sampleSSJFilloutForms,
+  sampleEventAttendance,
+  sampleMontessoriCerts,
+  sampleEducatorNotes,
+  sampleSchoolNotes,
+  sampleActionSteps,
+  sampleMembershipFeeRecords,
+  sampleMembershipFeeUpdates,
+  sampleGovernanceDocs,
+  sampleGuideAssignments,
+  sampleGrants,
+  sampleLoans
+} from '../data/sampleData';
+import { TABS } from '../utils/constants';
+
+const useUnifiedData = (dataType, options = {}) => {
+    switch (dataType) {
+        case TABS.SCHOOLS:
+            return useUnifiedSchools(options);
+        case TABS.EDUCATORS:
+            return useUnifiedEducators(options);
+        case TABS.CHARTERS:
+            return useUnifiedCharters(options);
+        default:
+            return { data: [], loading: false, error: null, isUsingFallback: true };
+    }
+};
+
+const useUnifiedSchools = (options = {}) => {
+    const { includeInactive = false } = options;
+
+    // Get real data from Airtable
+    const schoolsHookResult = useSchools(includeInactive);
+
+    // Debug logging
+    console.log('🔍 Schools Hook Result:', schoolsHookResult);
+
+    // Extract data more carefully
+    const rawSchoolsData = schoolsHookResult?.data || schoolsHookResult || [];
+    const loading = schoolsHookResult?.loading || false;
+    const error = schoolsHookResult?.error || null;
+
+    const transformedData = useMemo(() => {
+        console.log('🔄 Processing schools data:', {
+            rawDataLength: rawSchoolsData?.length,
+            isArray: Array.isArray(rawSchoolsData),
+            loading,
+            error,
+            firstItem: rawSchoolsData?.[0]
+        });
+
+        // Only use real data if we have it and it's not loading
+        if (!loading && !error && Array.isArray(rawSchoolsData) && rawSchoolsData.length > 0) {
+            console.log('✅ Using REAL schools data:', rawSchoolsData.length, 'schools');
+
+            // Transform the data
+            const transformed = transformSchoolsData(rawSchoolsData);
+            console.log('🔄 Transformed data:', transformed.length, 'schools');
+
+            return transformed;
+        }
+
+        console.log('⚠️ Using sample data - Real data not available');
+        console.log('  Reasons: loading =', loading, ', error =', error, ', dataLength =', rawSchoolsData?.length);
+
+        // Return empty array instead of sample data to avoid confusion
+        return [];
+    }, [rawSchoolsData, loading, error]);
+
+  return {
+    data: transformedData,
+    loading,
+    error,
+    isUsingFallback: loading || error || !Array.isArray(rawSchoolsData) || rawSchoolsData.length === 0
+  };
+};
+
+const useUnifiedEducators = (options = {}) => {
+    const { includeInactive = false } = options;
+    const educatorsHookResult = useEducators(includeInactive);
+
+    // Extract data safely
+    const rawEducatorsData = educatorsHookResult?.data || [];
+    const loading = educatorsHookResult?.loading || false;
+    const error = educatorsHookResult?.error || null;
+
+    const data = useMemo(() => {
+        console.log('🔍 Processing educators data:', {
+            rawDataLength: rawEducatorsData?.length,
+            loading,
+            error,
+            firstItem: rawEducatorsData?.[0]
+        });
+
+        if (!loading && !error && Array.isArray(rawEducatorsData) && rawEducatorsData.length > 0) {
+            console.log('✅ Using real educators data:', rawEducatorsData.length, 'educators');
+            return rawEducatorsData;
+        }
+
+        console.log('⚠️ Using empty educators array - Real data not available');
+        return [];
+    }, [rawEducatorsData, loading, error]);
+
+    return {
+        data,
+        loading,
+        error,
+        isUsingFallback: data.length === 0 && !loading
+    };
+};
+
+const useUnifiedCharters = () => {
+  // For now, charters are always sample data since there's no real hook
+  return {
+    data: sampleCharters,
+    loading: false,
+    error: null,
+    isUsingFallback: true
+  };
+};
+
+// Related data hooks that always use sample data for now
+export const useEducatorsXSchools = () => {
+  return {
+    data: sampleEducatorsXSchools,
+    loading: false,
+    error: null
+  };
+};
+
+export const useSchoolLocations = (schoolId) => {
+  const filteredLocations = sampleLocations.filter(loc => loc.schoolId === schoolId);
+  return {
+    data: filteredLocations,
+    loading: false,
+    error: null
+  };
+};
+
+export const useSSJForms = (educatorId) => {
+  const filteredForms = sampleSSJFilloutForms.filter(form => form.educatorId === educatorId);
+  return {
+    data: filteredForms,
+    loading: false,
+    error: null
+  };
+};
+
+export const useEventAttendance = (educatorId) => {
+  const filteredEvents = sampleEventAttendance.filter(event => event.educatorId === educatorId);
+  return {
+    data: filteredEvents,
+    loading: false,
+    error: null
+  };
+};
+
+export const useMontessoriCerts = (educatorId) => {
+  const filteredCerts = sampleMontessoriCerts.filter(cert => cert.educatorId === educatorId);
+  return {
+    data: filteredCerts,
+    loading: false,
+    error: null
+  };
+};
+
+export const useEducatorNotes = (educatorId) => {
+  const filteredNotes = sampleEducatorNotes.filter(note => note.educatorId === educatorId);
+  return {
+    data: filteredNotes,
+    loading: false,
+    error: null
+  };
+};
+
+export const useSchoolNotes = (schoolId) => {
+  const filteredNotes = sampleSchoolNotes.filter(note => note.schoolId === schoolId);
+  return {
+    data: filteredNotes,
+    loading: false,
+    error: null
+  };
+};
+
+export const useActionSteps = (schoolId) => {
+  const filteredActions = sampleActionSteps.filter(action => action.schoolId === schoolId);
+  return {
+    data: filteredActions,
+    loading: false,
+    error: null
+  };
+};
+
+export const useMembershipFeeRecords = (schoolId) => {
+  const filteredRecords = sampleMembershipFeeRecords.filter(record => record.schoolId === schoolId);
+  return {
+    data: filteredRecords,
+    loading: false,
+    error: null
+  };
+};
+
+export const useMembershipFeeUpdates = (schoolId, schoolYear = null) => {
+  let filteredUpdates = sampleMembershipFeeUpdates.filter(update => update.schoolId === schoolId);
+  
+  if (schoolYear) {
+    filteredUpdates = filteredUpdates.filter(update => update.schoolYear === schoolYear);
+  }
+  
+  return {
+    data: filteredUpdates,
+    loading: false,
+    error: null
+  };
+};
+
+export const useGovernanceDocs = (schoolId) => {
+  const filteredDocs = sampleGovernanceDocs.filter(doc => doc.schoolId === schoolId);
+  return {
+    data: filteredDocs,
+    loading: false,
+    error: null
+  };
+};
+
+export const useGuideAssignments = (schoolId) => {
+  const filteredAssignments = sampleGuideAssignments.filter(assignment => assignment.schoolId === schoolId);
+  return {
+    data: filteredAssignments,
+    loading: false,
+    error: null
+  };
+};
+
+export const useGrants = (schoolId) => {
+  const filteredGrants = sampleGrants.filter(grant => grant.schoolId === schoolId);
+  return {
+    data: filteredGrants,
+    loading: false,
+    error: null
+  };
+};
+
+export const useLoans = (schoolId) => {
+  const filteredLoans = sampleLoans.filter(loan => loan.schoolId === schoolId);
+  return {
+    data: filteredLoans,
+    loading: false,
+    error: null
+  };
+};
+
+export default useUnifiedData;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\INDEX.CSS CODE IS BELOW
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Wildflower Schools Database - Manage schools, educators, and network data"
+    />
+    <title>Wildflower Schools Database</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\LOCATIONEDITMODAL.JSX CODE IS BELOW
+const LocationEditModal = ({ isOpen, onClose, onSubmit, location, isCreating = false }) => {
+  const [formData, setFormData] = useState({
+    address: '',
+    startDate: '',
+    endDate: '',
+    locationType: '',
+    currentMailingAddress: false,
+    currentPhysicalAddress: false,
+    currentlyActive: true,
+    squareFeet: '',
+    maxStudentsLicensedFor: '',
+    neighborhood: '',
+    coLocationType: '',
+    coLocationPartner: '',
+    leaseEndDate: '',
+    lease: '',
+    timeZone: ''
+  });
+
+  const locationTypeOptions = [
+    'School address and mailing address',
+    'School address only',
+    'Mailing address only',
+    'Former school address',
+    'Former mailing address',
+    'Temporary location'
+  ];
+
+  const coLocationTypeOptions = [
+    'None',
+    'Shared facility',
+    'Sublease',
+    'Partnership',
+    'Community center',
+    'Other'
+  ];
+
+  const timeZoneOptions = [
+    'Eastern Time (ET)',
+    'Central Time (CT)',
+    'Mountain Time (MT)',
+    'Pacific Time (PT)',
+    'Alaska Time (AKT)',
+    'Hawaii-Aleutian Time (HAT)'
+  ];
+
+  useEffect(() => {
+    if (location && isOpen && !isCreating) {
+      setFormData({
+        address: location.address || '',
+        startDate: location.startDate || '',
+        endDate: location.endDate || '',
+        locationType: location.locationType || '',
+        currentMailingAddress: location.currentMailingAddress || false,
+        currentPhysicalAddress: location.currentPhysicalAddress || false,
+        currentlyActive: location.currentlyActive || true,
+        squareFeet: location.squareFeet || '',
+        maxStudentsLicensedFor: location.maxStudentsLicensedFor || '',
+        neighborhood: location.neighborhood || '',
+        coLocationType: location.coLocationType || '',
+        coLocationPartner: location.coLocationPartner || '',
+        leaseEndDate: location.leaseEndDate || '',
+        lease: location.lease || '',
+        timeZone: location.timeZone || ''
+      });
+    } else if (isCreating) {
+      // Reset form for creating new location
+      setFormData({
+        address: '',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: '',
+        locationType: '',
+        currentMailingAddress: false,
+        currentPhysicalAddress: false,
+        currentlyActive: true,
+        squareFeet: '',
+        maxStudentsLicensedFor: '',
+        neighborhood: '',
+        coLocationType: '',
+        coLocationPartner: '',
+        leaseEndDate: '',
+        lease: '',
+        timeZone: ''
+      });
+    }
+  }, [location, isOpen, isCreating]);
+
+const AddGuideAssignmentModal = ({ isOpen, onClose, onSubmit, schoolId, allGuides }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGuide, setSelectedGuide] = useState(null);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState('');
+  const [currentlyActive, setCurrentlyActive] = useState(true);
+  const [role, setRole] = useState('');
+
+  const roleOptions = [
+    'Ops Guide',
+    'Regional Entrepreneur',
+    'Startup Guide',
+    'Partnership Lead',
+    'Mentor'
+  ];
+
+  const filteredGuides = useMemo(() => {
+    return (allGuides || []).filter(guide =>
+      `${guide.firstName} ${guide.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guide.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allGuides, searchTerm]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!selectedGuide || !role) return;
+
+    const newAssignment = {
+      guideId: selectedGuide.id,
+      schoolId: schoolId,
+      startDate: startDate,
+      endDate: endDate || null,
+      currentlyActive: currentlyActive,
+      role: role,
+      guideName: `${selectedGuide.firstName} ${selectedGuide.lastName}`
+    };
+
+    onSubmit(newAssignment);
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setSearchTerm('');
+    setSelectedGuide(null);
+    setStartDate(new Date().toISOString().split('T')[0]);
+    setEndDate('');
+    setCurrentlyActive(true);
+    setRole('');
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Add Guide Assignment</h3>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Select Guide
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search guides..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            {searchTerm && (
+              <div className="mt-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg">
+                {filteredGuides.map(guide => (
+                  <button
+                    key={guide.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedGuide(guide);
+                      setSearchTerm(`${guide.firstName} ${guide.lastName}`);
+                    }}
+                    className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${
+                      selectedGuide?.id === guide.id ? 'bg-blue-50' : ''
+                    }`}
+                  >
+                    <div className="font-medium">{guide.firstName} {guide.lastName}</div>
+                    <div className="text-sm text-gray-500">{guide.email}</div>
+                  </button>
+                ))}
+                {filteredGuides.length === 0 && (
+                  <div className="px-3 py-2 text-gray-500">No guides found</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Role *
+            </label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+              <option value="">Select role...</option>
+              {roleOptions.map(roleOption => (
+                <option key={roleOption} value={roleOption}>{roleOption}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={currentlyActive}
+                onChange={(e) => setCurrentlyActive(e.target.checked)}
+                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700">Currently Active</span>
+            </label>
+          </div>
+
+          <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!selectedGuide || !role}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Add Assignment
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const CreateGuideModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    organization: '',
+    expertise: ''
+  });
+
+  const [assignment, setAssignment] = useState({
+    role: '',
+    startDate: new Date().toISOString().split('T')[0],
+    currentlyActive: true
+  });
+
+  const roleOptions = [
+    'Ops Guide',
+    'Regional Entrepreneur', 
+    'Startup Guide',
+    'Partnership Lead',
+    'Mentor'
+  ];
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleAssignmentChange = (field, value) => {
+    setAssignment(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.firstName || !formData.lastName || !formData.email || !assignment.role) {
+      return;
+    }
+
+    const newGuideId = `guide_${Date.now()}`;
+    
+    const newGuide = {
+      id: newGuideId,
+      ...formData
+    };
+
+    const guideAssignment = {
+      guideId: newGuideId,
+      schoolId: schoolId,
+      startDate: assignment.startDate,
+      endDate: null,
+      currentlyActive: assignment.currentlyActive,
+      role: assignment.role,
+      guideName: `${formData.firstName} ${formData.lastName}`
+    };
+
+    onSubmit({ guide: newGuide, assignment: guideAssignment });
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      organization: '',
+      expertise: ''
+    });
+    setAssignment({
+      role: '',
+      startDate: new Date().toISOString().split('T')[0],
+      currentlyActive: true
+    });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Create New Guide</h3>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">Guide Information</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  First Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Organization
+                </label>
+                <input
+                  type="text"
+                  value={formData.organization}
+                  onChange={(e) => handleInputChange('organization', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Expertise
+                </label>
+                <input
+                  type="text"
+                  value={formData.expertise}
+                  onChange={(e) => handleInputChange('expertise', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., Finance, Operations, Legal"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="text-md font-medium text-gray-900 mb-3">Assignment to School</h4>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Role *
+                </label>
+                <select
+                  value={assignment.role}
+                  onChange={(e) => handleAssignmentChange('role', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">Select role...</option>
+                  {roleOptions.map(role => (
+                    <option key={role} value={role}>{role}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={assignment.startDate}
+                  onChange={(e) => handleAssignmentChange('startDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="mt-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={assignment.currentlyActive}
+                  onChange={(e) => handleAssignmentChange('currentlyActive', e.target.checked)}
+                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Currently Active</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex space-x-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!formData.firstName || !formData.lastName || !formData.email || !assignment.role}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Create Guide & Add Assignment
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.address || !formData.startDate || !formData.locationType) {
+      return;
+    }
+
+    const locationData = isCreating ? formData : {
+      ...location,
+      ...formData
+    };
+
+    onSubmit(locationData);
+    onClose();
+  };
+
+  const handleClose = () => {
+    setFormData({
+      address: '',
+      startDate: '',
+      endDate: '',
+      locationType: '',
+      currentMailingAddress: false,
+      currentPhysicalAddress: false,
+      currentlyActive: true,
+      squareFeet: '',
+      maxStudentsLicensedFor: '',
+      neighborhood: '',
+      coLocationType: '',
+      coLocationPartner: '',
+      leaseEndDate: '',
+      lease: '',
+      timeZone: ''
+    });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">
+            {isCreating ? 'Add New Location' : 'Edit Location'}
+          </h3>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Information */}
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">Basic Information</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Address *
+                </label>
+                <textarea
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows="3"
+                  placeholder="Enter full address..."
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Neighborhood
+                </label>
+                <input
+                  type="text"
+                  value={formData.neighborhood}
+                  onChange={(e) => handleInputChange('neighborhood', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Time Zone
+                </label>
+                <select
+                  value={formData.timeZone}
+                  onChange={(e) => handleInputChange('timeZone', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select time zone...</option>
+                  {timeZoneOptions.map(tz => (
+                    <option key={tz} value={tz}>{tz}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Square Feet
+                </label>
+                <input
+                  type="number"
+                  value={formData.squareFeet}
+                  onChange={(e) => handleInputChange('squareFeet', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max Students Licensed For
+                </label>
+                <input
+                  type="number"
+                  value={formData.maxStudentsLicensedFor}
+                  onChange={(e) => handleInputChange('maxStudentsLicensedFor', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Location Details */}
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">Location Details</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Location Type *
+                </label>
+                <select
+                  value={formData.locationType}
+                  onChange={(e) => handleInputChange('locationType', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">Select location type...</option>
+                  {locationTypeOptions.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Co-Location Type
+                </label>
+                <select
+                  value={formData.coLocationType}
+                  onChange={(e) => handleInputChange('coLocationType', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select co-location type...</option>
+                  {coLocationTypeOptions.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Co-Location Partner
+                </label>
+                <input
+                  type="text"
+                  value={formData.coLocationPartner}
+                  onChange={(e) => handleInputChange('coLocationPartner', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Lease
+                </label>
+                <input
+                  type="text"
+                  value={formData.lease}
+                  onChange={(e) => handleInputChange('lease', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Lease details..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Dates */}
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">Dates</h4>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start of time at location *
+                </label>
+                <input
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => handleInputChange('startDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End of time at location
+                </label>
+                <input
+                  type="date"
+                  value={formData.endDate}
+                  onChange={(e) => handleInputChange('endDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Lease End Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.leaseEndDate}
+                  onChange={(e) => handleInputChange('leaseEndDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Status */}
+          <div>
+            <h4 className="text-md font-medium text-gray-900 mb-3">Status</h4>
+            <div className="space-y-2">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.currentlyActive}
+                  onChange={(e) => handleInputChange('currentlyActive', e.target.checked)}
+                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Currently Active</span>
+              </label>
+              
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.currentMailingAddress}
+                  onChange={(e) => handleInputChange('currentMailingAddress', e.target.checked)}
+                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Current Mailing Address</span>
+              </label>
+              
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.currentPhysicalAddress}
+                  onChange={(e) => handleInputChange('currentPhysicalAddress', e.target.checked)}
+                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Current Physical Address</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex space-x-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!formData.address || !formData.startDate || !formData.locationType}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              {isCreating ? 'Add Location' : 'Update Location'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default LocationEditModal;
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\MAIN.JSX CODE IS BELOW
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './App.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\UTILS\CONSTANTS.JSX CODE IS BELOW
+// src/utils/constants.jsx
+
+export const TABS = {
+  SCHOOLS: 'schools',
+  EDUCATORS: 'educators',
+  CHARTERS: 'charters'
+};
+
+export const SCHOOL_TABS = {
+  SUMMARY: 'summary',
+  TLS: 'tls',
+  LOCATIONS: 'locations',
+  GOVERNANCE: 'governance',
+  GUIDES: 'guides',
+  SSJ_OSS: 'ssj-oss',
+  MEMBERSHIP_FEES: 'membership-fees',
+  GRANTS_LOANS: 'grants-loans',
+  LINKED_MTGS: 'linked-mtgs',
+  NOTES_ACTIONS: 'notes-actions'
+};
+
+export const EDUCATOR_TABS = {
+  SUMMARY: 'summary',
+  SCHOOLS: 'schools',
+  DEMOGRAPHICS: 'demographics',
+  CONTACT_INFO: 'contact-info',
+  ONLINE_FORMS: 'online-forms',
+  EARLY_CULTIVATION: 'early-cultivation',
+  EVENTS: 'events',
+  GUIDES: 'guides',
+  CERTS: 'certs',
+  NOTES: 'notes',
+  LINKED_EMAILS: 'linked-emails'
+};
+
+export const SCHOOL_STATUSES = {
+  OPEN: 'Open',
+  EMERGING: 'Emerging',
+  PERMANENTLY_CLOSED: 'Permanently Closed',
+  DISAFFILIATED: 'Disaffiliated',
+  DISAFFILIATING: 'Disaffiliating'
+};
+
+export const MEMBERSHIP_STATUSES = {
+  MEMBER_SCHOOL: 'Member School',
+  PENDING: 'Pending',
+  FORMER_MEMBER: 'Former Member'
+};
+
+export const GOVERNANCE_MODELS = {
+  INDEPENDENT: 'Independent',
+  CHARTER: 'Charter',
+  DISTRICT: 'District'
+};
+
+export const DISCOVERY_STATUSES = {
+  COMPLETE: 'Complete',
+  IN_PROGRESS: 'In Progress',
+  NOT_STARTED: 'Not Started'
+};
+
+export const NONPROFIT_STATUSES = {
+  FIVE_OH_ONE_C_THREE: '501(c)(3)',
+  GROUP_EXEMPTION: 'group exemption',
+  PENDING: 'pending',
+  FOR_PROFIT: 'for-profit'
+};
+
+export const GROUP_EXEMPTION_STATUSES = {
+  ACTIVE: 'Active',
+  PENDING: 'Pending',
+  WITHDRAWN: 'Withdrawn',
+  NOT_APPLICABLE: 'Not Applicable'
+};
+
+export const BUTTON_STYLES = {
+  PRIMARY: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm",
+  SECONDARY: "bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center text-sm",
+  SUCCESS: "bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm",
+  DANGER: "bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center text-sm",
+  WARNING: "bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 flex items-center text-sm"
+};
+
+export const TABLE_COLUMNS = {
+  SCHOOLS: [
+    { key: 'shortName', label: 'Short Name' },
+    { key: 'status', label: 'Status' },
+    { key: 'governanceModel', label: 'Governance' },
+    { key: 'agesServed', label: 'Ages Served' },
+    { key: 'location', label: 'Location' },
+    { key: 'membershipStatus', label: 'Membership' }
+  ],
+  EDUCATORS: [
+    { key: 'fullName', label: 'Full Name' },
+    { key: 'currentSchool', label: 'Current School' },
+    { key: 'role', label: 'Role' },
+    { key: 'email', label: 'Email' },
+    { key: 'raceEthnicity', label: 'Race & Ethnicity' },
+    { key: 'discoveryStatus', label: 'Discovery Status' }
+  ],
+  CHARTERS: [
+    { key: 'name', label: 'Charter Name' },
+    { key: 'status', label: 'Status' },
+    { key: 'initialTargetCommunity', label: 'Target Community' }
+  ]
+};
+
+export const MULTI_SELECT_COLUMNS = {
+  status: true,
+  agesServed: true,
+  governanceModel: true,
+  membershipStatus: true,
+  raceEthnicity: true
+};
+
+export const FIELD_TYPES = {
+  TEXT: 'text',
+  EMAIL: 'email',
+  TEL: 'tel',
+  URL: 'url',
+  DATE: 'date',
+  NUMBER: 'number',
+  BOOLEAN: 'boolean',
+  SELECT: 'select',
+  ARRAY: 'array'
+};
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\UTILS\DATATRANSFORMERS.JS CODE IS BELOW
+// Transform Airtable school record to match your React app format
+export const transformSchoolData = (airtableRecord, relatedData = {}) => {
+  if (!airtableRecord) return null;
+
+  // Debug location fields
+  console.log('🔍 Location field debug for:', airtableRecord['Name']);
+  console.log('  Current Physical Address - City:', airtableRecord['Current Physical Address - City']);
+  console.log('  Current Physical Address - State:', airtableRecord['Current Physical Address - State']);
+  console.log('  SSJ - Target City:', airtableRecord['SSJ - Target City']);
+  console.log('  SSJ - Target State:', airtableRecord['SSJ - Target State']);
+
+  return {
+    id: airtableRecord.id,
+    name: airtableRecord['Name'] || '',
+    shortName: airtableRecord['Short Name'] || airtableRecord['Name'] || '',
+    status: airtableRecord['School Status'] || '',
+    governanceModel: airtableRecord['Governance Model'] || '',
+    agesServed: airtableRecord['Ages served'] || [],
+
+    location: airtableRecord['Current Physical Address'] ? 
+      (Array.isArray(airtableRecord['Current Physical Address']) ? 
+        airtableRecord['Current Physical Address'][0] : 
+        airtableRecord['Current Physical Address']) : '',
+
+    // Location fields with debugging
+    activeLocationCity: airtableRecord['Current Physical Address - City'] ? 
+      (Array.isArray(airtableRecord['Current Physical Address - City']) ? 
+        airtableRecord['Current Physical Address - City'][0] : 
+        airtableRecord['Current Physical Address - City']) : null,
+    activeLocationState: airtableRecord['Current Physical Address - State'] ? 
+      (Array.isArray(airtableRecord['Current Physical Address - State']) ? 
+        airtableRecord['Current Physical Address - State'][0] : 
+        airtableRecord['Current Physical Address - State']) : null,
+    targetCity: airtableRecord['SSJ - Target City'] || null,
+    targetState: airtableRecord['SSJ - Target State'] || null,
+
+    membershipStatus: airtableRecord['Membership Status'] || '',
+    founders: airtableRecord['Founders'] || [],
+    phone: airtableRecord['School Phone'] || null,
+    website: airtableRecord['Website'] || '',
+    emailDomain: airtableRecord['Email Domain'] || '',
+    pod: airtableRecord['Pod'] || '',
+    ein: airtableRecord['EIN'] || '',
+    legalName: airtableRecord['Legal Name'] || '',
+    incorporationDate: airtableRecord['Incorporation Date'] || '',
+    nonprofitStatus: airtableRecord['Nonprofit status'] || '',
+    groupExemptionStatus: airtableRecord['Group exemption status'] || '',
+    dateReceivedGroupExemption: airtableRecord['Date received group exemption'] || '',
+    currentFYEnd: airtableRecord['Current FY end'] || '',
+    nondiscriminationOnApplication: airtableRecord['Nondiscrimination Policy on Application'] || false,
+    nondiscriminationOnWebsite: airtableRecord['Nondiscrimination Policy on Website'] || false,
+    guidestarRequested: airtableRecord['GuideStar Listing Requested?'] || false,
+    flexibleTuitionModel: airtableRecord['Flexible Tuition Model'] || false,
+    activePodMember: airtableRecord['Active Pod Member'] || '',
+    membershipAgreementDate: airtableRecord['Membership Agreement date'] || '',
+    
+    // SSJ/OSS Data
+    ssjStage: airtableRecord['SSJ Stage'] || '',
+    ssjTargetCity: airtableRecord['SSJ - Target City'] || '',
+    ssjTargetState: airtableRecord['SSJ - Target State'] || '',
+    ssjOriginalProjectedOpenDate: airtableRecord['SSJ - Original Projected Open Date'] || '',
+    ssjProjOpenSchoolYear: airtableRecord['SSJ - Proj Open School Year'] || '',
+    ssjProjectedOpen: airtableRecord['SSJ - Projected Open'] || '',
+    riskFactors: airtableRecord['Risk Factors'] ? 
+      (Array.isArray(airtableRecord['Risk Factors']) ? 
+        airtableRecord['Risk Factors'].join(', ') : 
+        airtableRecord['Risk Factors']) : '-',
+    watchlist: airtableRecord['Watchlist'] ? 
+      (Array.isArray(airtableRecord['Watchlist']) ? 
+        airtableRecord['Watchlist'].join(', ') : 
+        airtableRecord['Watchlist']) : '-',
+    ssjBoardDevelopment: airtableRecord['SSJ - Board development'] || '',
+    ssjCohortStatus: airtableRecord['SSJ - Cohort Status'] || '-',
+    enteredVisioningDate: airtableRecord['Entered Visioning Date'] || '',
+    cohorts: airtableRecord['Cohorts'] ? 
+      (Array.isArray(airtableRecord['Cohorts']) ? 
+        airtableRecord['Cohorts'].join(', ') : 
+        airtableRecord['Cohorts']) : '-',
+    visioningAlbumComplete: airtableRecord['Visioning album complete'] || false,
+    ssjHasETLPartner: airtableRecord['SSJ - Has the ETL identified a partner?'] || '',
+    ssjOpsGuideTrack: airtableRecord['SSJ - Ops Guide Support Track'] ? 
+      (Array.isArray(airtableRecord['SSJ - Ops Guide Support Track']) ? 
+        airtableRecord['SSJ - Ops Guide Support Track'].join(', ') : 
+        airtableRecord['SSJ - Ops Guide Support Track']) : '',
+    enteredPlanningDate: airtableRecord['Entered Planning Date'] || '',
+    planningAlbum: airtableRecord['Planning album'] || '-',
+    ssjReadinessRating: airtableRecord['SSJ - Readiness to Open Rating'] || '',
+    ssjTool: airtableRecord['SSJ - SSJ Tool'] || '',
+    enteredStartupDate: airtableRecord['Entered Startup Date'] || '',
+    logoDesigner: airtableRecord['Logo designer'] || '',
+    trademarkFiled: airtableRecord['Trademark filed'] || '-',
+    nameSelectionProposal: airtableRecord['Name Selection Proposal'] || '-',
+    ssjNameReserved: airtableRecord['SSJ - Name Reserved'] || '',
+    ssjFacility: airtableRecord['SSJ - Facility'] || '',
+    building4GoodFirm: airtableRecord['Building4Good Firm & Attorney'] || '-',
+    ssjBuilding4GoodStatus: airtableRecord['SSJ - Building4Good Status'] || '-',
+    ssjDateSharedN4G: airtableRecord['SSJ - Date shared with N4G'] || '-',
+    ssjAmountRaised: airtableRecord['SSJ - Amount raised'] || '-',
+    ssjGapInFunding: airtableRecord['SSJ - Gap in Funding'] || '-',
+    ssjLoanApprovedAmt: airtableRecord['SSJ - Loan approved amt'] || '-',
+    ssjLoanEligibility: airtableRecord['SSJ - Loan eligibility'] || '-',
+    ssjTotalStartupFunding: airtableRecord['SSJ - Total Startup Funding Needed'] || '',
+    ssjViablePathway: airtableRecord['SSJ - Does the school have a viable pathway to funding?'] || '',
+    ssjFundraisingNarrative: airtableRecord['SSJ - Fundraising narrative'] || '',
+    ssjInternalFunding: airtableRecord['SSJ - Is the school planning to apply for internal Wildflower funding?'] || '',
+    ssjBudgetStage: airtableRecord['SSJ - Is the budget at a stage that will allow the ETL(s) to take their next steps?'] || '-',
+    ssjEnrollmentTrack: airtableRecord['SSJ - Is the team on track for their enrollment goals?'] || '-',
+    ssjNextDecision: airtableRecord['SSJ - What is the next big decision or action this school is working on?'] || '',
+    
+    // Systems
+    googleVoice: airtableRecord['Google Voice'] || '-',
+    budgetUtility: airtableRecord['Budget Utility'] || '-',
+    admissionsSystem: airtableRecord['Admissions System'] || '',
+    billComAccount: airtableRecord['Bill.com account'] || '-',
+    bookkeeper: airtableRecord['Bookkeeper / Accountant'] || '-',
+    businessInsurance: airtableRecord['Business Insurance'] || '-',
+    tcRecordkeeping: airtableRecord['TC Recordkeeping'] || '-',
+    tcAdmissions: airtableRecord['TC Admissions'] || '-',
+    qbo: airtableRecord['QBO'] || '',
+    tcSchoolId: airtableRecord['TC school ID'] || '-',
+    websiteTool: airtableRecord['Website tool'] || '',
+    
+    // Additional fields
+    currentTLs: airtableRecord['Current TLs'] || [],
+    schoolOpenDate: airtableRecord['Opened'] || null,
+    programFocus: airtableRecord['Program Focus'] ? 
+      (Array.isArray(airtableRecord['Program Focus']) ? 
+        airtableRecord['Program Focus'].join(', ') : 
+        airtableRecord['Program Focus']) : '',
+    maxCapacityEnrollments: airtableRecord['Enrollment at Full Capacity'] || null,
+    numberOfClassrooms: airtableRecord['Number of classrooms'] || null,
+    publicFunding: false, // This would need to be derived from related public funding records
+    schoolCalendar: airtableRecord['School calendar'] || '',
+    schoolSchedule: airtableRecord['School schedule'] ? 
+      (Array.isArray(airtableRecord['School schedule']) ? 
+        airtableRecord['School schedule'].join(', ') : 
+        airtableRecord['School schedule']) : '',
+    
+    // Membership fields
+    signedMembershipAgreementDate: airtableRecord['Membership Agreement date'] || '',
+    signedMembershipAgreement: airtableRecord['Signed Membership Agreement'] ? 
+      (Array.isArray(airtableRecord['Signed Membership Agreement']) && 
+       airtableRecord['Signed Membership Agreement'].length > 0 ? 
+        airtableRecord['Signed Membership Agreement'][0].url : '') : '',
+    agreementVersion: airtableRecord['Agreement Version '] || '',
+    
+    // Contact info
+    schoolEmail: airtableRecord['School Email'] || '',
+    facebook: airtableRecord['Facebook'] || '',
+    instagram: airtableRecord['Instagram'] || '',
+    
+    // Legal entity
+    legalStructure: airtableRecord['Legal structure'] || '',
+    institutionalPartner: airtableRecord['Institutional partner'] || null,
+    dateWithdrawnFromGroupExemption: airtableRecord['Date withdrawn from Group Exemption'] || null,
+    loanReportName: airtableRecord['Loan Report Name'] || '',
+    
+    // Closed school fields
+    leftNetworkDate: airtableRecord['Left Network Date'] || null,
+    leftNetworkReason: airtableRecord['Left Network Reason'] ? 
+      (Array.isArray(airtableRecord['Left Network Reason']) ? 
+        airtableRecord['Left Network Reason'].join(', ') : 
+        airtableRecord['Left Network Reason']) : null,
+    membershipTerminationLetter: airtableRecord['Membership termination letter'] ? 
+      (Array.isArray(airtableRecord['Membership termination letter']) && 
+       airtableRecord['Membership termination letter'].length > 0 ? 
+        airtableRecord['Membership termination letter'][0].url : '') : null
+  };
+};
+
+// Transform Airtable educator record to match your React app format
+export const transformEducatorData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    fullName: airtableRecord['Full Name'] || '',
+    firstName: airtableRecord['First Name'] || '',
+    lastName: airtableRecord['Last Name'] || '',
+    email: airtableRecord['Current Primary Email Address'] || '',
+    currentSchool: airtableRecord['Currently Active School'] ? 
+      (Array.isArray(airtableRecord['Currently Active School']) ? 
+        airtableRecord['Currently Active School'][0] : 
+        airtableRecord['Currently Active School']) : '',
+    role: airtableRecord['Current Role'] ? 
+      (Array.isArray(airtableRecord['Current Role']) ? 
+        airtableRecord['Current Role'][0] : 
+        airtableRecord['Current Role']) : '',
+    discoveryStatus: airtableRecord['Discovery status'] || '',
+    montessoriCertified: airtableRecord['Montessori Certified'] || false,
+    pronouns: airtableRecord['Pronouns'] || '',
+    pronounsOther: airtableRecord['Pronouns - Other'] || '',
+    inactiveFlag: airtableRecord['Inactive Flag'] || false,
+    
+    // Demographics
+    raceEthnicity: airtableRecord['Race & Ethnicity'] || [],
+    raceEthnicityOther: airtableRecord['Race & Ethnicity - Other'] || '',
+    gender: airtableRecord['Gender'] || '',
+    genderOther: airtableRecord['Gender - Other'] || '',
+    householdIncome: airtableRecord['Household Income'] || '',
+    incomeBackground: airtableRecord['Income Background'] || '',
+    lgbtqia: airtableRecord['LGBTQIA'] === 'TRUE',
+    primaryLanguage: airtableRecord['Primary Language'] ? 
+      (Array.isArray(airtableRecord['Primary Language']) ? 
+        airtableRecord['Primary Language'][0] : 
+        airtableRecord['Primary Language']) : '',
+    otherLanguages: airtableRecord['Other languages'] || [],
+    
+    // Contact Info
+    primaryPhone: airtableRecord['Primary phone'] || '',
+    secondaryPhone: airtableRecord['Secondary phone'] || null,
+    homeAddress: airtableRecord['Home Address'] || ''
+  };
+};
+
+// Transform Airtable charter record to match your React app format
+export const transformCharterData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    name: airtableRecord['Full name'] || airtableRecord['Charter key'] || '',
+    shortName: airtableRecord['Short Name'] || '',
+    status: airtableRecord['Status'] || '',
+    initialTargetCommunity: airtableRecord['Initial target community'] || ''
+  };
+};
+
+// Transform Airtable educator x school relationship
+export const transformEducatorXSchoolData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    educatorId: Array.isArray(airtableRecord['Educator']) ? 
+      airtableRecord['Educator'][0] : 
+      airtableRecord['Educator'],
+    schoolId: Array.isArray(airtableRecord['School']) ? 
+      airtableRecord['School'][0] : 
+      airtableRecord['School'],
+    startDate: airtableRecord['Start Date'] || '',
+    endDate: airtableRecord['End Date'] || null,
+    currentlyActive: airtableRecord['Currently Active'] || false,
+    roles: airtableRecord['Roles'] || [],
+    educatorName: Array.isArray(airtableRecord['Educator Full Name']) ? 
+      airtableRecord['Educator Full Name'][0] : 
+      airtableRecord['Educator Full Name'] || ''
+  };
+};
+
+// Transform other related data types
+export const transformSchoolNoteData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    schoolId: Array.isArray(airtableRecord['School']) ? 
+      airtableRecord['School'][0] : 
+      airtableRecord['School'],
+    noteText: airtableRecord['Notes'] || '',
+    createdBy: Array.isArray(airtableRecord['Created by']) ? 
+      airtableRecord['Created by'][0] : 
+      airtableRecord['Created by'] || '',
+    createdDate: airtableRecord['Date created'] || '',
+    isPrivate: airtableRecord['Private'] || false
+  };
+};
+
+export const transformEducatorNoteData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    educatorId: Array.isArray(airtableRecord['Educator']) ? 
+      airtableRecord['Educator'][0] : 
+      airtableRecord['Educator'],
+    noteText: airtableRecord['Notes'] || '',
+    createdBy: Array.isArray(airtableRecord['Created by']) ? 
+      airtableRecord['Created by'][0] : 
+      airtableRecord['Created by'] || '',
+    createdDate: airtableRecord['Date'] || '',
+    isPrivate: airtableRecord['Private'] || false
+  };
+};
+
+export const transformGrantData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    schoolId: Array.isArray(airtableRecord['School']) ? 
+      airtableRecord['School'][0] : 
+      airtableRecord['School'],
+    amount: airtableRecord['Amount'] || 0,
+    issueDate: airtableRecord['Issue Date'] || '',
+    issuedBy: airtableRecord['Funding Source'] || '',
+    partnerName: airtableRecord['Funding Source'] || '',
+    status: airtableRecord['Grant Status'] || '',
+    useOfFunds: airtableRecord['Notes'] || ''
+  };
+};
+
+export const transformLoanData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    schoolId: Array.isArray(airtableRecord['School']) ? 
+      airtableRecord['School'][0] : 
+      airtableRecord['School'],
+    amount: airtableRecord['Amount Issued'] || 0,
+    issueDate: airtableRecord['Effective Issue Date'] || '',
+    maturityDate: airtableRecord['Maturity'] || '',
+    interestRate: airtableRecord['Interest Rate'] || 0,
+    status: 'Active', // You may need to derive this from other fields
+    useOfProceeds: airtableRecord['Use of Proceeds'] || ''
+  };
+};
+
+export const transformActionStepData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    schoolId: Array.isArray(airtableRecord['Schools']) ? 
+      airtableRecord['Schools'][0] : 
+      airtableRecord['Schools'],
+    item: airtableRecord['Item'] || '',
+    assignee: Array.isArray(airtableRecord['Assignee']) ? 
+      airtableRecord['Assignee'][0] : 
+      airtableRecord['Assignee'] || '',
+    status: airtableRecord['Status'] || '',
+    dueDate: airtableRecord['Due date'] || ''
+  };
+};
+
+export const transformLocationData = (airtableRecord) => {
+  if (!airtableRecord) return null;
+
+  return {
+    id: airtableRecord.id,
+    schoolId: Array.isArray(airtableRecord['School']) ? 
+      airtableRecord['School'][0] : 
+      airtableRecord['School'],
+    address: airtableRecord['Address'] || '',
+    startDate: airtableRecord['Start Date'] || '',
+    endDate: airtableRecord['End Date'] || null,
+    currentlyActive: airtableRecord['Currently Active'] || true,
+    locationType: airtableRecord['Location Type'] || '',
+    currentMailingAddress: airtableRecord['Current Mailing Address'] || false,
+    currentPhysicalAddress: airtableRecord['Current Physical Address'] || false
+  };
+};
+
+export const transformLocationsData = (airtableRecords) => {
+  return airtableRecords.map(transformLocationData).filter(Boolean);
+};
+
+// Batch transform functions
+export const transformSchoolsData = (airtableRecords) => {
+  return airtableRecords.map(transformSchoolData).filter(Boolean);
+};
+
+export const transformEducatorsData = (airtableRecords) => {
+  return airtableRecords.map(transformEducatorData).filter(Boolean);
+};
+
+export const transformChartersData = (airtableRecords) => {
+  return airtableRecords.map(transformCharterData).filter(Boolean);
+};
+
+export const transformEducatorsXSchoolsData = (airtableRecords) => {
+  return airtableRecords.map(transformEducatorXSchoolData).filter(Boolean);
+};
+
+C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\VITE.CONFIG.JS CODE IS BELOW
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+})
+

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { EDUCATOR_ROLES } from './utils/constants.js';
 
 const CreateEducatorModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
   const [formData, setFormData] = useState({
@@ -20,14 +21,7 @@ const CreateEducatorModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
     currentlyActive: true
   });
 
-  const roleOptions = [
-    'Founder',
-    'Teacher Leader',
-    'Head of School',
-    'Assistant Teacher',
-    'Support Staff',
-    'Board Member'
-  ];
+  const roleOptions = EDUCATOR_ROLES;
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({

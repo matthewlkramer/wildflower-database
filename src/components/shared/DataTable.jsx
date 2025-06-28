@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import MultiSelectDropdown from './MultiSelectDropdown';
 
 const DataTable = ({ 
@@ -80,7 +80,7 @@ const DataTable = ({
     });
     
     return result;
-  }, [data, searchTerm, columnFilters]);
+  }, [data, debouncedSearchTerm, columnFilters]);
 
   const handleColumnFilterChange = (columnKey, value) => {
     if (onColumnFilterChange) {

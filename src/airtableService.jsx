@@ -1,4 +1,4 @@
-import { AIRTABLE_CONFIG, TABLES } from './airtableConfig.jsx';
+import { AIRTABLE_CONFIG, TABLES } from './airtableConfig.js';
 
 class AirtableService {
     constructor() {

@@ -17,7 +17,7 @@ import { useTabCounts } from '../hooks/useTabCounts';
 import { useEducatorFilters } from '../hooks/useEducatorFilters';
 
 // Import constants
-import { TABS } from '../utils/constants';
+import { TABS } from '../utils/constants.js';
 
 const WildflowerDatabase = () => {
     const [mainTab, setMainTab] = useState(TABS.SCHOOLS);

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import StatusBadge from '../components/shared/StatusBadge';
-import { TABS } from '../utils/constants';
+import { TABS } from '../utils/constants.js';
 
 export const useTableColumns = (dataType) => {
     return useMemo(() => {

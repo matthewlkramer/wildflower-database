@@ -82,58 +82,14 @@ export const useEducators = (includeInactive = false) => {
             setError(null);
 
             try {
-                console.log('🔄 Fetching educators with includeInactive:', includeInactive);
 
                 // Fetch educators and relationships
-                const [educatorsData, educatorsXSchoolsData] = await Promise.all([
+                const [educatorsData] = await Promise.all([
                     airtableService.fetchEducators(includeInactive),
-                    airtableService.fetchEducatorsXSchools()
                 ]);
 
-                console.log('📊 Raw educators data:', {
-                    totalEducators: educatorsData.length,
-                    totalRelationships: educatorsXSchoolsData.length,
-                    firstEducator: educatorsData[0],
-                    educatorFields: educatorsData[0] ? Object.keys(educatorsData[0]) : []
-                });
-
                 // Filter educators based on relationships if not including inactive
-                let filteredEducators = educatorsData;
-
-                if (!includeInactive) {
-                    // Get educators who have active relationships
-                    const activeEducatorIds = new Set(
-                        educatorsXSchoolsData
-                            .filter(rel => rel['Currently Active'] === true)
-                            .map(rel => {
-                                if (Array.isArray(rel.Educator)) {
-                                    return rel.Educator[0];
-                                }
-                                return rel.Educator;
-                            })
-                            .filter(Boolean)
-                    );
-
-                    console.log('👥 Active educator IDs from relationships:', activeEducatorIds.size);
-
-                    filteredEducators = educatorsData.filter(educator => {
-                        const hasAnyRelationship = educatorsXSchoolsData.some(rel => {
-                            const relEducatorId = Array.isArray(rel.Educator) ? rel.Educator[0] : rel.Educator;
-                            return relEducatorId === educator.id;
-                        });
-                        const hasActiveRelationship = activeEducatorIds.has(educator.id);
-
-                        const shouldInclude = hasActiveRelationship || !hasAnyRelationship;
-
-                        if (!shouldInclude) {
-                            console.log('🚫 Filtering out educator:', educator['First Name'], educator['Last Name'], 'has relationships but none active');
-                        }
-
-                        return shouldInclude;
-                    });
-
-                    console.log('✅ After relationship filtering:', filteredEducators.length, 'educators');
-                }
+                let filteredEducators = educatorsData.filter(educator => !educator['Inactive Flag']);
 
                 // Transform the data using the clean email structure
                 const transformedEducators = filteredEducators.map(educator => {
@@ -143,39 +99,19 @@ export const useEducators = (includeInactive = false) => {
                         fullName: educator[`Full Name`] || `Unknown`,
                         firstName: educator['First Name'] || '-',
                         lastName: educator['Last Name'] || '-',
-
-                        // Email handling - simplified to use only the two remaining fields
-                        email: Array.isArray(educator['Current Primary Email Address'])
-                            ? educator['Current Primary Email Address'][0]
-                            : educator['Current Primary Email Address'] || '',
-
-                        // Store reference to linked email records (for future use if needed)
+                        email: educator['Current Primary Email Address'] || '',
                         emailAddresses: educator['Email Addresses'] || [],
-
-                        // Contact info
                         phone: educator['Primary phone'] || '',
                         secondaryPhone: educator['Secondary phone'] || '',
                         homeAddress: educator['Home Address'] || '',
-
-                        // Personal info
                         pronouns: educator['Pronouns'] || '',
                         pronounsOther: educator['Pronouns Other'] || '',
                         nickname: educator['Nickname'] || '',
-
-                        // Professional info
                         discoveryStatus: educator['Discovery status'] || '',
                         individualType: educator['Individual Type'] || '',
                         montessoriCertified: educator['Montessori Certified'] || false,
-
-                        // Current school info (using lookup fields)
-                        currentSchool: Array.isArray(educator['Currently Active School'])
-                            ? educator['Currently Active School'][0]
-                            : educator['Currently Active School'] || '',
-                        role: Array.isArray(educator['Current Role'])
-                            ? educator['Current Role'][0]
-                            : educator['Current Role'] || '',
-
-                        // Demographics
+                        currentSchool: educator['Currently Active School'] || '',
+                        role: educator['Current Role'] || '',
                         raceEthnicity: educator['Race & Ethnicity'] || [],
                         raceEthnicityOther: educator['Race & Ethnicity Other'] || '',
                         gender: educator['Gender'] || '',
@@ -183,35 +119,23 @@ export const useEducators = (includeInactive = false) => {
                         householdIncome: educator['Household Income'] || '',
                         incomeBackground: educator['Income Background'] || [],
                         lgbtqia: educator['LGBTQIA'] || '',
-                        primaryLanguage: Array.isArray(educator['Primary Language'])
-                            ? educator['Primary Language'][0]
-                            : educator['Primary Language'] || '',
+                        primaryLanguage: educator['Primary Language'] || '',
                         otherLanguages: educator['Other languages'] || [],
-
-                        // Location/targeting
                         targetGeo: educator['Target geo combined'] || '',
                         targetCity: educator['Target city'] || '',
                         targetState: educator['Target state'] || '',
                         targetIntl: educator['Target - international'] || '',
-
-                        // Additional fields
                         holaspirit: educator['Active Holaspirit'] || false,
                         tcUserId: educator['TC User ID'] || '',
                         createdTime: educator['Created'] || educator.createdTime,
                         selfReflection: educator['Self-reflection'] || '',
-
-                        // School relationship info
+                        inactiveFlag: educator['Inactive Flag'] || false,
                         currentActiveSchool: educator['Currently Active School'] || '',
                         allSchools: educator['All Schools'] || [],
                         schoolStatuses: educator['School Statuses'] || [],
-                        activeSchoolAffiliationStatus: Array.isArray(educator['Active School Affiliation Status'])
-                            ? educator['Active School Affiliation Status'][0]
-                            : educator['Active School Affiliation Status'] || ''
+                        activeSchoolAffiliationStatus: educator['Active School Affiliation Status'] || ''
                     };
                 });
-
-                console.log('✅ Transformed educators:', transformedEducators.length);
-                console.log('📊 Sample transformed educator:', transformedEducators[0]);
 
                 setData(transformedEducators);
             } catch (err) {

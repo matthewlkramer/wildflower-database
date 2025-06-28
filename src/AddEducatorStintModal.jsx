@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Search } from 'lucide-react';
+import { EDUCATOR_ROLES } from './utils/constants.js';
 
 const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducators }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -8,13 +9,7 @@ const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducato
   const [currentlyActive, setCurrentlyActive] = useState(true);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-  const roleOptions = [
-    'Founder',
-    'Teacher Leader',
-    'Head of School',
-    'Assistant Teacher',
-    'Support Staff',
-    'Board Member'
+    const roleOptions = EDUCATOR_ROLES
   ];
 
   const filteredEducators = useMemo(() => {

@@ -2,13 +2,6 @@
 export const transformSchoolData = (airtableRecord, relatedData = {}) => {
   if (!airtableRecord) return null;
 
-  // Debug location fields
-  console.log('🔍 Location field debug for:', airtableRecord['Name']);
-  console.log('  Current Physical Address - City:', airtableRecord['Current Physical Address - City']);
-  console.log('  Current Physical Address - State:', airtableRecord['Current Physical Address - State']);
-  console.log('  SSJ - Target City:', airtableRecord['SSJ - Target City']);
-  console.log('  SSJ - Target State:', airtableRecord['SSJ - Target State']);
-
   return {
     id: airtableRecord.id,
     name: airtableRecord['Name'] || '',
@@ -177,7 +170,8 @@ export const transformEducatorData = (airtableRecord) => {
     fullName: airtableRecord['Full Name'] || '',
     firstName: airtableRecord['First Name'] || '',
     lastName: airtableRecord['Last Name'] || '',
-    email: airtableRecord['Current Primary Email Address'] || '',
+    primaryEmail: airtableRecord['Current Primary Email Address'] || '',
+    emailAddresses: airtableRecord['Email Addresses'] || [],
     currentSchool: airtableRecord['Currently Active School'] ? 
       (Array.isArray(airtableRecord['Currently Active School']) ? 
         airtableRecord['Currently Active School'][0] : 
@@ -189,12 +183,16 @@ export const transformEducatorData = (airtableRecord) => {
     discoveryStatus: airtableRecord['Discovery status'] || '',
     montessoriCertified: airtableRecord['Montessori Certified'] || false,
     pronouns: airtableRecord['Pronouns'] || '',
-    phone: airtableRecord['Primary phone'] || '',
+    pronounsOther: airtableRecord['Pronouns - Other'] || '',
+    inactiveFlag: airtableRecord['Inactive Flag'] || false,
     
     // Demographics
     raceEthnicity: airtableRecord['Race & Ethnicity'] || [],
+    raceEthnicityOther: airtableRecord['Race & Ethnicity - Other'] || '',
     gender: airtableRecord['Gender'] || '',
+    genderOther: airtableRecord['Gender - Other'] || '',
     householdIncome: airtableRecord['Household Income'] || '',
+    incomeBackground: airtableRecord['Income Background'] || '',
     lgbtqia: airtableRecord['LGBTQIA'] === 'TRUE',
     primaryLanguage: airtableRecord['Primary Language'] ? 
       (Array.isArray(airtableRecord['Primary Language']) ? 

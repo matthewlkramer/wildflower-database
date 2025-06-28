@@ -1,7 +1,7 @@
 export const AIRTABLE_CONFIG = {
-  BASE_ID: 'appJBT9a4f3b7hWQ2',
-  API_KEY: 'patPJ0FQbeJOXZV6q.47a003922253003392f41b305cb163caba0c18ec6be85ee4bb1219d89c453048',
-  BASE_URL: 'https://api.airtable.com/v0'
+    BASE_ID: process.env.VITE_AIRTABLE_BASE_ID || 'appJBT9a4f3b7hWQ2',
+    API_KEY: process.env.VITE_AIRTABLE_API_KEY || 'patPJ0FQbeJOXZV6q.47a003922253003392f41b305cb163caba0c18ec6be85ee4bb1219d89c453048',
+    BASE_URL: 'https://api.airtable.com/v0'
 };
 
 // Table names mapping from your Airtable (these must match exactly)
