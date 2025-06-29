@@ -44,7 +44,7 @@ export const useEducatorFilters = (educatorsData) => {
 
         console.log('✅ Active educators filtered:', activeEducators.length, 'out of', educatorsData.length);
         return activeEducators;
-    }, [educatorsData, includeInactiveEducators]);
+    }, [educatorsData, includeInactiveEducators]); // Make sure includeInactiveEducators is in the dependency array
 
     return {
         includeInactiveEducators,
