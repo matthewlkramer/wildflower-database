@@ -84,16 +84,11 @@ export const useEducators = (includeInactive = false) => {
 
             try {
 
-                // Fetch educators and relationships
-                const [educatorsData] = await Promise.all([
-                    airtableService.fetchEducators(includeInactive),
-                ]);
-
-                // Filter educators based on relationships if not including inactive
-                let filteredEducators = educatorsData.filter(educator => !educator['Inactive Flag']);
+                // Always fetch ALL educators - let React filtering handle the rest
+                const educatorsData = await airtableService.fetchEducators(true);
 
                 // Transform the data using the clean email structure
-                const transformedEducators = filteredEducators.map(educator => {
+                const transformedEducators = educatorsData.map(educator => {
 
                     return {
                         id: educator.id,
