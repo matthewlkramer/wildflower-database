@@ -1,8 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 
-import { testAirtableConnection } from '../airtableService.jsx';
-
 // Import components
 import DataTable from './shared/DataTable';
 import SchoolDetails from './schools/SchoolDetails';
@@ -47,12 +45,6 @@ const WildflowerDatabase = () => {
     // Apply filters to the data
     const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
     const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
-    useEffect(() => {
-        if (import.meta.env.DEV) {
-            console.log('🧪 Running Airtable connection test...');
-            testAirtableConnection();
-        }
-    }, []);
 
     // Get current data based on active tab
     const getCurrentData = () => {
