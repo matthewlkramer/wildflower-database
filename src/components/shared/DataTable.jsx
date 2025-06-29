@@ -27,7 +27,11 @@ const DataTable = ({
         'status': true,
         'agesServed': true,
         'governanceModel': true,
-        'membershipStatus': true
+        'membershipStatus': true,
+        'discoveryStatus': true,
+        'individualType': true,
+        'raceEthnicity': true,
+        'role': true
     };
 
     // Get unique values for multi-select columns

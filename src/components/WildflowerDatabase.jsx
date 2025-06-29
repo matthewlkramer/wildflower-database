@@ -1,5 +1,7 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
+
+import { testAirtableConnection } from '../airtableService.jsx';
 
 // Import components
 import DataTable from './shared/DataTable';
@@ -42,22 +44,15 @@ const WildflowerDatabase = () => {
     const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true }); // Always get all data
     const chartersResult = useUnifiedData(TABS.CHARTERS);
 
-    console.log('🔍 Raw educators result:', {
-        loading: educatorsResult.loading,
-        error: educatorsResult.error,
-        dataLength: educatorsResult.data?.length,
-        firstEducator: educatorsResult.data?.[0]
-    });
-
     // Apply filters to the data
     const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
     const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
-
-    console.log('🔍 Filtered data:', {
-        schools: filteredSchools?.length,
-        educators: filteredEducators?.length,
-        includeInactiveEducators
-    });
+    useEffect(() => {
+        if (import.meta.env.DEV) {
+            console.log('🧪 Running Airtable connection test...');
+            testAirtableConnection();
+        }
+    }, []);
 
     // Get current data based on active tab
     const getCurrentData = () => {
@@ -168,8 +163,7 @@ const WildflowerDatabase = () => {
                         <div className="p-6 border-b">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    {/* Debug info for educators tab */}
-                                    {mainTab === TABS.EDUCATORS && process.env.NODE_ENV === 'development' && (
+                                    {mainTab === TABS.EDUCATORS && import.meta.env.DEV && (
                                         <div className="text-xs text-gray-500">
                                             Debug: {getCurrentData().length} educators shown,
                                             Raw: {educatorsResult.data?.length || 0},
