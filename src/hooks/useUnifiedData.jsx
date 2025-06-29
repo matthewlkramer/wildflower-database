@@ -1,7 +1,7 @@
 
 import { useMemo } from 'react';
 import { useSchools, useEducators } from './useAirtableData';
-import { transformSchoolsData } from '../utils/dataTransformers';
+import { transformSchoolsData } from '../utils/dataTransformers.js';
 import { 
   sampleSchools, 
   sampleEducators, 
