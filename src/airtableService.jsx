@@ -39,10 +39,35 @@ class AirtableService {
 
                 const url = `${this.baseUrl}/${encodeURIComponent(tableName)}?${params}`;
                 console.log(`📄 Fetching page ${pageCount + 1} from ${tableName}...`);
+
+                console.log('🔗 Making Airtable request:', {
+                    tableName: tableName,
+                    pageCount: pageCount + 1,
+                    hasApiKey: !!this.headers.Authorization,
+                    baseId: AIRTABLE_CONFIG.BASE_ID,
+                    urlLength: url.length
+                });
+
                 const response = await fetch(url, { headers: this.headers });
 
+                console.log('📡 Airtable response:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    ok: response.ok,
+                    tableName: tableName,
+                    pageCount: pageCount + 1
+                });
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error('❌ Airtable API Error:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        error: errorText,
+                        tableName: tableName,
+                        url: url.substring(0, 100) + '...'
+                    });
+                    throw new Error(`Airtable API error: ${response.status} - ${errorText}`);
                 }
 
                 const data = await response.json();
@@ -181,18 +206,11 @@ class AirtableService {
 
         const options = {
             sort: { field: 'Last Name', direction: 'asc' },
+            // Remove the filterByFormula - always get ALL educators
+            // Let React handle the filtering
         };
 
-        // Add filter for active educators only (default behavior)
-        if (!includeInactive) {
-            // Filter out:
-            // 1. Discovery status = "Paused" 
-            // 2. Individual type = "Community member"
-            // Note: We'll handle the "no active school relationships" filter in the hook
-            options.filterByFormula = `AND({Discovery status} != 'Paused',{Individual type} != 'Community member')`;
-        }
-
-        console.log('🔄 Fetching educators with options:', options);
+        console.log('🔄 Fetching ALL educators (no server-side filtering)');
         return this.fetchRecords(TABLES.EDUCATORS, options);
     }
 
