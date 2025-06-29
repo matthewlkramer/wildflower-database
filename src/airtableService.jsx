@@ -202,16 +202,21 @@ class AirtableService {
 
     // Fetch educators
     async fetchEducators(includeInactive = false) {
-        console.log('🔄 Fetching educators with includeInactive:', includeInactive);
+        console.log('🚨 DEBUG: fetchEducators called with includeInactive:', includeInactive);
 
         const options = {
             sort: { field: 'Last Name', direction: 'asc' },
-            // Remove the filterByFormula - always get ALL educators
-            // Let React handle the filtering
+            // No filterByFormula - should get ALL educators
         };
 
-        console.log('🔄 Fetching ALL educators (no server-side filtering)');
-        return this.fetchRecords(TABLES.EDUCATORS, options);
+        console.log('🚨 DEBUG: Calling fetchRecords with options:', options);
+        console.log('🚨 DEBUG: Should get ALL 3002 educators from Airtable');
+
+        const result = await this.fetchRecords(TABLES.EDUCATORS, options);
+
+        console.log('🚨 DEBUG: fetchEducators result length:', result.length);
+
+        return result;
     }
 
     // Fetch charters

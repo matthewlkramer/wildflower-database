@@ -45,6 +45,22 @@ const WildflowerDatabase = () => {
     // Apply filters to the data
     const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
     const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
+    // Add this temporary test after your hooks
+    useEffect(() => {
+        const testEducatorsAPI = async () => {
+            try {
+                console.log('🧪 Testing Educators API directly...');
+                const { airtableService } = await import('../airtableService.jsx');
+                const allEducators = await airtableService.fetchEducators(true);
+                console.log('🧪 Direct API call result:', allEducators.length, 'educators');
+            } catch (error) {
+                console.error('🧪 Direct API test failed:', error);
+            }
+        };
+
+        testEducatorsAPI();
+    }, []); // Run once on mount
+
 
     // Get current data based on active tab
     const getCurrentData = () => {

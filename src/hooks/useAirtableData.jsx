@@ -72,6 +72,7 @@ export const useSchools = (includeInactive = false) => {
 
 // Hook for fetching educators
 export const useEducators = (includeInactive = false) => {
+    console.log('🚨 useEducators hook called with includeInactive:', includeInactive);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
