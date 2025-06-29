@@ -154,15 +154,6 @@ const WildflowerDatabase = () => {
                     <div className="bg-white rounded-lg shadow h-full flex flex-col">
                         <div className="p-6 border-b">
                             <div className="flex items-center justify-between">
-                                <div>
-                                    {mainTab === TABS.EDUCATORS && import.meta.env.DEV && (
-                                        <div className="text-xs text-gray-500">
-                                            Debug: {getCurrentData().length} educators shown,
-                                            Raw: {educatorsResult.data?.length || 0},
-                                            Include inactive: {includeInactiveEducators ? 'Yes' : 'No'}
-                                        </div>
-                                    )}
-                                </div>
                                 <div className="flex items-center space-x-4">
                                     {/* Status Filter Toggle - show for schools and educators */}
                                     {mainTab === TABS.SCHOOLS && (
