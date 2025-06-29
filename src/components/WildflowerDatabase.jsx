@@ -121,7 +121,6 @@ const WildflowerDatabase = () => {
     }
 
     return (
-return (
         <div className="h-screen flex flex-col bg-gray-50">
             {/* Header with title and main tabs */}
             <div className="bg-white shadow-sm border-b">
