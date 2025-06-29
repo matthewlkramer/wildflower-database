@@ -9,8 +9,7 @@ const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducato
   const [currentlyActive, setCurrentlyActive] = useState(true);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-    const roleOptions = EDUCATOR_ROLES
-  ];
+    const roleOptions = EDUCATOR_ROLES;
 
   const filteredEducators = useMemo(() => {
     return allEducators.filter(educator =>
