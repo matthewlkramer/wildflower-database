@@ -27,20 +27,11 @@ class AirtableService {
 
             // Debug logging for locations table specifically
             if (tableName === TABLES.LOCATIONS) {
-                console.log('🔍 fetchRecords for LOCATIONS table:', {
-                    tableName,
-                    filterByFormula,
-                    sort,
-                    maxRecords,
-                    pageSize
-                });
             }
 
             let allRecords = [];
             let offset = null;
             let pageCount = 0;
-
-            console.log(`🔄 Starting to fetch records from ${tableName}...`);
 
             do {
                 const params = new URLSearchParams();
@@ -150,7 +141,6 @@ class AirtableService {
             const data = await response.json();
             return this.transformRecords([data])[0];
         } catch (error) {
-            console.error(`Error creating record in ${tableName}:`, error);
             throw error;
         }
     }
@@ -174,7 +164,6 @@ class AirtableService {
             const data = await response.json();
             return this.transformRecords([data])[0];
         } catch (error) {
-            console.error(`Error updating record ${recordId} in ${tableName}:`, error);
             throw error;
         }
     }
@@ -196,7 +185,6 @@ class AirtableService {
 
             return true;
         } catch (error) {
-            console.error(`Error deleting record ${recordId} from ${tableName}:`, error);
             throw error;
         }
     }
@@ -210,13 +198,11 @@ class AirtableService {
             
             if (records.length > 0) {
                 const fields = Object.keys(records[0]).filter(key => key !== 'id' && key !== 'createdTime');
-                console.log(`📋 ${tableName} fields:`, fields);
                 return fields;
             }
             
             return [];
         } catch (error) {
-            console.error(`Error getting fields for ${tableName}:`, error);
             return [];
         }
     }
@@ -233,7 +219,6 @@ class AirtableService {
             options.filterByFormula = "OR({School Status} = 'Open', {School Status} = 'Emerging')";
         }
 
-        console.log('🔄 Fetching schools with options:', options);
         const schools = await this.fetchRecords(TABLES.SCHOOLS, options);
         
         // Log first school to see field names
@@ -247,18 +232,12 @@ class AirtableService {
 
     // Fetch educators - CORRECTED field names
     async fetchEducators(includeInactive = false) {
-        console.log('🚨 DEBUG: fetchEducators called with includeInactive:', includeInactive);
-
         const options = {
             sort: { field: 'Last Name', direction: 'asc' },
         };
 
-        console.log('🚨 DEBUG: Calling fetchRecords with options:', options);
-        console.log('🚨 DEBUG: Should get ALL educators from Airtable');
-
         const result = await this.fetchRecords(TABLES.EDUCATORS, options);
 
-        console.log('🚨 DEBUG: fetchEducators result length:', result.length);
         
         // Log first educator to see field names
         if (result.length > 0) {
@@ -293,7 +272,6 @@ class AirtableService {
 
     // Add a generic method to fetch all records from any table (for your hooks)
     async getAllRecords(tableName, options = {}) {
-        console.log(`🔄 Getting ALL records from ${tableName}...`);
         return this.fetchRecords(tableName, {
             maxRecords: 10000, // Allow up to 10,000 records
             ...options
@@ -337,7 +315,6 @@ class AirtableService {
             }
         } else {
             // Fallback
-            console.warn(`⚠️ Could not determine correct filter for ${tableName}`);
             filterByFormula = `FIND("${schoolId}", ARRAYJOIN({School}, ","))`;
         }
 
@@ -349,11 +326,9 @@ class AirtableService {
             options.sort = { field: sortField, direction: sortDirection };
         }
 
-        console.log(`🔍 Using filter formula: ${filterByFormula}`);
         
         const result = await this.fetchRecords(tableName, options);
         
-        console.log(`✅ fetchBySchoolId result for ${tableName}:`, result.length, 'records');
         
         return result;
     }

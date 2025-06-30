@@ -1,7 +1,7 @@
 // src/hooks/useCachedData.jsx
 // Cached versions of your data hooks
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { dataCache, CACHE_KEYS } from '../utils/dataCache';
 import { airtableService } from '../airtableService';
 
@@ -24,12 +24,28 @@ export const useCachedData = (cacheKey, fetchFunction, options = {}) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Use refs to prevent unnecessary re-fetches
+  const fetchFunctionRef = useRef(fetchFunction);
+  const optionsRef = useRef(options);
+  const hasInitializedRef = useRef(false);
+  
+  // Update refs when values change
+  useEffect(() => {
+    fetchFunctionRef.current = fetchFunction;
+  }, [fetchFunction]);
+  
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
 
   const fetchData = useCallback(async (forceRefresh = false) => {
     try {
+      const currentOptions = optionsRef.current;
+      
       // Check cache first (unless forcing refresh)
       if (!forceRefresh) {
-        const cached = dataCache.get(cacheKey, options);
+        const cached = dataCache.get(cacheKey, currentOptions);
         if (cached) {
           setData(cached.data || []);
           setLoading(false);
@@ -39,19 +55,19 @@ export const useCachedData = (cacheKey, fetchFunction, options = {}) => {
       }
 
       // Check if already loading to prevent duplicate requests
-      if (dataCache.isLoading(cacheKey, options)) {
+      if (dataCache.isLoading(cacheKey, currentOptions)) {
         // Already loading, skip duplicate request
         return;
       }
       
       setLoading(true);
       setError(null);
-      dataCache.setLoading(cacheKey, true, options);
+      dataCache.setLoading(cacheKey, true, currentOptions);
       
-      const result = await fetchFunction();
+      const result = await fetchFunctionRef.current();
       
       // Cache the result
-      dataCache.set(cacheKey, result, options);
+      dataCache.set(cacheKey, result, currentOptions);
       
       setData(result || []);
       setLoading(false);
@@ -62,24 +78,38 @@ export const useCachedData = (cacheKey, fetchFunction, options = {}) => {
       setLoading(false);
       
       // Cache the error too
-      dataCache.set(cacheKey, [], options, err);
+      dataCache.set(cacheKey, [], optionsRef.current, err);
       throw err;
     } finally {
-      dataCache.setLoading(cacheKey, false, options);
+      dataCache.setLoading(cacheKey, false, optionsRef.current);
     }
-  }, [cacheKey, fetchFunction, options]);
+  }, [cacheKey]); // Remove fetchFunction and options from dependencies
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    // Skip fetching if critical options are missing
+    if (options.schoolId === null || options.schoolId === undefined) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+    
+    // Only fetch if this is the first time or if schoolId changed
+    const shouldFetch = !hasInitializedRef.current || 
+                       (hasInitializedRef.current && optionsRef.current.schoolId !== options.schoolId);
+    
+    if (shouldFetch) {
+      hasInitializedRef.current = true;
+      fetchData();
+    }
+  }, [fetchData, options.schoolId]);
 
   const refetch = useCallback(() => {
     return fetchData(true); // Force refresh
   }, [fetchData]);
 
   const invalidateCache = useCallback(() => {
-    dataCache.invalidate(cacheKey, options);
-  }, [cacheKey, options]);
+    dataCache.invalidate(cacheKey, optionsRef.current);
+  }, [cacheKey]);
 
   return { 
     data, 
@@ -124,6 +154,11 @@ export const useCachedEducatorsXSchools = () => {
 // Cached School-specific data hooks (these can be cached per school)
 export const useCachedSchoolLocations = (schoolId) => {
   const options = { schoolId };
+  
+  // Early return if no schoolId
+  if (!schoolId) {
+    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
+  }
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
@@ -201,6 +236,11 @@ export const useCachedSchoolNotes = (schoolId) => {
     return await airtableService.fetchSchoolNotes(schoolId);
   }, [schoolId]);
 
+  // Early return if no schoolId
+  if (!schoolId) {
+    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
+  }
+
   return useCachedData(CACHE_KEYS.SCHOOL_NOTES, fetchFunction, options);
 };
 
@@ -222,6 +262,11 @@ export const useCachedActionSteps = (schoolId) => {
       return step.school_id === schoolId || (Array.isArray(step.school_ids) && step.school_ids.includes(schoolId));
     });
   }, [schoolId]);
+
+  // Early return if no schoolId
+  if (!schoolId) {
+    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
+  }
 
   return useCachedData(CACHE_KEYS.ACTION_STEPS, fetchFunction, options);
 };
@@ -245,6 +290,11 @@ export const useCachedGovernanceDocs = (schoolId) => {
     });
   }, [schoolId]);
 
+  // Early return if no schoolId
+  if (!schoolId) {
+    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
+  }
+
   return useCachedData(CACHE_KEYS.GOVERNANCE_DOCS, fetchFunction, options);
 };
 
@@ -267,6 +317,11 @@ export const useCachedGuideAssignments = (schoolId) => {
     });
   }, [schoolId]);
 
+  // Early return if no schoolId
+  if (!schoolId) {
+    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
+  }
+
   return useCachedData(CACHE_KEYS.GUIDE_ASSIGNMENTS, fetchFunction, options);
 };
 
@@ -277,6 +332,11 @@ export const useCachedGrants = (schoolId) => {
     if (!schoolId) return [];
     return await airtableService.fetchSchoolGrants(schoolId);
   }, [schoolId]);
+
+  // Early return if no schoolId
+  if (!schoolId) {
+    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
+  }
 
   return useCachedData(CACHE_KEYS.GRANTS, fetchFunction, options);
 };
@@ -289,6 +349,11 @@ export const useCachedLoans = (schoolId) => {
     return await airtableService.fetchSchoolLoans(schoolId);
   }, [schoolId]);
 
+  // Early return if no schoolId
+  if (!schoolId) {
+    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
+  }
+
   return useCachedData(CACHE_KEYS.LOANS, fetchFunction, options);
 };
 
@@ -299,6 +364,11 @@ export const useCachedMembershipFees = (schoolId) => {
     if (!schoolId) return [];
     return await airtableService.fetchSchoolMembershipFees(schoolId);
   }, [schoolId]);
+
+  // Early return if no schoolId
+  if (!schoolId) {
+    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
+  }
 
   return useCachedData(CACHE_KEYS.MEMBERSHIP_FEES, fetchFunction, options);
 };

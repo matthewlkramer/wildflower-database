@@ -4,19 +4,11 @@ export const useEducatorFilters = (educatorsData) => {
     const [includeInactiveEducators, setIncludeInactiveEducators] = useState(false);
 
     const filteredEducators = useMemo(() => {
-        console.log('🔍 Filtering educators:', {
-            totalEducators: educatorsData?.length,
-            includeInactive: includeInactiveEducators,
-            sampleEducatorsData: educatorsData?.slice(0, 3)
-        });
-
         if (!educatorsData || !Array.isArray(educatorsData)) {
-            console.log('⚠️ No educators data or not array');
             return [];
         }
 
         if (includeInactiveEducators) {
-            console.log('✅ Including all educators:', educatorsData.length);
             return educatorsData;
         }
 
@@ -37,7 +29,6 @@ export const useEducatorFilters = (educatorsData) => {
             return isActive;
         });
 
-        console.log('✅ Active educators filtered:', activeEducators.length, 'out of', educatorsData.length);
         return activeEducators;
     }, [educatorsData, includeInactiveEducators]); // Make sure includeInactiveEducators is in the dependency array
 

@@ -83,15 +83,42 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     return educatorsXSchools?.filter(exs => exs.schoolId === school.id) || [];
   };
 
-  // Get data using hooks
-  const { data: schoolLocations, refetch: refetchLocations } = useSchoolLocations(school.id);
-  const { data: schoolNotes } = useSchoolNotes(school.id);
-  const { data: actionSteps } = useActionSteps(school.id);
-  const { data: governanceDocs } = useGovernanceDocs(school.id);
-  const { data: guideAssignments } = useGuideAssignments(school.id);
-  const { data: grants } = useGrants(school.id);
-  const { data: loans } = useLoans(school.id);
-  const { data: membershipFeeRecords } = useMembershipFeeRecords(school.id);
+  // Only fetch data for the active tab to prevent duplicate requests
+  // Locations tab data
+  const { data: schoolLocations, refetch: refetchLocations } = useSchoolLocations(
+    activeTab === 'locations' ? school.id : null
+  );
+  
+  // Notes/Actions tab data
+  const { data: schoolNotes } = useSchoolNotes(
+    activeTab === 'notes-actions' ? school.id : null
+  );
+  const { data: actionSteps } = useActionSteps(
+    activeTab === 'notes-actions' ? school.id : null
+  );
+  
+  // Governance tab data
+  const { data: governanceDocs } = useGovernanceDocs(
+    activeTab === 'governance' ? school.id : null
+  );
+  
+  // Guides tab data
+  const { data: guideAssignments } = useGuideAssignments(
+    activeTab === 'guides' ? school.id : null
+  );
+  
+  // Grants/Loans tab data
+  const { data: grants } = useGrants(
+    activeTab === 'grants-loans' ? school.id : null
+  );
+  const { data: loans } = useLoans(
+    activeTab === 'grants-loans' ? school.id : null
+  );
+  
+  // Membership fees tab data
+  const { data: membershipFeeRecords } = useMembershipFeeRecords(
+    activeTab === 'membership-fees' ? school.id : null
+  );
 
   // Edit functionality
   const handleEditSave = () => {
@@ -863,4 +890,4 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   );
 };
 
-export default SchoolDetails;
+export default React.memo(SchoolDetails);

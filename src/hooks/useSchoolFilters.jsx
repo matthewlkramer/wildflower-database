@@ -4,19 +4,11 @@ export const useSchoolFilters = (schools) => {
     const [includeInactiveSchools, setIncludeInactiveSchools] = useState(false);
 
     const filteredSchools = useMemo(() => {
-        console.log('?? Filtering schools:', {
-            totalSchools: schools?.length,
-            includeInactive: includeInactiveSchools,
-            sampleSchoolsData: schools?.slice(0, 3)
-        });
-
         if (!schools || !Array.isArray(schools)) {
-            console.log('? No schools data or not array');
             return [];
         }
 
         if (includeInactiveSchools) {
-            console.log('? Including all schools:', schools.length);
             return schools;
         }
 
@@ -29,7 +21,6 @@ export const useSchoolFilters = (schools) => {
             return isActive;
         });
 
-        console.log('? Active schools filtered:', activeSchools.length, 'out of', schools.length);
         return activeSchools;
     }, [schools, includeInactiveSchools]);
 
