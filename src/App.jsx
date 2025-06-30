@@ -5,7 +5,6 @@ import TestComponent from './components/TestComponent.jsx';
 import './App.css';
 
 function App() {
-  console.log('🎨 App component rendering');
   return (
     <div className="App">
       <WildflowerDatabase />

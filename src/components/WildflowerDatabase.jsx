@@ -35,7 +35,7 @@ const WildflowerDatabase = () => {
         columnFilters,
         handleColumnFilterChange,
         clearAllFilters,
-        hasActiveFilters
+        hasActiveFilters = false
     } = useFilters();
 
     // Data fetching - get all data first, then filter
@@ -245,7 +245,7 @@ const WildflowerDatabase = () => {
                                                 <Filter className="w-4 h-4" />
                                             </button>
 
-                                            {(showFilters && hasActiveFilters) && (
+                                            {showFilters && (hasActiveFilters || false) && (
                                                 <button
                                                     onClick={clearAllFilters}
                                                     className="text-xs text-gray-500 hover:text-gray-700 underline"
