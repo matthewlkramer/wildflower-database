@@ -26,8 +26,6 @@ const safeInterestRate = (field) => {
 export const transformGrantData = (airtableRecord) => {
   if (!airtableRecord) return null;
 
-  console.log('🔍 Transforming grant record:', airtableRecord);
-
   return {
     id: airtableRecord.id,
     schoolId: airtableRecord['school_id'], // Use the formula field, not the relationship
@@ -50,8 +48,6 @@ export const transformGrantData = (airtableRecord) => {
 export const transformLoanData = (airtableRecord) => {
   if (!airtableRecord) return null;
 
-  console.log('🔍 Transforming loan record:', airtableRecord);
-
   return {
     id: airtableRecord.id,
     schoolId: airtableRecord['school_id'], // Use the formula field, not the relationship
@@ -73,8 +69,6 @@ export const transformLoanData = (airtableRecord) => {
 export const transformGuideAssignmentData = (airtableRecord) => {
   if (!airtableRecord) return null;
 
-  console.log('🔍 Transforming guide assignment record:', airtableRecord);
-
   return {
     id: airtableRecord.id,
     schoolId: airtableRecord['school_id'], // Use the formula field, not the relationship
@@ -93,8 +87,6 @@ export const transformGuideAssignmentData = (airtableRecord) => {
 // CORRECTED: Transform location data with actual Airtable field names
 export const transformLocationData = (airtableRecord) => {
   if (!airtableRecord) return null;
-
-  console.log('🔍 Transforming location record:', airtableRecord);
 
   return {
     id: airtableRecord.id,
@@ -127,8 +119,6 @@ export const transformLocationData = (airtableRecord) => {
 // CORRECTED: Transform action step data with actual Airtable field names
 export const transformActionStepData = (airtableRecord) => {
   if (!airtableRecord) return null;
-
-  console.log('🔍 Transforming action step record:', airtableRecord);
 
   return {
     id: airtableRecord.id,
@@ -344,7 +334,6 @@ export const transformEducatorData = (airtableRecord) => {
 // Batch transform functions
 export const transformSchoolsData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformSchoolsData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformSchoolData).filter(Boolean);
@@ -352,7 +341,6 @@ export const transformSchoolsData = (airtableRecords) => {
 
 export const transformEducatorsData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformEducatorsData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformEducatorData).filter(Boolean);
@@ -360,7 +348,6 @@ export const transformEducatorsData = (airtableRecords) => {
 
 export const transformEducatorsXSchoolsData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformEducatorsXSchoolsData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformEducatorXSchoolData).filter(Boolean);
@@ -368,7 +355,6 @@ export const transformEducatorsXSchoolsData = (airtableRecords) => {
 
 export const transformLocationsData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformLocationsData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformLocationData).filter(Boolean);
@@ -376,7 +362,6 @@ export const transformLocationsData = (airtableRecords) => {
 
 export const transformGrantsData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformGrantsData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformGrantData).filter(Boolean);
@@ -384,7 +369,6 @@ export const transformGrantsData = (airtableRecords) => {
 
 export const transformLoansData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformLoansData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformLoanData).filter(Boolean);
@@ -392,7 +376,6 @@ export const transformLoansData = (airtableRecords) => {
 
 export const transformGuideAssignmentsData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformGuideAssignmentsData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformGuideAssignmentData).filter(Boolean);
@@ -400,7 +383,6 @@ export const transformGuideAssignmentsData = (airtableRecords) => {
 
 export const transformActionStepsData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformActionStepsData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformActionStepData).filter(Boolean);
@@ -421,7 +403,6 @@ export const transformCharterData = (airtableRecord) => {
 
 export const transformChartersData = (airtableRecords) => {
   if (!Array.isArray(airtableRecords)) {
-    console.warn('transformChartersData: Expected array, got:', typeof airtableRecords);
     return [];
   }
   return airtableRecords.map(transformCharterData).filter(Boolean);

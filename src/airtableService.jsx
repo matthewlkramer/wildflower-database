@@ -58,28 +58,28 @@ class AirtableService {
                     console.log('🔗 Locations API URL:', url);
                 }
                 
-                console.log(`📄 Fetching page ${pageCount + 1} from ${tableName}...`);
+                // console.log(`📄 Fetching page ${pageCount + 1} from ${tableName}...`);
 
-                console.log('🔗 Making Airtable request:', {
-                    tableName: tableName,
-                    pageCount: pageCount + 1,
-                    hasApiKey: !!this.headers.Authorization,
-                    baseId: AIRTABLE_CONFIG.BASE_ID,
-                    urlLength: url.length
-                });
+                // console.log('🔗 Making Airtable request:', {
+                //     tableName: tableName,
+                //     pageCount: pageCount + 1,
+                //     hasApiKey: !!this.headers.Authorization,
+                //     baseId: AIRTABLE_CONFIG.BASE_ID,
+                //     urlLength: url.length
+                // });
 
                 const response = await fetch(url, { 
                     headers: this.headers,
                     mode: 'cors'
                 });
 
-                console.log('📡 Airtable response:', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    ok: response.ok,
-                    tableName: tableName,
-                    pageCount: pageCount + 1
-                });
+                // console.log('📡 Airtable response:', {
+                //     status: response.status,
+                //     statusText: response.statusText,
+                //     ok: response.ok,
+                //     tableName: tableName,
+                //     pageCount: pageCount + 1
+                // });
 
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -100,7 +100,7 @@ class AirtableService {
                 offset = data.offset;
                 pageCount++;
 
-                console.log(`📄 Page ${pageCount}: Fetched ${recordsInThisPage.length} records, total so far: ${allRecords.length}`);
+                // console.log(`📄 Page ${pageCount}: Fetched ${recordsInThisPage.length} records, total so far: ${allRecords.length}`);
 
                 // Stop if no more pages or we've reached maxRecords
                 if (!offset || allRecords.length >= maxRecords) {
@@ -137,13 +137,13 @@ class AirtableService {
 
     // Transform Airtable records to a more usable format
     transformRecords(records) {
-        console.log('🔄 Transforming records, first raw record:', records[0]);
+        // console.log('🔄 Transforming records, first raw record:', records[0]);
         const transformed = records.map(record => ({
             id: record.id,
             ...record.fields,
             createdTime: record.createdTime
         }));
-        console.log('✅ First transformed record:', transformed[0]);
+        // console.log('✅ First transformed record:', transformed[0]);
         return transformed;
     }
 
@@ -248,8 +248,8 @@ class AirtableService {
         
         // Log first school to see field names
         if (schools.length > 0) {
-            console.log('🏫 SCHOOL FIELD NAMES:', Object.keys(schools[0]));
-            console.log('🏫 First school:', schools[0]);
+            // console.log('🏫 SCHOOL FIELD NAMES:', Object.keys(schools[0]));
+            // console.log('🏫 First school:', schools[0]);
         }
         
         return schools;
@@ -272,8 +272,8 @@ class AirtableService {
         
         // Log first educator to see field names
         if (result.length > 0) {
-            console.log('📋 EDUCATOR FIELD NAMES:', Object.keys(result[0]));
-            console.log('📋 FIRST EDUCATOR DATA:', result[0]);
+            // console.log('📋 EDUCATOR FIELD NAMES:', Object.keys(result[0]));
+            // console.log('📋 FIRST EDUCATOR DATA:', result[0]);
         }
 
         return result;
@@ -294,8 +294,8 @@ class AirtableService {
         
         // Log first record to see field structure
         if (result.length > 0) {
-            console.log('🔗 EDUCATORS X SCHOOLS FIELDS:', Object.keys(result[0]));
-            console.log('🔗 First relationship:', result[0]);
+            // console.log('🔗 EDUCATORS X SCHOOLS FIELDS:', Object.keys(result[0]));
+            // console.log('🔗 First relationship:', result[0]);
         }
         
         return result;
@@ -317,13 +317,13 @@ class AirtableService {
         
         // First, let's fetch ALL records to see what we're working with
         const allRecords = await this.fetchRecords(tableName, { maxRecords: 10000 });
-        console.log(`📊 Sample ${tableName} records:`, allRecords.slice(0, 2));
+        // console.log(`📊 Sample ${tableName} records:`, allRecords.slice(0, 2));
         if (allRecords.length > 0) {
-            console.log(`📋 ${tableName} field names:`, Object.keys(allRecords[0]));
+            // console.log(`📋 ${tableName} field names:`, Object.keys(allRecords[0]));
             // Check what the School field contains
             const firstRecord = allRecords[0];
-            console.log(`🔍 First record School field:`, firstRecord.School);
-            console.log(`🔍 First record school_id field:`, firstRecord.school_id);
+            // console.log(`🔍 First record School field:`, firstRecord.School);
+            // console.log(`🔍 First record school_id field:`, firstRecord.school_id);
         }
         
         // For tables that link to Schools, we need to use the correct linking approach

@@ -25,9 +25,6 @@ export const useSchoolFilters = (schools) => {
             const status = school.status;
             const isActive = status === 'Open' || status === 'Emerging';
 
-            if (!isActive) {
-                console.log('?? Filtering out school:', school.name, 'with status:', status);
-            }
 
             return isActive;
         });

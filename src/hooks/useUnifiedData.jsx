@@ -70,8 +70,6 @@ const useUnifiedEducators = (options = {}) => {
 
         if (!loading && !error && Array.isArray(rawEducatorsData) && rawEducatorsData.length > 0) {
             console.log('✅ Using educators data:', rawEducatorsData.length, 'educators');
-            console.log('🔍 Sample educator data:', rawEducatorsData[0]);
-            console.log('🔍 Educator field names:', Object.keys(rawEducatorsData[0] || {}));
             return rawEducatorsData;
         }
 
@@ -114,9 +112,7 @@ export const useEducatorsXSchools = () => {
   
         if (!loading && !error && Array.isArray(realData) && realData.length > 0) {
             console.log('✅ Using EducatorsXSchools data:', realData.length, 'relationships');
-            console.log('🔍 Sample EducatorsXSchools record:', realData[0]);
             const transformed = transformEducatorsXSchoolsData(realData);
-            console.log('🔍 Sample transformed record:', transformed[0]);
             return {
                 data: transformed,
                 loading: false,

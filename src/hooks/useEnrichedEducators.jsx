@@ -25,20 +25,12 @@ export const useEnrichedEducators = (options = {}) => {
         // Create a map of school IDs to school names
         const schoolMap = {};
         schools.forEach(school => {
-            // Log first school to see available fields
-            if (Object.keys(schoolMap).length === 0) {
-                console.log('🏫 First school fields:', Object.keys(school));
-                console.log('🏫 First school data:', school);
-            }
             const schoolName = school.shortName || school['Short Name'] || school.Name || school.name;
             if (schoolName) {
                 schoolMap[school.id] = schoolName;
             }
         });
         
-        // Log to debug the mapping
-        console.log('📚 School map sample:', Object.entries(schoolMap).slice(0, 3));
-        console.log('🔗 Relationships sample:', relationships.slice(0, 3));
         
         // Enrich each educator with their current school and role
         return educators.map(educator => {

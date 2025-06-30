@@ -139,7 +139,6 @@ export const useCachedSchoolLocations = (schoolId) => {
     
     // Check if we have valid cached data
     if (cache.data && (Date.now() - cache.timestamp < GLOBAL_CACHE_TIMEOUT)) {
-      console.log('✅ Using cached Locations data');
       // Filter from cache
       const filtered = cache.data.filter(location => {
         if (location.school_id === schoolId) return true;
@@ -147,7 +146,6 @@ export const useCachedSchoolLocations = (schoolId) => {
         if (Array.isArray(location.School) && location.School.includes(schoolId)) return true;
         return false;
       });
-      console.log(`🎯 Filtered ${filtered.length} locations for school ${schoolId} from cache`);
       return filtered;
     }
     
@@ -177,7 +175,6 @@ export const useCachedSchoolLocations = (schoolId) => {
     
     try {
       const allLocations = await airtableService.fetchRecords(tableName, { maxRecords: 10000 });
-      console.log('🌍 All locations fetched:', allLocations.length);
       
       // Update global cache
       globalTableCache[tableName] = {
@@ -194,7 +191,6 @@ export const useCachedSchoolLocations = (schoolId) => {
         return false;
       });
       
-      console.log(`🎯 Filtered ${schoolLocations.length} locations for school ${schoolId}`);
       return schoolLocations;
     } catch (error) {
       globalTableCache[tableName].loading = false;

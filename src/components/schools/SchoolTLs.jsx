@@ -18,15 +18,9 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
 
     // Filter relationships for this school and enrich with educator names
     const schoolEducators = useMemo(() => {
-        console.log('🔗 All educatorsXSchools:', educatorsXSchools);
-        console.log('🏫 Filtering for school.id:', school.id);
-        
         const relationships = educatorsXSchools.filter(exs => {
-            console.log('Comparing:', exs.schoolId, '===', school.id, '?', exs.schoolId === school.id);
             return exs.schoolId === school.id;
         });
-        
-        console.log('🎯 Filtered relationships:', relationships);
         
         // Create educator map for quick lookup
         const educatorMap = {};

@@ -31,7 +31,7 @@ class DataCache {
     const key = this.getCacheKey(type, options);
     
     if (this.isCacheValid(key)) {
-      console.log(`✅ Cache HIT for ${key}`);
+      // Cache HIT
       return {
         data: this.cache.get(key),
         loading: false,
@@ -40,7 +40,7 @@ class DataCache {
       };
     }
     
-    console.log(`❌ Cache MISS for ${key}`);
+    // Cache MISS
     return null;
   }
 
@@ -53,7 +53,7 @@ class DataCache {
     this.timestamps.set(key, Date.now());
     this.loading.set(key, false);
     
-    console.log(`💾 Cached ${key} with ${data?.length || 0} records`);
+    // Cached data
   }
 
   // Set loading state
@@ -77,7 +77,7 @@ class DataCache {
     this.errors.delete(key);
     this.timestamps.delete(key);
     
-    console.log(`🗑️ Invalidated cache for ${key}`);
+    // Invalidated cache
   }
 
   // Invalidate all cache entries for a type
@@ -97,7 +97,7 @@ class DataCache {
       this.timestamps.delete(key);
     });
     
-    console.log(`🗑️ Invalidated all cache entries for type: ${type}`);
+    // Invalidated all cache entries for type
   }
 
   // Clear all cache
@@ -107,7 +107,7 @@ class DataCache {
     this.errors.clear();
     this.timestamps.clear();
     
-    console.log('🗑️ Cleared all cache');
+    // Cleared all cache
   }
 
   // Get cache stats
