@@ -27,10 +27,11 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoad
             });
         }
         
-        // Enrich relationships with educator data
+        // Enrich relationships with educator data if available
         return relationships.map(rel => ({
             ...rel,
-            educatorName: String(educatorMap[rel.educatorId]?.['Full Name'] || rel.educatorName || 'Unknown Educator'),
+            // Use the educatorName from the relationship first, then try to enrich from allEducators
+            educatorName: rel.educatorName || educatorMap[rel.educatorId]?.['Full Name'] || 'Unknown Educator',
             educatorEmail: educatorMap[rel.educatorId]?.['Current Primary Email Address'] || null
         }));
     }, [educatorsXSchools, school.id, allEducators]);
@@ -135,7 +136,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoad
             </div>
 
             <div className="bg-white border rounded-lg overflow-hidden">
-                {(educatorsXSchoolsLoading || allEducatorsLoading) ? (
+                {(educatorsXSchoolsLoading) ? (
                     <div className="text-center py-12">
                         <div className="inline-flex flex-col items-center">
                             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
@@ -175,7 +176,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoad
                                         <div className="flex-shrink-0 h-8 w-8">
                                             <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
                                                 <span className="text-sm font-medium text-gray-600">
-                                                    {(typeof relationship.educatorName === 'string' ? relationship.educatorName.split(' ').map(n => n[0]).join('') : null) || '??'}
+                                                    {(relationship.educatorName && typeof relationship.educatorName === 'string' ? relationship.educatorName.split(' ').map(n => n[0]).join('') : '??')}
                                                 </span>
                                             </div>
                                         </div>

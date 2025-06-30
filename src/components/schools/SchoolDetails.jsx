@@ -57,7 +57,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   }
 
   // Get all educators for the stint functionality
-  const { data: allEducators, loading: allEducatorsLoading } = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
+  const { data: allEducators = [], loading: allEducatorsLoading = false } = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
   
   // Get educators x schools relationships
   const { data: educatorsXSchools } = useEducatorsXSchools();

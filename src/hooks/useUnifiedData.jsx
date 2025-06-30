@@ -15,7 +15,8 @@ import {
   useCachedMembershipFees
 } from './useCachedData';
 import { 
-  transformSchoolsData, 
+  transformSchoolsData,
+  transformEducatorsData,
   transformEducatorsXSchoolsData, 
   transformLocationsData,
   transformGovernanceDocData,
@@ -79,7 +80,7 @@ const useUnifiedEducators = (options = {}) => {
 
         if (!loading && !error && Array.isArray(rawEducatorsData) && rawEducatorsData.length > 0) {
             // Using educators data
-            return rawEducatorsData;
+            return transformEducatorsData(rawEducatorsData);
         }
 
         if (loading) {
