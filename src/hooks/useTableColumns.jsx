@@ -85,7 +85,7 @@ export const useTableColumns = (dataType) => {
                     { key: 'shortName', label: 'Name' , defaultWidth: 120,},
                     { key: 'status', label: 'Status', defaultWidth: 80, render: (value) => <StatusBadge status={value} />},
                     { key: 'governanceModel', label: 'Governance', defaultWidth: 100},
-                    { key: 'agesServed', label: 'Ages Served', defaultWidth: 150, render: (value) => <Pills values={value} colorScheme=\"green\" />},
+                    { key: 'agesServed', label: 'Ages Served', defaultWidth: 150, render: (value) => <Pills values={value} colorScheme="green" />},
                     {
                         key: 'location',
                         label: 'Location',
