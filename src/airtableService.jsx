@@ -1,6 +1,7 @@
 // src/airtableService.jsx - Updated with correct field names from metadata
 
 import { AIRTABLE_CONFIG, TABLES } from './airtableConfig.js';
+import { rateLimiter } from './utils/rateLimiter.js';
 
 
 class AirtableService {
@@ -68,10 +69,12 @@ class AirtableService {
                 //     urlLength: url.length
                 // });
 
-                const response = await fetch(url, { 
-                    headers: this.headers,
-                    mode: 'cors'
-                });
+                const response = await rateLimiter.throttle(() => 
+                    fetch(url, { 
+                        headers: this.headers,
+                        mode: 'cors'
+                    })
+                );
 
                 // console.log('📡 Airtable response:', {
                 //     status: response.status,
@@ -151,11 +154,13 @@ class AirtableService {
     async createRecord(tableName, fields) {
         try {
             const url = `${this.baseUrl}/${encodeURIComponent(tableName)}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: this.headers,
-                body: JSON.stringify({ fields })
-            });
+            const response = await rateLimiter.throttle(() =>
+                fetch(url, {
+                    method: 'POST',
+                    headers: this.headers,
+                    body: JSON.stringify({ fields })
+                })
+            );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -173,11 +178,13 @@ class AirtableService {
     async updateRecord(tableName, recordId, fields) {
         try {
             const url = `${this.baseUrl}/${encodeURIComponent(tableName)}/${recordId}`;
-            const response = await fetch(url, {
-                method: 'PATCH',
-                headers: this.headers,
-                body: JSON.stringify({ fields })
-            });
+            const response = await rateLimiter.throttle(() =>
+                fetch(url, {
+                    method: 'PATCH',
+                    headers: this.headers,
+                    body: JSON.stringify({ fields })
+                })
+            );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -195,10 +202,12 @@ class AirtableService {
     async deleteRecord(tableName, recordId) {
         try {
             const url = `${this.baseUrl}/${encodeURIComponent(tableName)}/${recordId}`;
-            const response = await fetch(url, {
-                method: 'DELETE',
-                headers: this.headers
-            });
+            const response = await rateLimiter.throttle(() =>
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: this.headers
+                })
+            );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

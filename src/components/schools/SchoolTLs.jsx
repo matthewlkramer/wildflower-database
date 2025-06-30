@@ -227,7 +227,16 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
                     </tbody>
                 </table>
 
-                {schoolEducators.length === 0 && (
+                {(educatorsXSchoolsLoading || allEducatorsLoading) && (
+                    <div className="text-center py-12">
+                        <div className="inline-flex flex-col items-center">
+                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
+                            <p className="text-gray-600">Loading educators...</p>
+                        </div>
+                    </div>
+                )}
+                
+                {!educatorsXSchoolsLoading && !allEducatorsLoading && schoolEducators.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
                         No educators assigned to this school yet.
                     </div>

@@ -11,15 +11,10 @@ const ResizableDataTable = ({
   showFilters, 
   columnFilters, 
   onColumnFilterChange,
-  tableKey // Used to save different widths for different tables
+  tableKey, // Used to save different widths for different tables
+  loading = false // New prop for loading state
 }) => {
-  // Debug log
-  console.log('🔍 ResizableDataTable Debug:', {
-    dataLength: data?.length,
-    firstItem: data?.[0],
-    columns: columns.map(c => ({ key: c.key, label: c.label })),
-    tableKey
-  });
+  // ResizableDataTable component
   // State for column widths - load from localStorage
   const [columnWidths, setColumnWidths] = useState(() => {
     const saved = localStorage.getItem(`column-widths-${tableKey}`);
@@ -150,6 +145,11 @@ const ResizableDataTable = ({
     // Apply filters and search
     const filteredData = useMemo(() => {
     let result = data;
+    
+    // Check if there are active filters
+    const hasActiveFilters = Object.values(columnFilters).some(filter => 
+      filter && (Array.isArray(filter) ? filter.length > 0 : true)
+    );
 
     // Apply search term filter
     if (searchTerm) {
@@ -337,9 +337,21 @@ const ResizableDataTable = ({
           </tbody>
         </table>
         
-        {filteredData.length === 0 && (
+        {loading && (
+          <div className="text-center py-12">
+            <div className="inline-flex flex-col items-center">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-gray-600">Loading data...</p>
+            </div>
+          </div>
+        )}
+        
+        {!loading && filteredData.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            No results found. Try adjusting your filters or search term.
+            {searchTerm || hasActiveFilters ? 
+              'No results found. Try adjusting your filters or search term.' : 
+              'No data available.'
+            }
           </div>
         )}
       </div>

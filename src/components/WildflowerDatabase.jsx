@@ -61,6 +61,20 @@ const WildflowerDatabase = () => {
                 return [];
         }
     };
+    
+    // Get loading state based on active tab
+    const isLoading = () => {
+        switch (mainTab) {
+            case TABS.SCHOOLS:
+                return schoolsResult.loading;
+            case TABS.EDUCATORS:
+                return educatorsResult.loading;
+            case TABS.CHARTERS:
+                return chartersResult.loading;
+            default:
+                return false;
+        }
+    };
 
     // Table columns
     const columns = useTableColumns(mainTab);
@@ -272,6 +286,7 @@ const WildflowerDatabase = () => {
                                 columnFilters={columnFilters}
                                 onColumnFilterChange={handleColumnFilterChange}
                                 tableKey={mainTab} // This saves different widths for schools vs educators vs charters
+                                loading={isLoading()} // Pass loading state
                                 />
                             </div>
                         </div>

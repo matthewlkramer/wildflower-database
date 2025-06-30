@@ -56,8 +56,8 @@ export const useAllTableData = () => {
 
       const data = {};
       
-      // Fetch all tables in parallel
-      const promises = TABLES_TO_CACHE.map(async (tableName) => {
+      // Fetch tables in sequence to avoid rate limiting
+      for (const tableName of TABLES_TO_CACHE) {
         try {
           const records = await airtableService.fetchRecords(tableName, { maxRecords: 10000 });
           data[tableName] = records;
@@ -65,9 +65,7 @@ export const useAllTableData = () => {
           console.error(`❌ Error fetching ${tableName}:`, err);
           data[tableName] = [];
         }
-      });
-
-      await Promise.all(promises);
+      }
 
       // Cache the results
       dataCache.set(FULL_TABLE_CACHE_KEY, data);

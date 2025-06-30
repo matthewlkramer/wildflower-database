@@ -31,8 +31,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedSchool, setEditedSchool] = useState(school);
   
-  console.log('🏫 SchoolDetails - school prop:', school);
-  console.log('🏫 School ID:', school?.id);
+  // School details received
   
   // Location modal states
   const [showLocationModal, setShowLocationModal] = useState(false);

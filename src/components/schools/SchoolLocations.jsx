@@ -8,12 +8,10 @@ const SchoolLocations = ({ school }) => {
     const [showLocationEditModal, setShowLocationEditModal] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState(null);
 
-    const { data: schoolLocations, refetch: refetchLocations } = useSchoolLocations(school.id);
+    const { data: schoolLocations, loading: locationsLoading, refetch: refetchLocations } = useSchoolLocations(school.id);
     const { updateRecord, deleteRecord, loading: mutationLoading } = useAirtableMutations();
     
-    console.log('🔍 SchoolLocations - school:', school);
-    console.log('🔍 SchoolLocations - school.id:', school.id);
-    console.log('🔍 SchoolLocations - locations data:', schoolLocations);
+    // SchoolLocations component
 
     const handleEditLocation = (location) => {
         setSelectedLocation(location);
@@ -177,7 +175,16 @@ const SchoolLocations = ({ school }) => {
                     </tbody>
                 </table>
 
-                {schoolLocations.length === 0 && (
+                {locationsLoading && (
+                    <div className="text-center py-12">
+                        <div className="inline-flex flex-col items-center">
+                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
+                            <p className="text-gray-600">Loading locations...</p>
+                        </div>
+                    </div>
+                )}
+                
+                {!locationsLoading && schoolLocations.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
                         No locations added for this school yet.
                     </div>

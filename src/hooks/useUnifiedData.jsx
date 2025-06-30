@@ -69,7 +69,7 @@ const useUnifiedEducators = (options = {}) => {
         const { data: rawEducatorsData, loading, error } = educatorsResult;
 
         if (!loading && !error && Array.isArray(rawEducatorsData) && rawEducatorsData.length > 0) {
-            console.log('✅ Using educators data:', rawEducatorsData.length, 'educators');
+            // Using educators data
             return rawEducatorsData;
         }
 
@@ -138,7 +138,7 @@ export const useSchoolLocations = (schoolId) => {
         
         if (!loading && !error && Array.isArray(realData)) {
             if (realData.length > 0) {
-                console.log('✅ Using locations data for school:', schoolId, realData.length, 'locations');
+                // Using locations data for school
                 return {
                     data: transformLocationsData(realData),
                     loading: false,
