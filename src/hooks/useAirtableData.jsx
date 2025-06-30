@@ -376,13 +376,53 @@ export const useDataFiltering = (data, searchTerm) => {
   return filteredData;
 };
 
-// Hook for fetching school locations
+// Replace your useSchoolLocations hook in useAirtableData.jsx with this fixed version:
+
 export const useSchoolLocations = (schoolId) => {
+  console.log('🚨 useSchoolLocations (REAL) hook called with schoolId:', schoolId);
+  
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchLocations = useCallback(async () => {
+  useEffect(() => {
+    console.log('🚨 useSchoolLocations useEffect triggered for schoolId:', schoolId);
+    
+    const fetchLocations = async () => {
+      console.log('🚨 fetchLocations function called for schoolId:', schoolId);
+      
+      if (!schoolId) {
+        console.log('⚠️ No schoolId provided to fetchLocations');
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        console.log('🔄 Starting fetchLocations for schoolId:', schoolId);
+        setLoading(true);
+        setError(null);
+        
+        console.log('🔄 About to call airtableService.fetchSchoolLocations...');
+        const locations = await airtableService.fetchSchoolLocations(schoolId);
+        console.log('✅ fetchSchoolLocations returned:', locations);
+        console.log('✅ Locations count:', locations?.length);
+        
+        setData(locations || []);
+      } catch (err) {
+        console.error('❌ Error in fetchLocations:', err);
+        setError(err);
+        setData([]);
+      } finally {
+        console.log('🏁 fetchLocations finished, setting loading to false');
+        setLoading(false);
+      }
+    };
+
+    fetchLocations();
+  }, [schoolId]); // Only depend on schoolId, not the callback function
+
+  // Create a stable refetch function
+  const refetch = useCallback(async () => {
     if (!schoolId) return;
     
     try {
@@ -392,15 +432,12 @@ export const useSchoolLocations = (schoolId) => {
       setData(locations || []);
     } catch (err) {
       setError(err);
-      console.error('Error fetching locations:', err);
+      setData([]);
     } finally {
       setLoading(false);
     }
   }, [schoolId]);
 
-  useEffect(() => {
-    fetchLocations();
-  }, [fetchLocations]);
-
-  return { data, loading, error, refetch: fetchLocations };
+  console.log('🚨 useSchoolLocations returning:', { data, loading, error, refetch });
+  return { data, loading, error, refetch };
 };

@@ -1,0 +1,50 @@
+// src/components/shared/ResizableDataTable.css:
+
+.resizable-table {
+  table-layout: fixed;
+}
+
+.resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  user-select: none;
+  margin-right: -4px;
+}
+
+.resize-handle:hover {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+.resize-handle.dragging {
+  background-color: rgba(59, 130, 246, 0.6);
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 20px;
+  background-color: currentColor;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.resize-handle:hover::after {
+  opacity: 0.5;
+}
+
+.resize-handle.dragging::after {
+  opacity: 1;
+}
+
+/* Prevent text selection while resizing */
+.resizing * {
+  user-select: none !important;
+}

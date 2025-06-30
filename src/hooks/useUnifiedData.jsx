@@ -1,26 +1,20 @@
+// src/hooks/useUnifiedData.jsx - Clean version without sample data
 
 import { useMemo } from 'react';
-import { useSchools, useEducators } from './useAirtableData';
-import { transformSchoolsData } from '../utils/dataTransformers.js';
 import { 
-  sampleSchools, 
-  sampleEducators, 
-  sampleCharters,
-  sampleEducatorsXSchools,
-  sampleLocations,
-  sampleSSJFilloutForms,
-  sampleEventAttendance,
-  sampleMontessoriCerts,
-  sampleEducatorNotes,
-  sampleSchoolNotes,
-  sampleActionSteps,
-  sampleMembershipFeeRecords,
-  sampleMembershipFeeUpdates,
-  sampleGovernanceDocs,
-  sampleGuideAssignments,
-  sampleGrants,
-  sampleLoans
-} from '../data/sampleData';
+  useCachedSchools, 
+  useCachedEducators, 
+  useCachedEducatorsXSchools,
+  useCachedSchoolLocations,
+  useCachedSchoolNotes,
+  useCachedActionSteps,
+  useCachedGovernanceDocs,
+  useCachedGuideAssignments,
+  useCachedGrants,
+  useCachedLoans,
+  useCachedMembershipFees
+} from './useCachedData';
+import { transformSchoolsData, transformEducatorsXSchoolsData, transformLocationsData } from '../utils/dataTransformers.js';
 import { TABS } from '../utils/constants.js';
 
 const useUnifiedData = (dataType, options = {}) => {
@@ -32,232 +26,267 @@ const useUnifiedData = (dataType, options = {}) => {
         case TABS.CHARTERS:
             return useUnifiedCharters(options);
         default:
-            return { data: [], loading: false, error: null, isUsingFallback: true };
+            return { data: [], loading: false, error: null };
     }
 };
 
 const useUnifiedSchools = (options = {}) => {
     const { includeInactive = false } = options;
-
-    // Get real data from Airtable
-    const schoolsHookResult = useSchools(includeInactive);
-
-    // Debug logging
-    console.log('🔍 Schools Hook Result:', schoolsHookResult);
-
-    // Extract data more carefully
-    const rawSchoolsData = schoolsHookResult?.data || schoolsHookResult || [];
-    const loading = schoolsHookResult?.loading || false;
-    const error = schoolsHookResult?.error || null;
+    const schoolsResult = useCachedSchools(includeInactive);
 
     const transformedData = useMemo(() => {
-        console.log('🔄 Processing schools data:', {
-            rawDataLength: rawSchoolsData?.length,
-            isArray: Array.isArray(rawSchoolsData),
-            loading,
-            error,
-            firstItem: rawSchoolsData?.[0]
-        });
+        const { data: rawSchoolsData, loading, error } = schoolsResult;
 
-        // Only use real data if we have it and it's not loading
         if (!loading && !error && Array.isArray(rawSchoolsData) && rawSchoolsData.length > 0) {
-            console.log('✅ Using REAL schools data:', rawSchoolsData.length, 'schools');
-
-            // Transform the data
-            const transformed = transformSchoolsData(rawSchoolsData);
-            console.log('🔄 Transformed data:', transformed.length, 'schools');
-
-            return transformed;
+            console.log('✅ Using schools data:', rawSchoolsData.length, 'schools');
+            return transformSchoolsData(rawSchoolsData);
         }
 
-        console.log('⚠️ Using sample data - Real data not available');
-        console.log('  Reasons: loading =', loading, ', error =', error, ', dataLength =', rawSchoolsData?.length);
+        if (loading) {
+            console.log('⏳ Schools still loading...');
+        } else if (error) {
+            console.log('❌ Schools error:', error.message);
+        } else {
+            console.log('📭 No schools data available');
+        }
 
-        // Return empty array instead of sample data to avoid confusion
         return [];
-    }, [rawSchoolsData, loading, error]);
+    }, [schoolsResult]);
 
-  return {
-    data: transformedData,
-    loading,
-    error,
-    isUsingFallback: loading || error || !Array.isArray(rawSchoolsData) || rawSchoolsData.length === 0
-  };
+    return {
+        data: transformedData,
+        loading: schoolsResult.loading,
+        error: schoolsResult.error,
+        refetch: schoolsResult.refetch
+    };
 };
 
 const useUnifiedEducators = (options = {}) => {
     const { includeInactive = false } = options;
-    const educatorsHookResult = useEducators(includeInactive);
-
-    // Extract data safely
-    const rawEducatorsData = educatorsHookResult?.data || [];
-    const loading = educatorsHookResult?.loading || false;
-    const error = educatorsHookResult?.error || null;
+    const educatorsResult = useCachedEducators(includeInactive);
 
     const data = useMemo(() => {
-        console.log('🔍 Processing educators data:', {
-            rawDataLength: rawEducatorsData?.length,
-            loading,
-            error,
-            firstItem: rawEducatorsData?.[0]
-        });
+        const { data: rawEducatorsData, loading, error } = educatorsResult;
 
         if (!loading && !error && Array.isArray(rawEducatorsData) && rawEducatorsData.length > 0) {
-            console.log('✅ Using real educators data:', rawEducatorsData.length, 'educators');
+            console.log('✅ Using educators data:', rawEducatorsData.length, 'educators');
+            console.log('🔍 Sample educator data:', rawEducatorsData[0]);
+            console.log('🔍 Educator field names:', Object.keys(rawEducatorsData[0] || {}));
             return rawEducatorsData;
         }
 
-        console.log('⚠️ Using empty educators array - Real data not available');
+        if (loading) {
+            console.log('⏳ Educators still loading...');
+        } else if (error) {
+            console.log('❌ Educators error:', error.message);
+        } else {
+            console.log('📭 No educators data available');
+        }
+
         return [];
-    }, [rawEducatorsData, loading, error]);
+    }, [educatorsResult]);
 
     return {
         data,
-        loading,
-        error,
-        isUsingFallback: data.length === 0 && !loading
+        loading: educatorsResult.loading,
+        error: educatorsResult.error,
+        refetch: educatorsResult.refetch
     };
 };
 
 const useUnifiedCharters = () => {
-  // For now, charters are always sample data since there's no real hook
-  return {
-    data: sampleCharters,
-    loading: false,
-    error: null,
-    isUsingFallback: true
-  };
+    // TODO: Implement real charters data when needed
+
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
 };
 
-// Related data hooks that always use sample data for now
+// Related data hooks - all real data, no fallbacks
 export const useEducatorsXSchools = () => {
-  return {
-    data: sampleEducatorsXSchools,
-    loading: false,
-    error: null
-  };
+    const realDataResult = useCachedEducatorsXSchools();
+    
+    return useMemo(() => {
+        const { data: realData, loading, error } = realDataResult;
+  
+        if (!loading && !error && Array.isArray(realData) && realData.length > 0) {
+            console.log('✅ Using EducatorsXSchools data:', realData.length, 'relationships');
+            return {
+                data: transformEducatorsXSchoolsData(realData),
+                loading: false,
+                error: null,
+                refetch: realDataResult.refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch: realDataResult.refetch
+        };
+    }, [realDataResult]);
 };
 
 export const useSchoolLocations = (schoolId) => {
-  const filteredLocations = sampleLocations.filter(loc => loc.schoolId === schoolId);
-  return {
-    data: filteredLocations,
-    loading: false,
-    error: null
-  };
+    const realDataResult = useCachedSchoolLocations(schoolId);
+    
+    return useMemo(() => {
+        const { data: realData, loading, error } = realDataResult;
+        
+        if (!loading && !error && Array.isArray(realData)) {
+            if (realData.length > 0) {
+                console.log('✅ Using locations data for school:', schoolId, realData.length, 'locations');
+                return {
+                    data: transformLocationsData(realData),
+                    loading: false,
+                    error: null,
+                    refetch: realDataResult.refetch
+                };
+            } else {
+                console.log('📭 No locations found for school:', schoolId);
+            }
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch: realDataResult.refetch
+        };
+    }, [realDataResult, schoolId]);
 };
 
-export const useSSJForms = (educatorId) => {
-  const filteredForms = sampleSSJFilloutForms.filter(form => form.educatorId === educatorId);
-  return {
-    data: filteredForms,
-    loading: false,
-    error: null
-  };
-};
-
-export const useEventAttendance = (educatorId) => {
-  const filteredEvents = sampleEventAttendance.filter(event => event.educatorId === educatorId);
-  return {
-    data: filteredEvents,
-    loading: false,
-    error: null
-  };
-};
-
-export const useMontessoriCerts = (educatorId) => {
-  const filteredCerts = sampleMontessoriCerts.filter(cert => cert.educatorId === educatorId);
-  return {
-    data: filteredCerts,
-    loading: false,
-    error: null
-  };
-};
-
-export const useEducatorNotes = (educatorId) => {
-  const filteredNotes = sampleEducatorNotes.filter(note => note.educatorId === educatorId);
-  return {
-    data: filteredNotes,
-    loading: false,
-    error: null
-  };
-};
-
+// Clean school-specific data hooks
 export const useSchoolNotes = (schoolId) => {
-  const filteredNotes = sampleSchoolNotes.filter(note => note.schoolId === schoolId);
-  return {
-    data: filteredNotes,
-    loading: false,
-    error: null
-  };
+    const result = useCachedSchoolNotes(schoolId);
+    
+    return {
+        data: result.data || [],
+        loading: result.loading,
+        error: result.error,
+        refetch: result.refetch
+    };
 };
 
 export const useActionSteps = (schoolId) => {
-  const filteredActions = sampleActionSteps.filter(action => action.schoolId === schoolId);
-  return {
-    data: filteredActions,
-    loading: false,
-    error: null
-  };
-};
-
-export const useMembershipFeeRecords = (schoolId) => {
-  const filteredRecords = sampleMembershipFeeRecords.filter(record => record.schoolId === schoolId);
-  return {
-    data: filteredRecords,
-    loading: false,
-    error: null
-  };
-};
-
-export const useMembershipFeeUpdates = (schoolId, schoolYear = null) => {
-  let filteredUpdates = sampleMembershipFeeUpdates.filter(update => update.schoolId === schoolId);
-  
-  if (schoolYear) {
-    filteredUpdates = filteredUpdates.filter(update => update.schoolYear === schoolYear);
-  }
-  
-  return {
-    data: filteredUpdates,
-    loading: false,
-    error: null
-  };
+    const result = useCachedActionSteps(schoolId);
+    
+    return {
+        data: result.data || [],
+        loading: result.loading,
+        error: result.error,
+        refetch: result.refetch
+    };
 };
 
 export const useGovernanceDocs = (schoolId) => {
-  const filteredDocs = sampleGovernanceDocs.filter(doc => doc.schoolId === schoolId);
-  return {
-    data: filteredDocs,
-    loading: false,
-    error: null
-  };
+    const result = useCachedGovernanceDocs(schoolId);
+    
+    return {
+        data: result.data || [],
+        loading: result.loading,
+        error: result.error,
+        refetch: result.refetch
+    };
 };
 
 export const useGuideAssignments = (schoolId) => {
-  const filteredAssignments = sampleGuideAssignments.filter(assignment => assignment.schoolId === schoolId);
-  return {
-    data: filteredAssignments,
-    loading: false,
-    error: null
-  };
+    const result = useCachedGuideAssignments(schoolId);
+    
+    return {
+        data: result.data || [],
+        loading: result.loading,
+        error: result.error,
+        refetch: result.refetch
+    };
 };
 
 export const useGrants = (schoolId) => {
-  const filteredGrants = sampleGrants.filter(grant => grant.schoolId === schoolId);
-  return {
-    data: filteredGrants,
-    loading: false,
-    error: null
-  };
+    const result = useCachedGrants(schoolId);
+    
+    return {
+        data: result.data || [],
+        loading: result.loading,
+        error: result.error,
+        refetch: result.refetch
+    };
 };
 
 export const useLoans = (schoolId) => {
-  const filteredLoans = sampleLoans.filter(loan => loan.schoolId === schoolId);
-  return {
-    data: filteredLoans,
-    loading: false,
-    error: null
-  };
+    const result = useCachedLoans(schoolId);
+    
+    return {
+        data: result.data || [],
+        loading: result.loading,
+        error: result.error,
+        refetch: result.refetch
+    };
+};
+
+export const useMembershipFeeRecords = (schoolId) => {
+    const result = useCachedMembershipFees(schoolId);
+    
+    return {
+        data: result.data || [],
+        loading: result.loading,
+        error: result.error,
+        refetch: result.refetch
+    };
+};
+
+// Placeholder hooks for features not yet implemented
+export const useSSJForms = (educatorId) => {
+
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
+};
+
+export const useEventAttendance = (educatorId) => {
+
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
+};
+
+export const useMontessoriCerts = (educatorId) => {
+
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
+};
+
+export const useEducatorNotes = (educatorId) => {
+    console.log('⚠️ Educator Notes not implemented yet for educator:', educatorId);
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
+};
+
+export const useMembershipFeeUpdates = (schoolId, schoolYear = null) => {
+    console.log('⚠️ Membership Fee Updates not implemented yet for school:', schoolId, 'year:', schoolYear);
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
 };
 
 export default useUnifiedData;

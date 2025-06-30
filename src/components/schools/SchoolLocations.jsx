@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Plus, CheckCircle, XCircle } from 'lucide-react';
 import { useSchoolLocations } from '../../hooks/useUnifiedData';
 import { useAirtableMutations } from '../../hooks/useAirtableData';
-import LocationEditModal from '../../LocationEditModal';
+import LocationEditModal from '../modals/LocationEditModal';
 
 const SchoolLocations = ({ school }) => {
     const [showLocationEditModal, setShowLocationEditModal] = useState(false);

@@ -1,8 +1,8 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 
 // Import components
-import DataTable from './shared/DataTable';
+import ResizableDataTable from './shared/ResizableDataTable'; // CAN WE DELETE THE PLAIN DATATABLE.JS FILE?
 import SchoolDetails from './schools/SchoolDetails';
 import EducatorDetails from './educators/EducatorDetails';
 import CharterDetails from './charters/CharterDetails';
@@ -21,6 +21,7 @@ import { TABS } from '../utils/constants.js';
 
 const WildflowerDatabase = () => {
     const [mainTab, setMainTab] = useState(TABS.SCHOOLS);
+    
 
     // Navigation
     const { selectedItem, navigateToItem, navigateBack, navigateToEducator } = useNavigation();
@@ -37,30 +38,15 @@ const WildflowerDatabase = () => {
         hasActiveFilters
     } = useFilters();
 
-    // Data fetching - FIXED: Get all data first, then filter
+    // Data fetching - get all data first, then filter
     const schoolsResult = useUnifiedData(TABS.SCHOOLS, { includeInactive: true });
-    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true }); // Always get all data
+    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
     const chartersResult = useUnifiedData(TABS.CHARTERS);
+    
 
     // Apply filters to the data
     const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
     const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
-    // Add this temporary test after your hooks
-    useEffect(() => {
-        const testEducatorsAPI = async () => {
-            try {
-                console.log('🧪 Testing Educators API directly...');
-                const { airtableService } = await import('../airtableService.jsx');
-                const allEducators = await airtableService.fetchEducators(true);
-                console.log('🧪 Direct API call result:', allEducators.length, 'educators');
-            } catch (error) {
-                console.error('🧪 Direct API test failed:', error);
-            }
-        };
-
-        testEducatorsAPI();
-    }, []); // Run once on mount
-
 
     // Get current data based on active tab
     const getCurrentData = () => {
@@ -79,11 +65,11 @@ const WildflowerDatabase = () => {
     // Table columns
     const columns = useTableColumns(mainTab);
 
-    // Tab counts - FIXED: Use filtered educators length
+    // Tab counts
     const mainTabs = useTabCounts(
         filteredSchools || [],
         schoolsResult.loading,
-        filteredEducators || [], // Use filtered educators for count
+        filteredEducators || [],
         chartersResult.data || [],
         includeInactiveSchools
     );
@@ -100,6 +86,7 @@ const WildflowerDatabase = () => {
 
     // Show loading state
     if (educatorsResult.loading && mainTab === TABS.EDUCATORS) {
+        console.log('🔄 Showing educators loading state');
         return (
             <div className="h-screen flex items-center justify-center">
                 <div className="text-center">
@@ -140,7 +127,7 @@ const WildflowerDatabase = () => {
         <div className="h-screen flex flex-col bg-gray-50">
             {/* Header with title and main tabs */}
             <div className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full px-6 lg:px-8 xl:px-12">
                     <div className="flex items-center justify-between py-4">
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
@@ -152,7 +139,9 @@ const WildflowerDatabase = () => {
                             {mainTabs.map((tab) => (
                                 <button
                                     key={tab.id}
-                                    onClick={() => setMainTab(tab.id)}
+                                    onClick={() => {
+                                        setMainTab(tab.id);
+                                    }}
                                     className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${mainTab === tab.id
                                             ? 'bg-blue-100 text-blue-700'
                                             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
@@ -168,7 +157,7 @@ const WildflowerDatabase = () => {
 
             {/* Main content area */}
             <div className="flex-1 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
+                <div className="w-full px-6 lg:px-8 xl:px-12">
                     <div className="bg-white rounded-lg shadow h-full flex flex-col">
                         {/* Controls bar */}
                         <div className="p-6 border-b">
@@ -244,21 +233,21 @@ const WildflowerDatabase = () => {
 
                         {/* Data table */}
                         <div className="flex-1 overflow-auto">
-                            <DataTable
-                                data={getCurrentData()}
-                                columns={columns}
-                                onRowClick={handleRowClick}
-                                searchTerm={searchTerm}
-                                showFilters={showFilters}
-                                columnFilters={columnFilters}
-                                onColumnFilterChange={handleColumnFilterChange}
+                            <ResizableDataTable 
+                            data={getCurrentData()}
+                            columns={columns}
+                            onRowClick={handleRowClick}
+                            searchTerm={searchTerm}
+                            showFilters={showFilters}
+                            columnFilters={columnFilters}
+                            onColumnFilterChange={handleColumnFilterChange}
+                            tableKey={mainTab} // This saves different widths for schools vs educators vs charters
                             />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    );
-};
+    )};
 
 export default WildflowerDatabase;

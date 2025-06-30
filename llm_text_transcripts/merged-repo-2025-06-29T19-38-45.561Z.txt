@@ -1,7 +1,54 @@
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\ADDEDUCATORSTINTMODAL.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\INDEX.HTML CODE IS BELOW
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\PACKAGE.JSON CODE IS BELOW
+{
+  "name": "wildflower-database",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lucide-react": "^0.523.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "eslint": "^9.29.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.2.0",
+    "vite": "^7.0.0"
+  }
+}
+
+
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\ADDEDUCATORSTINTMODAL.JSX CODE IS BELOW
 import React, { useState, useMemo } from 'react';
 import { X, Search } from 'lucide-react';
+import { EDUCATOR_ROLES } from './utils/constants.js';
 
 const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducators }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,14 +57,7 @@ const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducato
   const [currentlyActive, setCurrentlyActive] = useState(true);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-  const roleOptions = [
-    'Founder',
-    'Teacher Leader',
-    'Head of School',
-    'Assistant Teacher',
-    'Support Staff',
-    'Board Member'
-  ];
+    const roleOptions = EDUCATOR_ROLES;
 
   const filteredEducators = useMemo(() => {
     return allEducators.filter(educator =>
@@ -186,40 +226,55 @@ const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducato
 
 export default AddEducatorStintModal;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\AIRTABLECONFIG.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\AIRTABLECONFIG.JS CODE IS BELOW
 export const AIRTABLE_CONFIG = {
-  BASE_ID: 'appJBT9a4f3b7hWQ2',
-  API_KEY: 'patPJ0FQbeJOXZV6q.47a003922253003392f41b305cb163caba0c18ec6be85ee4bb1219d89c453048',
-  BASE_URL: 'https://api.airtable.com/v0'
+    BASE_ID: import.meta.env.VITE_AIRTABLE_BASE_ID || 'appJBT9a4f3b7hWQ2',
+    API_KEY: import.meta.env.VITE_AIRTABLE_API_KEY || 'patPJ0FQbeJOXZV6q.47a003922253003392f41b305cb163caba0c18ec6be85ee4bb1219d89c453048',
+    BASE_URL: 'https://api.airtable.com/v0'
 };
 
 // Table names mapping from your Airtable (these must match exactly)
 export const TABLES = {
-  SCHOOLS: 'Schools',
-  EDUCATORS: 'Educators', 
-  CHARTERS: 'Charters',
-  EDUCATORS_X_SCHOOLS: 'Educators x Schools',
-  LOCATIONS: 'Locations',
-  SCHOOL_NOTES: 'School notes',
-  EDUCATOR_NOTES: 'Educator notes',
-  GRANTS: 'Grants',
-  LOANS: 'Loans',
-  ACTION_STEPS: 'Action steps',
-  MEMBERSHIP_FEE_OVERVIEW: 'Membership fee overview',
-  MEMBERSHIP_FEE_UPDATES: 'Membership fee change log',
-  SSJ_FILLOUT_FORMS: 'SSJ Fillout Forms',
-  EVENT_ATTENDANCE: 'Event attendance',
-  MONTESSORI_CERTS: 'Montessori Certs',
-  GUIDES_ASSIGNMENTS: 'Guides Assignments',
-  GOVERNANCE_DOCS: 'Governance docs',
-  EMAIL_ADDRESSES: 'Email Addresses',
-  NINE_NINETIES: '990s',
-  FAMILY_SURVEYS: 'Family Survey',
-  ASSESSMENT_DATA: 'Assessment data'
+    SCHOOLS: 'Schools',
+    EDUCATORS: 'Educators',
+    CHARTERS: 'Charters',
+    EDUCATORS_X_SCHOOLS: 'Educators x Schools',
+    LOCATIONS: 'Locations',
+    SCHOOL_NOTES: 'School notes',
+    EDUCATOR_NOTES: 'Educator notes',
+    GRANTS: 'Grants',
+    LOANS: 'Loans',
+    ACTION_STEPS: 'Action steps',
+    MEMBERSHIP_FEE_OVERVIEW: 'Membership fee overview',
+    MEMBERSHIP_FEE_UPDATES: 'Membership fee change log',
+    SSJ_FILLOUT_FORMS: 'SSJ Fillout Forms',
+    EVENT_ATTENDANCE: 'Event attendance',
+    MONTESSORI_CERTS: 'Montessori Certs',
+    GUIDES_ASSIGNMENTS: 'Guides Assignments',
+    GOVERNANCE_DOCS: 'Governance docs',
+    EMAIL_ADDRESSES: 'Email Addresses',
+    NINE_NINETIES: '990s',
+    FAMILY_SURVEYS: 'Family Survey',
+    ASSESSMENT_DATA: 'Assessment data'
 };
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\AIRTABLESERVICE.JSX CODE IS BELOW
-import { AIRTABLE_CONFIG, TABLES } from './airtableConfig.jsx';
+// API Rate limiting configuration
+export const API_CONFIG = {
+    MAX_REQUESTS_PER_SECOND: 5,
+    REQUEST_DELAY: 200, // milliseconds
+    RETRY_ATTEMPTS: 3,
+    RETRY_DELAY: 1000 // milliseconds
+};
+
+// Environment-specific settings
+export const ENV_CONFIG = {
+    isDevelopment: import.meta.env.DEV,
+    isProduction: import.meta.env.PROD,
+    enableDebugLogs: import.meta.env.VITE_DEBUG_LOGS === 'true'
+};
+
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\AIRTABLESERVICE.JSX CODE IS BELOW
+import { AIRTABLE_CONFIG, TABLES } from './airtableConfig.js';
 
 class AirtableService {
     constructor() {
@@ -260,10 +315,35 @@ class AirtableService {
 
                 const url = `${this.baseUrl}/${encodeURIComponent(tableName)}?${params}`;
                 console.log(`📄 Fetching page ${pageCount + 1} from ${tableName}...`);
+
+                console.log('🔗 Making Airtable request:', {
+                    tableName: tableName,
+                    pageCount: pageCount + 1,
+                    hasApiKey: !!this.headers.Authorization,
+                    baseId: AIRTABLE_CONFIG.BASE_ID,
+                    urlLength: url.length
+                });
+
                 const response = await fetch(url, { headers: this.headers });
 
+                console.log('📡 Airtable response:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    ok: response.ok,
+                    tableName: tableName,
+                    pageCount: pageCount + 1
+                });
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error('❌ Airtable API Error:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        error: errorText,
+                        tableName: tableName,
+                        url: url.substring(0, 100) + '...'
+                    });
+                    throw new Error(`Airtable API error: ${response.status} - ${errorText}`);
                 }
 
                 const data = await response.json();
@@ -398,23 +478,21 @@ class AirtableService {
 
     // Fetch educators
     async fetchEducators(includeInactive = false) {
-        console.log('🔄 Fetching educators with includeInactive:', includeInactive);
+        console.log('🚨 DEBUG: fetchEducators called with includeInactive:', includeInactive);
 
         const options = {
             sort: { field: 'Last Name', direction: 'asc' },
+            // No filterByFormula - should get ALL educators
         };
 
-        // Add filter for active educators only (default behavior)
-        if (!includeInactive) {
-            // Filter out:
-            // 1. Discovery status = "Paused" 
-            // 2. Individual type = "Community member"
-            // Note: We'll handle the "no active school relationships" filter in the hook
-            options.filterByFormula = `AND({Discovery status} != 'Paused',{Individual type} != 'Community member')`;
-        }
+        console.log('🚨 DEBUG: Calling fetchRecords with options:', options);
+        console.log('🚨 DEBUG: Should get ALL 3002 educators from Airtable');
 
-        console.log('🔄 Fetching educators with options:', options);
-        return this.fetchRecords(TABLES.EDUCATORS, options);
+        const result = await this.fetchRecords(TABLES.EDUCATORS, options);
+
+        console.log('🚨 DEBUG: fetchEducators result length:', result.length);
+
+        return result;
     }
 
     // Fetch charters
@@ -564,7 +642,7 @@ class AirtableService {
 
 export const airtableService = new AirtableService();
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\APP.CSS CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\APP.CSS CODE IS BELOW
 @import 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
 
 body {
@@ -576,7 +654,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\APP.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\APP.JSX CODE IS BELOW
 // src/App.jsx
 import React from 'react';
 import WildflowerDatabase from './components/WildflowerDatabase.jsx';
@@ -592,7 +670,10 @@ function App() {
 
 export default App;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\CHARTERS\CHARTERDETAILS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\ASSETS\REACT.SVG CODE IS BELOW
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\CHARTERS\CHARTERDETAILS.JSX CODE IS BELOW
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 
@@ -619,7 +700,7 @@ const CharterDetails = ({ charter, onBack }) => {
 
 export default CharterDetails;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\EDUCATORS\EDUCATORDETAILS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\EDUCATORS\EDUCATORDETAILS.JSX CODE IS BELOW
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 
@@ -648,7 +729,7 @@ const EducatorDetails = ({ educator, onBack }) => {
 
 export default EducatorDetails;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\EDUCATORS\EDUCATORSUMMARY.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\EDUCATORS\EDUCATORSUMMARY.JSX CODE IS BELOW
 import React, { useState } from 'react';
 import DetailRow from '../shared/DetailRow';
 import StatusBadge from '../shared/StatusBadge';
@@ -706,18 +787,33 @@ const EducatorSummary = ({ educator }) => {
 export default EducatorSummary;
 
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLDETAILS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLDETAILS.JSX CODE IS BELOW
 // src/components/schools/SchoolDetails.jsx
+// Updated to use your enhanced DetailRow component
+
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import TabContainer from '../shared/TabContainer';
-import SchoolSummary from './SchoolSummary';
-import SchoolTLs from './SchoolTLs';
-import SchoolLocations from './SchoolLocations';
-// Import other school tab components...
+import { ArrowLeft, CheckCircle, XCircle, Plus, ExternalLink, FileText } from 'lucide-react';
+import StatusBadge from '../shared/StatusBadge';
+import DetailRow, { EditableDetailRow } from '../shared/DetailRow';
+// Import the sample data and hooks you need
+import { 
+  sampleEducatorsXSchools,
+  sampleLocations,
+  sampleSchoolNotes,
+  sampleActionSteps,
+  sampleGovernanceDocs,
+  sampleGuideAssignments,
+  sampleGrants,
+  sampleLoans,
+  sampleMembershipFeeRecords,
+  sampleMembershipFeeUpdates
+} from '../../data/sampleData';
 
 const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   const [activeTab, setActiveTab] = useState('summary');
+  const [selectedSchoolYear, setSelectedSchoolYear] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSchool, setEditedSchool] = useState(school);
 
   const tabs = [
     { id: 'summary', label: 'Summary' },
@@ -732,15 +828,66 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     { id: 'notes-actions', label: 'Notes/Action steps' }
   ];
 
+  // Helper functions for data (same as before)
+  const getSchoolEducators = () => sampleEducatorsXSchools.filter(exs => exs.schoolId === school.id);
+  const getSchoolLocations = () => sampleLocations.filter(loc => loc.schoolId === school.id);
+  const getSchoolNotes = () => sampleSchoolNotes.filter(note => note.schoolId === school.id);
+  const getActionSteps = () => sampleActionSteps.filter(action => action.schoolId === school.id);
+  const getGovernanceDocs = () => sampleGovernanceDocs.filter(doc => doc.schoolId === school.id);
+  const getGuideAssignments = () => sampleGuideAssignments.filter(assignment => assignment.schoolId === school.id);
+  const getGrants = () => sampleGrants.filter(grant => grant.schoolId === school.id);
+  const getLoans = () => sampleLoans.filter(loan => loan.schoolId === school.id);
+  const getMembershipFeeRecords = () => sampleMembershipFeeRecords.filter(record => record.schoolId === school.id);
+  const getMembershipFeeUpdates = (schoolYear) => sampleMembershipFeeUpdates.filter(update => 
+    update.schoolId === school.id && (!schoolYear || update.schoolYear === schoolYear)
+  );
+
+  // Edit functionality
+  const handleEditSave = () => {
+    console.log('Saving school data:', editedSchool);
+    setIsEditing(false);
+  };
+
+  const handleEditCancel = () => {
+    setEditedSchool(school);
+    setIsEditing(false);
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditedSchool(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Tab content rendering
   const renderTabContent = () => {
     switch (activeTab) {
       case 'summary':
-        return <SchoolSummary school={school} />;
+        return renderSummaryTab();
       case 'tls':
-        return <SchoolTLs school={school} onEducatorOpen={onEducatorOpen} />;
+        return renderTLsTab();
       case 'locations':
-        return <SchoolLocations school={school} />;
-      // Add other cases...
+        return renderLocationsTab();
+      case 'governance':
+        return renderGovernanceTab();
+      case 'guides':
+        return renderGuidesTab();
+      case 'ssj-oss':
+        return renderSSJOSSTab();
+      case 'membership-fees':
+        return renderMembershipFeesTab();
+      case 'grants-loans':
+        return renderGrantsLoansTab();
+      case 'notes-actions':
+        return renderNotesActionsTab();
+      case 'linked-mtgs':
+        return (
+          <div className="text-center py-8 text-gray-500">
+            <h3 className="text-lg font-semibold mb-2">Linked Meetings/Emails</h3>
+            <p>This section will be implemented later</p>
+          </div>
+        );
       default:
         return (
           <div className="text-center py-8 text-gray-500">
@@ -750,22 +897,914 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     }
   };
 
+  const renderSummaryTab = () => (
+    <div className="space-y-8">
+      {/* Edit Button */}
+      <div className="flex justify-end">
+        {!isEditing ? (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+          >
+            Edit
+          </button>
+        ) : (
+          <div className="flex space-x-2">
+            <button
+              onClick={handleEditSave}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm"
+            >
+              Update
+            </button>
+            <button
+              onClick={handleEditCancel}
+              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Header Section */}
+      <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+        {/* School Logo */}
+        <div className="row-span-3 flex items-center justify-center">
+          <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+            <FileText className="w-16 h-16 text-gray-400" />
+          </div>
+        </div>
+        
+        {/* Basic Info using enhanced DetailRow */}
+        {isEditing ? (
+          <>
+            <EditableDetailRow 
+              label="School Name" 
+              field="name" 
+              value={editedSchool.name}
+              onChange={handleInputChange}
+              required
+            />
+            <EditableDetailRow 
+              label="Short Name" 
+              field="shortName" 
+              value={editedSchool.shortName}
+              onChange={handleInputChange}
+            />
+            <EditableDetailRow 
+              label="Ages Served" 
+              field="agesServed" 
+              value={editedSchool.agesServed}
+              onChange={handleInputChange}
+              type="array"
+              placeholder="Primary, Lower Elementary, etc."
+            />
+            <EditableDetailRow 
+              label="Governance Model" 
+              field="governanceModel" 
+              value={editedSchool.governanceModel}
+              onChange={handleInputChange}
+              type="select"
+              options={['Independent', 'Charter', 'District']}
+            />
+            <EditableDetailRow 
+              label="Founders" 
+              field="founders" 
+              value={editedSchool.founders}
+              onChange={handleInputChange}
+              type="array"
+              placeholder="Founder names"
+            />
+            <EditableDetailRow 
+              label="Current TLs" 
+              field="currentTLs" 
+              value={editedSchool.currentTLs}
+              onChange={handleInputChange}
+              type="array"
+              placeholder="Teacher leader names"
+            />
+            <EditableDetailRow 
+              label="School Open Date" 
+              field="schoolOpenDate" 
+              value={editedSchool.schoolOpenDate || editedSchool.opened}
+              onChange={handleInputChange}
+              type="date"
+            />
+            <EditableDetailRow 
+              label="School Status" 
+              field="status" 
+              value={editedSchool.status}
+              onChange={handleInputChange}
+              type="select"
+              options={['Emerging', 'Open', 'Permanently Closed', 'Disaffiliated', 'Disaffiliating']}
+            />
+            <EditableDetailRow 
+              label="Membership Status" 
+              field="membershipStatus" 
+              value={editedSchool.membershipStatus}
+              onChange={handleInputChange}
+              type="select"
+              options={['Member School', 'Pending', 'Former Member']}
+            />
+          </>
+        ) : (
+          <>
+            <DetailRow label="School Name" value={editedSchool.name} />
+            <DetailRow label="Short Name" value={editedSchool.shortName} />
+            <DetailRow label="Ages Served" value={editedSchool.agesServed} />
+            <DetailRow label="Governance Model" value={editedSchool.governanceModel} />
+            <DetailRow label="Founders" value={editedSchool.founders} />
+            <DetailRow label="Current TLs" value={editedSchool.currentTLs} />
+            <DetailRow label="School Open Date" value={editedSchool.schoolOpenDate || editedSchool.opened} type="date" />
+            <DetailRow label="School Status" value={<StatusBadge status={editedSchool.status} />} />
+            <DetailRow label="Membership Status" value={<StatusBadge status={editedSchool.membershipStatus} />} />
+          </>
+        )}
+      </div>
+
+      {/* Additional School Information */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900">School Information</h3>
+        <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+          {isEditing ? (
+            <>
+              <EditableDetailRow 
+                label="Program Focus" 
+                field="programFocus" 
+                value={editedSchool.programFocus}
+                onChange={handleInputChange}
+                placeholder="Nature-based Montessori, etc."
+              />
+              <EditableDetailRow 
+                label="Max Capacity" 
+                field="maxCapacityEnrollments" 
+                value={editedSchool.maxCapacityEnrollments}
+                onChange={handleInputChange}
+                type="number"
+              />
+              <EditableDetailRow 
+                label="Number of Classrooms" 
+                field="numberOfClassrooms" 
+                value={editedSchool.numberOfClassrooms}
+                onChange={handleInputChange}
+                type="number"
+              />
+              <EditableDetailRow 
+                label="Public Funding" 
+                field="publicFunding" 
+                value={editedSchool.publicFunding}
+                onChange={handleInputChange}
+                type="boolean"
+              />
+            </>
+          ) : (
+            <>
+              <DetailRow label="Program Focus" value={editedSchool.programFocus} />
+              <DetailRow label="Max Capacity" value={editedSchool.maxCapacityEnrollments} />
+              <DetailRow label="Number of Classrooms" value={editedSchool.numberOfClassrooms} />
+              <DetailRow label="Public Funding" value={editedSchool.publicFunding} />
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Contact Information */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900">Contact Information</h3>
+        <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+          {isEditing ? (
+            <>
+              <EditableDetailRow 
+                label="School Email" 
+                field="schoolEmail" 
+                value={editedSchool.schoolEmail}
+                onChange={handleInputChange}
+                type="email"
+              />
+              <EditableDetailRow 
+                label="School Phone" 
+                field="phone" 
+                value={editedSchool.phone}
+                onChange={handleInputChange}
+                type="phone"
+              />
+              <EditableDetailRow 
+                label="Website" 
+                field="website" 
+                value={editedSchool.website}
+                onChange={handleInputChange}
+                type="url"
+              />
+              <EditableDetailRow 
+                label="Email Domain" 
+                field="emailDomain" 
+                value={editedSchool.emailDomain}
+                onChange={handleInputChange}
+                placeholder="schoolname.org"
+              />
+            </>
+          ) : (
+            <>
+              <DetailRow label="School Email" value={editedSchool.schoolEmail} type="email" />
+              <DetailRow label="School Phone" value={editedSchool.phone} type="phone" />
+              <DetailRow label="Website" value={editedSchool.website} type="url" />
+              <DetailRow label="Email Domain" value={editedSchool.emailDomain} />
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Legal Information */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900">Legal Entity</h3>
+        <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+          {isEditing ? (
+            <>
+              <EditableDetailRow 
+                label="EIN" 
+                field="ein" 
+                value={editedSchool.ein}
+                onChange={handleInputChange}
+                placeholder="99-1234567"
+              />
+              <EditableDetailRow 
+                label="Legal Name" 
+                field="legalName" 
+                value={editedSchool.legalName}
+                onChange={handleInputChange}
+              />
+              <EditableDetailRow 
+                label="Incorporation Date" 
+                field="incorporationDate" 
+                value={editedSchool.incorporationDate}
+                onChange={handleInputChange}
+                type="date"
+              />
+              <EditableDetailRow 
+                label="Nonprofit Status" 
+                field="nonprofitStatus" 
+                value={editedSchool.nonprofitStatus}
+                onChange={handleInputChange}
+                type="select"
+                options={['501(c)(3)', 'group exemption', 'pending', 'for-profit']}
+              />
+            </>
+          ) : (
+            <>
+              <DetailRow label="EIN" value={editedSchool.ein} />
+              <DetailRow label="Legal Name" value={editedSchool.legalName} />
+              <DetailRow label="Incorporation Date" value={editedSchool.incorporationDate} type="date" />
+              <DetailRow label="Nonprofit Status" value={editedSchool.nonprofitStatus} />
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ... (keeping all the other tab render functions the same as before, but with enhanced DetailRow usage where applicable)
+  
+  const renderTLsTab = () => {
+    const educators = getSchoolEducators();
+    
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold">Teacher Leaders & Staff</h3>
+          <div className="flex space-x-2">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Add stint for educator in database
+            </button>
+            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Create new educator in database
+            </button>
+          </div>
+        </div>
+        
+        <div className="bg-white border rounded-lg overflow-hidden">
+          <table className="min-w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Educator
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Role(s)
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Start Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  End Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Currently Active
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {educators.map(relationship => (
+                <tr key={relationship.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-8 w-8">
+                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-sm font-medium text-gray-600">
+                            {relationship.educatorName.split(' ').map(n => n[0]).join('')}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {relationship.educatorName}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-wrap gap-1">
+                      {relationship.roles.map((role, index) => (
+                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {role}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {relationship.startDate}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {relationship.endDate || '-'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {relationship.currentlyActive ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600" />
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
+                      <button 
+                        onClick={() => onEducatorOpen && onEducatorOpen(relationship.educatorId)}
+                        className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                      >
+                        Open
+                      </button>
+                      <button className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700">
+                        End stint
+                      </button>
+                      <button className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700">
+                        Delete stint
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          
+          {educators.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              No educators assigned to this school yet.
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Add the rest of the tab functions here...
+  const renderLocationsTab = () => {
+    const locations = getSchoolLocations();
+    
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold">Locations</h3>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Location
+          </button>
+        </div>
+        
+        <div className="bg-white border rounded-lg overflow-hidden">
+          <table className="min-w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Mailing</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Physical</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {locations.map(location => (
+                <tr key={location.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">{location.address}</div>
+                    <div className="text-sm text-gray-500">{location.locationType}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{location.startDate}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{location.endDate || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {location.currentMailingAddress ? <CheckCircle className="w-5 h-5 text-green-600" /> : <XCircle className="w-5 h-5 text-red-600" />}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {location.currentPhysicalAddress ? <CheckCircle className="w-5 h-5 text-green-600" /> : <XCircle className="w-5 h-5 text-red-600" />}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
+                      <button className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">Edit</button>
+                      <button className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700">End period</button>
+                      <button className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {locations.length === 0 && (
+            <div className="text-center py-8 text-gray-500">No locations added for this school yet.</div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderGovernanceTab = () => {
+    const docs = getGovernanceDocs();
+    
+    return (
+      <div className="grid grid-cols-2 gap-8">
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">Board Members</h3>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+              <Plus className="w-4 h-4 mr-2" />Add Member
+            </button>
+          </div>
+          <div className="bg-white border rounded-lg overflow-hidden">
+            <div className="text-center py-8 text-gray-500">No board members added yet.</div>
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">Policies and Documents</h3>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+              <Plus className="w-4 h-4 mr-2" />Add Document
+            </button>
+          </div>
+          <div className="bg-white border rounded-lg overflow-hidden">
+            <table className="min-w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {docs.map(doc => (
+                  <tr key={doc.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-4">
+                      <div className="text-sm font-medium text-gray-900">{doc.documentType}</div>
+                      {doc.docNotes && <div className="text-sm text-gray-500 mt-1">{doc.docNotes}</div>}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{doc.date}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                      <button onClick={() => window.open(doc.docLink, '_blank')} className="text-blue-600 hover:text-blue-900 mr-3">
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
+                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {docs.length === 0 && <div className="text-center py-8 text-gray-500">No governance documents added yet.</div>}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderGuidesTab = () => {
+    const guides = getGuideAssignments();
+    
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold">Guide Assignments</h3>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+            <Plus className="w-4 h-4 mr-2" />Add Assignment
+          </button>
+        </div>
+        
+        <div className="bg-white border rounded-lg overflow-hidden">
+          <table className="min-w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guide</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Currently Active</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {guides.map(assignment => (
+                <tr key={assignment.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-8 w-8">
+                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-sm font-medium text-gray-600">
+                            {assignment.guideShortName.split(' ').map(n => n[0]).join('')}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">{assignment.guideShortName}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      {assignment.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment.startDate}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment.endDate || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {assignment.currentlyActive ? <CheckCircle className="w-5 h-5 text-green-600" /> : <XCircle className="w-5 h-5 text-red-600" />}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
+                    <button className="text-red-600 hover:text-red-900">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {guides.length === 0 && <div className="text-center py-8 text-gray-500">No guide assignments for this school yet.</div>}
+        </div>
+      </div>
+    );
+  };
+
+  const renderSSJOSSTab = () => (
+    <div className="grid grid-cols-4 gap-8">
+      <div className="space-y-4">
+        <DetailRow label="SSJ Stage" value={school.ssjStage} />
+        <DetailRow label="SSJ - Target City" value={school.ssjTargetCity} />
+        <DetailRow label="SSJ - Board development" value={school.ssjBoardDevelopment} />
+        <DetailRow label="SSJ - Has the ETL identified a partner?" value={school.ssjHasETLPartner} />
+        <DetailRow label="SSJ - Total Startup Funding Needed" value={school.ssjTotalStartupFunding} type="currency" />
+        <DetailRow label="SSJ - Fundraising narrative" value={school.ssjFundraisingNarrative} type="multiline" />
+      </div>
+      <div className="space-y-4">
+        <DetailRow label="SSJ - Original Projected Open Date" value={school.ssjOriginalProjectedOpenDate} type="date" />
+        <DetailRow label="SSJ - Target State" value={school.ssjTargetState} />
+        <DetailRow label="SSJ - Readiness to Open Rating" value={school.ssjReadinessRating} />
+        <DetailRow label="SSJ - Facility" value={school.ssjFacility} />
+        <DetailRow label="Building4Good Firm & Attorney" value={school.building4GoodFirm} />
+      </div>
+      <div className="space-y-4">
+        <DetailRow label="SSJ - Proj Open School Year" value={school.ssjProjOpenSchoolYear} />
+        <DetailRow label="Risk Factors" value={school.riskFactors} />
+        <DetailRow label="Entered Visioning Date" value={school.enteredVisioningDate} type="date" />
+        <DetailRow label="Entered Planning Date" value={school.enteredPlanningDate} type="date" />
+        <DetailRow label="Entered Startup Date" value={school.enteredStartupDate} type="date" />
+      </div>
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <DetailRow label="SSJ - Projected Open" value={school.ssjProjectedOpen} type="date" />
+          <DetailRow label="Watchlist" value={school.watchlist} />
+        </div>
+        <div>
+          <h4 className="text-lg font-semibold mb-4 text-gray-900">Systems</h4>
+          <div className="space-y-4">
+            <DetailRow label="Google Voice" value={school.googleVoice} />
+            <DetailRow label="Budget Utility" value={school.budgetUtility} />
+            <DetailRow label="Admissions System" value={school.admissionsSystem} />
+            <DetailRow label="QBO" value={school.qbo} />
+            <DetailRow label="Website tool" value={school.websiteTool} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderMembershipFeesTab = () => {
+    const feeRecords = getMembershipFeeRecords();
+    const selectedRecord = selectedSchoolYear ? feeRecords.find(record => record.schoolYear === selectedSchoolYear) : null;
+    const membershipUpdates = selectedSchoolYear ? getMembershipFeeUpdates(selectedSchoolYear) : [];
+
+    return (
+      <div className="grid grid-cols-12 gap-8">
+        <div className="col-span-3">
+          <h3 className="text-lg font-semibold mb-4">School Years</h3>
+          <div className="space-y-2">
+            {feeRecords.map(record => (
+              <button
+                key={record.id}
+                onClick={() => setSelectedSchoolYear(record.schoolYear)}
+                className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                  selectedSchoolYear === record.schoolYear ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-gray-200 hover:bg-gray-50'
+                }`}
+              >
+                {record.schoolYear}
+              </button>
+            ))}
+            {feeRecords.length === 0 && <div className="text-center py-8 text-gray-500">No fee records found</div>}
+          </div>
+        </div>
+
+        <div className="col-span-5">
+          {selectedRecord ? (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">{selectedRecord.schoolYear} Details</h3>
+              <div className="bg-white border rounded-lg p-6">
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                  <DetailRow label="School Year" value={selectedRecord.schoolYear} />
+                  <DetailRow label="Initial Fee" value={selectedRecord.initialFee} type="currency" />
+                  <DetailRow label="Revised Amount" value={selectedRecord.revisedAmount} type="currency" />
+                  <DetailRow label="Amount Paid" value={selectedRecord.amountPaid} type="currency" />
+                  <DetailRow label="Amount Receivable" value={selectedRecord.amountReceivable} type="currency" />
+                  <DetailRow label="Revenue" value={selectedRecord.revenue} type="currency" />
+                  <DetailRow label="Exemption Status" value={selectedRecord.exemptionStatus} />
+                  <DetailRow label="Nth Year" value={selectedRecord.nthYear} />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <h3 className="text-lg font-semibold mb-2">Select a School Year</h3>
+              <p>Choose a school year from the left to view fee details</p>
+            </div>
+          )}
+        </div>
+
+        <div className="col-span-4">
+          {selectedSchoolYear ? (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">{selectedSchoolYear} Updates</h3>
+              <div className="space-y-3">
+                {membershipUpdates.map(update => (
+                  <div key={update.id} className="bg-white border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-900">{update.updateType}</span>
+                      <span className="text-sm text-gray-500">{update.date}</span>
+                    </div>
+                    {update.amountPaid && (
+                      <div className="text-sm text-green-600 mb-1">Amount: ${update.amountPaid.toLocaleString()}</div>
+                    )}
+                    {update.revisedFeeAmount && (
+                      <div className="text-sm text-blue-600 mb-1">New Fee: ${update.revisedFeeAmount.toLocaleString()}</div>
+                    )}
+                    <div className="text-sm text-gray-600">{update.explanation}</div>
+                  </div>
+                ))}
+                {membershipUpdates.length === 0 && <div className="text-center py-8 text-gray-500">No updates for this school year</div>}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">Select a school year to view updates</div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderGrantsLoansTab = () => {
+    const grants = getGrants();
+    const loans = getLoans();
+    
+    return (
+      <div className="grid grid-cols-2 gap-8">
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">Grants</h3>
+            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm">
+              <Plus className="w-4 h-4 mr-2" />Create New Grant
+            </button>
+          </div>
+          
+          <div className="bg-white border rounded-lg overflow-hidden">
+            <table className="min-w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issued By</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {grants.map(grant => (
+                  <tr key={grant.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{grant.issueDate}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${grant.amount.toLocaleString()}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{grant.issuedBy}</div>
+                      <div className="text-sm text-gray-500">{grant.partnerName}</div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={grant.status} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                      <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
+                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {grants.length === 0 && <div className="text-center py-8 text-gray-500">No grants found for this school.</div>}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">Loans</h3>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+              <Plus className="w-4 h-4 mr-2" />Create New Loan
+            </button>
+          </div>
+          
+          <div className="bg-white border rounded-lg overflow-hidden">
+            <table className="min-w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {loans.map(loan => (
+                  <tr key={loan.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{loan.issueDate}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">${loan.amount.toLocaleString()}</div>
+                      <div className="text-sm text-gray-500">{loan.interestRate * 100}% interest</div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={loan.status} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                      <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
+                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {loans.length === 0 && <div className="text-center py-8 text-gray-500">No loans found for this school.</div>}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderNotesActionsTab = () => {
+    const notes = getSchoolNotes();
+    const actions = getActionSteps();
+    
+    return (
+      <div className="grid grid-cols-2 gap-8">
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">School Notes</h3>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm">
+              <Plus className="w-4 h-4 mr-2" />Add Note
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            {notes.map(note => (
+              <div key={note.id} className="bg-white border rounded-lg p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0 h-8 w-8">
+                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          {note.createdBy.split(' ').map(n => n[0]).join('')}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{note.createdBy}</div>
+                      <div className="text-sm text-gray-500">{note.createdDate}</div>
+                    </div>
+                    {note.isPrivate && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Private
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button className="text-blue-600 hover:text-blue-900 text-sm">Edit</button>
+                    <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
+                  </div>
+                </div>
+                <div className="text-sm text-gray-900">{note.noteText}</div>
+              </div>
+            ))}
+            {notes.length === 0 && <div className="text-center py-8 text-gray-500">No notes found for this school.</div>}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">Action Steps</h3>
+            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm">
+              <Plus className="w-4 h-4 mr-2" />Add Action
+            </button>
+          </div>
+          
+          <div className="bg-white border rounded-lg overflow-hidden">
+            <table className="min-w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignee</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {actions.map(action => (
+                  <tr key={action.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <div className="text-sm font-medium text-gray-900">{action.item}</div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{action.assignee}</td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={action.status} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{action.dueDate}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                      <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {actions.length === 0 && <div className="text-center py-8 text-gray-500">No action steps found for this school.</div>}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <TabContainer
-      title={school.name}
-      tabs={tabs}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      onBack={onBack}
-    >
-      {renderTabContent()}
-    </TabContainer>
+    <div className="h-full flex flex-col bg-white">
+      <div className="border-b bg-gray-50 px-6 py-4">
+        <div className="flex items-center mb-4">
+          <button 
+            onClick={onBack}
+            className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">{school.name}</h1>
+        </div>
+        
+        <div className="flex space-x-8 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6">
+        {renderTabContent()}
+      </div>
+    </div>
   );
 };
 
 export default SchoolDetails;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLLOCATIONS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLLOCATIONS.JSX CODE IS BELOW
 import React, { useState } from 'react';
 import { Plus, CheckCircle, XCircle } from 'lucide-react';
 import { useSchoolLocations } from '../../hooks/useUnifiedData';
@@ -964,7 +2003,7 @@ const SchoolLocations = ({ school }) => {
 
 export default SchoolLocations;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLSUMMARY.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLSUMMARY.JSX CODE IS BELOW
 import React, { useState } from 'react';
 import { FileText } from 'lucide-react';
 import DetailRow from '../shared/DetailRow';
@@ -1025,7 +2064,7 @@ const SchoolSummary = ({ school }) => {
 
 export default SchoolSummary;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLTLS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SCHOOLS\SCHOOLTLS.JSX CODE IS BELOW
 import React, { useState } from 'react';
 import { Plus, CheckCircle, XCircle } from 'lucide-react';
 import { useEducatorsXSchools } from '../../hooks/useUnifiedData';
@@ -1268,175 +2307,191 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
 
 export default SchoolTLs;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\DATATABLE.JSX CODE IS BELOW
-import React, { useMemo } from 'react';
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\DATATABLE.JSX CODE IS BELOW
+import React, { useMemo, useState, useEffect } from 'react';
 import MultiSelectDropdown from './MultiSelectDropdown';
 
-const DataTable = ({ 
-  data, 
-  columns, 
-  onRowClick, 
-  searchTerm, 
-  showFilters, 
-  columnFilters, 
-  onColumnFilterChange 
+const DataTable = ({
+    data,
+    columns,
+    onRowClick,
+    searchTerm,
+    showFilters,
+    columnFilters,
+    onColumnFilterChange
 }) => {
-  // Define which columns should use multi-select
-  const multiSelectColumns = {
-    'status': true,
-    'agesServed': true,
-    'governanceModel': true,
-    'membershipStatus': true
-  };
+    // Add debounced search term
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm || '');
 
-  // Get unique values for multi-select columns
-  const getUniqueValues = (columnKey) => {
-    const values = new Set();
-    data.forEach(item => {
-      const value = item[columnKey];
-      if (Array.isArray(value)) {
-        value.forEach(v => v && values.add(v));
-      } else if (value) {
-        values.add(value);
-      }
-    });
-    return Array.from(values).sort();
-  };
+    // Debounce search term
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm || '');
+        }, 300);
 
-  // Apply both search and column filters
-  const filteredData = useMemo(() => {
-    let result = data;
-    
-    // Apply search term filter
-    if (searchTerm) {
-      result = result.filter(item => 
-        Object.values(item).some(value => {
-          if (Array.isArray(value)) {
-            return value.some(v => v && v.toString().toLowerCase().includes(searchTerm.toLowerCase()));
-          }
-          return value && value.toString().toLowerCase().includes(searchTerm.toLowerCase());
-        })
-      );
-    }
-    
-    // Apply column filters
-    Object.entries(columnFilters).forEach(([columnKey, filterValue]) => {
-      if (filterValue) {
-        if (multiSelectColumns[columnKey] && Array.isArray(filterValue) && filterValue.length > 0) {
-          // Multi-select filter logic
-          result = result.filter(item => {
-            const itemValue = item[columnKey];
-            if (Array.isArray(itemValue)) {
-              // Check if any of the item's values match any selected filter values
-              return itemValue.some(val => filterValue.includes(val));
-            } else {
-              // Check if the item's value matches any selected filter values
-              return filterValue.includes(itemValue);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+    // Define which columns should use multi-select
+    const multiSelectColumns = {
+        'status': true,
+        'agesServed': true,
+        'governanceModel': true,
+        'membershipStatus': true,
+        'discoveryStatus': true,
+        'individualType': true,
+        'raceEthnicity': true,
+        'role': true
+    };
+
+    // Get unique values for multi-select columns
+    const getUniqueValues = (columnKey) => {
+        const values = new Set();
+        data.forEach(item => {
+            const value = item[columnKey];
+            if (Array.isArray(value)) {
+                value.forEach(v => v && values.add(v));
+            } else if (value) {
+                values.add(value);
             }
-          });
-        } else if (typeof filterValue === 'string' && filterValue.trim()) {
-          // Text filter logic
-          result = result.filter(item => {
-            const itemValue = item[columnKey];
-            if (itemValue == null) return false;
-            if (Array.isArray(itemValue)) {
-              return itemValue.some(val => 
-                val && val.toString().toLowerCase().includes(filterValue.toLowerCase())
-              );
-            }
-            return itemValue.toString().toLowerCase().includes(filterValue.toLowerCase());
-          });
+        });
+        return Array.from(values).sort();
+    };
+
+    // Apply both search and column filters
+    const filteredData = useMemo(() => {
+        let result = data;
+
+        // Apply search term filter with debounced value
+        if (debouncedSearchTerm) {
+            result = result.filter(item =>
+                Object.values(item).some(value => {
+                    if (Array.isArray(value)) {
+                        return value.some(v => v && v.toString().toLowerCase().includes(debouncedSearchTerm.toLowerCase()));
+                    }
+                    return value && value.toString().toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+                })
+            );
         }
-      }
-    });
-    
-    return result;
-  }, [data, searchTerm, columnFilters]);
 
-  const handleColumnFilterChange = (columnKey, value) => {
-    if (onColumnFilterChange) {
-      onColumnFilterChange(columnKey, value);
-    }
-  };
+        // Apply column filters
+        Object.entries(columnFilters).forEach(([columnKey, filterValue]) => {
+            if (filterValue) {
+                if (multiSelectColumns[columnKey] && Array.isArray(filterValue) && filterValue.length > 0) {
+                    // Multi-select filter logic
+                    result = result.filter(item => {
+                        const itemValue = item[columnKey];
+                        if (Array.isArray(itemValue)) {
+                            // Check if any of the item's values match any selected filter values
+                            return itemValue.some(val => filterValue.includes(val));
+                        } else {
+                            // Check if the item's value matches any selected filter values
+                            return filterValue.includes(itemValue);
+                        }
+                    });
+                } else if (typeof filterValue === 'string' && filterValue.trim()) {
+                    // Text filter logic
+                    result = result.filter(item => {
+                        const itemValue = item[columnKey];
+                        if (itemValue == null) return false;
+                        if (Array.isArray(itemValue)) {
+                            return itemValue.some(val =>
+                                val && val.toString().toLowerCase().includes(filterValue.toLowerCase())
+                            );
+                        }
+                        return itemValue.toString().toLowerCase().includes(filterValue.toLowerCase());
+                    });
+                }
+            }
+        });
 
-  const renderFilterInput = (col) => {
-    if (multiSelectColumns[col.key]) {
-      const options = getUniqueValues(col.key);
-      const selectedValues = columnFilters[col.key] || [];
-      
-      return (
-        <MultiSelectDropdown
-          options={options}
-          selectedValues={selectedValues}
-          onChange={(values) => handleColumnFilterChange(col.key, values)}
-          placeholder={`Filter ${col.label}...`}
-        />
-      );
-    } else {
-      return (
-        <input
-          type="text"
-          placeholder={`Filter ${col.label}...`}
-          value={columnFilters[col.key] || ''}
-          onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
-          className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-        />
-      );
-    }
-  };
+        return result;
+    }, [data, debouncedSearchTerm, columnFilters]); // Now debouncedSearchTerm is properly defined
 
-  return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white">
-        <thead className="bg-gray-50">
-          <tr>
-            {columns.map((col) => (
-              <th key={col.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {col.label}
-              </th>
-            ))}
-          </tr>
-          
-          {/* Filter Row */}
-          {showFilters && (
-            <tr className="bg-gray-100">
-              {columns.map((col) => (
-                <th key={`filter-${col.key}`} className="px-6 py-2">
-                  {renderFilterInput(col)}
-                </th>
-              ))}
-            </tr>
-          )}
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {filteredData.map((item) => (
-            <tr 
-              key={item.id} 
-              className="hover:bg-gray-50 cursor-pointer transition-colors"
-              onClick={() => onRowClick && onRowClick(item)}
-            >
-              {columns.map((col) => (
-                <td key={col.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {col.render ? col.render(item[col.key], item) : item[col.key] || '-'}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      
-      {filteredData.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No results found. Try adjusting your filters or search term.
+    const handleColumnFilterChange = (columnKey, value) => {
+        if (onColumnFilterChange) {
+            onColumnFilterChange(columnKey, value);
+        }
+    };
+
+    const renderFilterInput = (col) => {
+        if (multiSelectColumns[col.key]) {
+            const options = getUniqueValues(col.key);
+            const selectedValues = columnFilters[col.key] || [];
+
+            return (
+                <MultiSelectDropdown
+                    options={options}
+                    selectedValues={selectedValues}
+                    onChange={(values) => handleColumnFilterChange(col.key, values)}
+                    placeholder={`Filter ${col.label}...`}
+                />
+            );
+        } else {
+            return (
+                <input
+                    type="text"
+                    placeholder={`Filter ${col.label}...`}
+                    value={columnFilters[col.key] || ''}
+                    onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+            );
+        }
+    };
+
+    return (
+        <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+                <thead className="bg-gray-50">
+                    <tr>
+                        {columns.map((col) => (
+                            <th key={col.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {col.label}
+                            </th>
+                        ))}
+                    </tr>
+
+                    {/* Filter Row */}
+                    {showFilters && (
+                        <tr className="bg-gray-100">
+                            {columns.map((col) => (
+                                <th key={`filter-${col.key}`} className="px-6 py-2">
+                                    {renderFilterInput(col)}
+                                </th>
+                            ))}
+                        </tr>
+                    )}
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredData.map((item) => (
+                        <tr
+                            key={item.id}
+                            className="hover:bg-gray-50 cursor-pointer transition-colors"
+                            onClick={() => onRowClick && onRowClick(item)}
+                        >
+                            {columns.map((col) => (
+                                <td key={col.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {col.render ? col.render(item[col.key], item) : item[col.key] || '-'}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {filteredData.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                    No results found. Try adjusting your filters or search term.
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default DataTable;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\DETAILROW.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\DETAILROW.JSX CODE IS BELOW
 import React from 'react';
 import { CheckCircle, XCircle, ExternalLink } from 'lucide-react';
 
@@ -1753,12 +2808,20 @@ export const EditableDetailRow = ({
 
 export default DetailRow;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\MULTISELECTDROPDOWN.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\MULTISELECTDROPDOWN.JSX CODE IS BELOW
 // src/components/shared/MultiSelectDropdown.jsx
+// Replace your entire MultiSelectDropdown.jsx file with this:
+
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 
-const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder }) => {
+const MultiSelectDropdown = ({ 
+  options, 
+  selectedValues, 
+  onChange, 
+  placeholder,
+  containerWidth // New prop for width control
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -1785,20 +2848,55 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
     onChange([]);
   };
 
+  // Enhanced options with "empty" option
+  const enhancedOptions = React.useMemo(() => {
+    const opts = [...options];
+    
+    // Add "empty" option at the beginning if not already present
+    if (!opts.includes('(empty)')) {
+      opts.unshift('(empty)');
+    }
+    
+    return opts;
+  }, [options]);
+
+  // Container style for width control
+  const containerStyle = containerWidth ? { width: `${containerWidth}px` } : {};
+
+  // Display text for selected values
+  const getDisplayText = () => {
+    if (selectedValues.length === 0) {
+      return placeholder;
+    }
+    
+    if (selectedValues.length === 1) {
+      const value = selectedValues[0];
+      return value === '(empty)' ? 'Empty/None' : value;
+    }
+    
+    // Handle multiple selections
+    const hasEmpty = selectedValues.includes('(empty)');
+    const nonEmptyCount = selectedValues.filter(v => v !== '(empty)').length;
+    
+    if (hasEmpty && nonEmptyCount > 0) {
+      return `${selectedValues.length} selected (incl. empty)`;
+    } else if (hasEmpty) {
+      return 'Empty/None';
+    } else {
+      return `${selectedValues.length} selected`;
+    }
+  };
+
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} style={containerStyle}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-left flex items-center justify-between"
+        style={containerStyle}
       >
         <span className="truncate">
-          {selectedValues.length === 0 
-            ? placeholder 
-            : selectedValues.length === 1 
-              ? selectedValues[0] 
-              : `${selectedValues.length} selected`
-          }
+          {getDisplayText()}
         </span>
         <div className="flex items-center space-x-1">
           {selectedValues.length > 0 && (
@@ -1815,23 +2913,75 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-          {options.map((option) => (
-            <label
-              key={option}
-              className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={selectedValues.includes(option)}
-                onChange={() => handleToggleOption(option)}
-                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-sm">{option}</span>
-            </label>
-          ))}
-          {options.length === 0 && (
-            <div className="px-3 py-2 text-sm text-gray-500">No options available</div>
+        <div 
+          className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
+          style={containerWidth ? { width: `${containerWidth}px` } : {}}
+        >
+          {enhancedOptions.map((option) => {
+            const isEmptyOption = option === '(empty)';
+            const isSelected = selectedValues.includes(option);
+            
+            return (
+              <label
+                key={option}
+                className={`flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors ${
+                  isEmptyOption ? 'border-b border-gray-200 bg-gray-25' : ''
+                } ${isSelected ? 'bg-blue-50' : ''}`}
+              >
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => handleToggleOption(option)}
+                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className={`text-sm ${
+                  isEmptyOption ? 'italic text-gray-500 font-medium' : ''
+                }`}>
+                  {isEmptyOption ? 'Empty/None' : option}
+                </span>
+                {isEmptyOption && (
+                  <span className="ml-auto text-xs text-gray-400">
+                    (no value)
+                  </span>
+                )}
+              </label>
+            );
+          })}
+          
+          {enhancedOptions.length === 1 && enhancedOptions[0] === '(empty)' && (
+            <div className="px-3 py-2 text-sm text-gray-500 italic">
+              Only empty values found
+            </div>
+          )}
+          
+          {enhancedOptions.length === 0 && (
+            <div className="px-3 py-2 text-sm text-gray-500">
+              No options available
+            </div>
+          )}
+          
+          {/* Summary at bottom if multiple selections */}
+          {selectedValues.length > 1 && (
+            <div className="border-t border-gray-200 px-3 py-2 bg-gray-50">
+              <div className="text-xs text-gray-600">
+                {selectedValues.length} of {enhancedOptions.length} selected
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {selectedValues.includes('(empty)') && (
+                  <span className="inline-block bg-gray-200 rounded px-1 mr-1">
+                    Empty
+                  </span>
+                )}
+                {selectedValues.filter(v => v !== '(empty)').slice(0, 3).map(val => (
+                  <span key={val} className="inline-block bg-blue-100 rounded px-1 mr-1">
+                    {val.length > 8 ? val.substring(0, 8) + '...' : val}
+                  </span>
+                ))}
+                {selectedValues.filter(v => v !== '(empty)').length > 3 && (
+                  <span className="text-gray-400">+{selectedValues.filter(v => v !== '(empty)').length - 3} more</span>
+                )}
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -1841,7 +2991,492 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
 
 export default MultiSelectDropdown;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\STATUSBADGE.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\RESIZABLEDATATABLE.CSS CODE IS BELOW
+// src/components/shared/ResizableDataTable.css:
+
+.resizable-table {
+  table-layout: fixed;
+}
+
+.resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  user-select: none;
+  margin-right: -4px;
+}
+
+.resize-handle:hover {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+.resize-handle.dragging {
+  background-color: rgba(59, 130, 246, 0.6);
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 20px;
+  background-color: currentColor;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.resize-handle:hover::after {
+  opacity: 0.5;
+}
+
+.resize-handle.dragging::after {
+  opacity: 1;
+}
+
+/* Prevent text selection while resizing */
+.resizing * {
+  user-select: none !important;
+}
+
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\RESIZABLEDATATABLE.JSX CODE IS BELOW
+// src/components/shared/ResizableDataTable.jsx
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
+import MultiSelectDropdown from './MultiSelectDropdown';
+import './ResizableDataTable.css';
+
+const ResizableDataTable = ({ 
+  data, 
+  columns, 
+  onRowClick, 
+  searchTerm, 
+  showFilters, 
+  columnFilters, 
+  onColumnFilterChange,
+  tableKey // Used to save different widths for different tables
+}) => {
+  // State for column widths - load from localStorage
+  const [columnWidths, setColumnWidths] = useState(() => {
+    const saved = localStorage.getItem(`column-widths-${tableKey}`);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.warn('Failed to parse saved column widths');
+      }
+    }
+    
+    // Default widths based on column defaults
+    const defaults = {};
+    columns.forEach((col) => {
+      defaults[col.key] = col.defaultWidth || 150;
+    });
+    return defaults;
+  });
+
+  // Save to localStorage whenever widths change
+  useEffect(() => {
+    localStorage.setItem(`column-widths-${tableKey}`, JSON.stringify(columnWidths));
+  }, [columnWidths, tableKey]);
+
+  // Update column widths when columns change (handles switching between tables)
+  useEffect(() => {
+    setColumnWidths(prev => {
+      const updated = { ...prev };
+      columns.forEach(col => {
+        if (!(col.key in updated)) {
+          updated[col.key] = col.defaultWidth || 150;
+        }
+      });
+      return updated;
+    });
+  }, [columns]);
+
+  // Multi-select column configuration
+  const multiSelectColumns = {
+    'status': true,
+    'agesServed': true,
+    'governanceModel': true,
+    'membershipStatus': true,
+    'raceEthnicity': true,
+    'role': true,
+    'discoveryStatus': true
+    };
+
+  // Handle column resize
+  const handleColumnResize = useCallback((columnKey, newWidth) => {
+    const minWidth = 80; // Minimum column width
+    const maxWidth = 500; // Maximum column width
+    const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+    
+    setColumnWidths(prev => ({
+      ...prev,
+      [columnKey]: clampedWidth
+    }));
+  }, []);
+
+  // Reset all column widths to defaults
+  const resetColumnWidths = () => {
+    const defaults = {};
+    columns.forEach((col) => {
+      defaults[col.key] = col.defaultWidth || 150;
+    });
+    setColumnWidths(defaults);
+  };
+
+  // Auto-fit column to content
+  const autoFitColumn = (columnKey) => {
+    // This is a simple heuristic - you could make it more sophisticated
+    const column = columns.find(col => col.key === columnKey);
+    if (!column) return;
+
+    // Calculate based on header length and some sample data
+    const headerLength = column.label.length * 8 + 40; // rough estimate
+    
+    // Check a few sample values to estimate content width
+    const sampleValues = data.slice(0, 5).map(item => {
+      const value = item[columnKey];
+      if (Array.isArray(value)) {
+        return value.join(', ');
+      }
+      return String(value || '');
+    });
+    
+    const maxContentLength = Math.max(...sampleValues.map(v => v.length));
+    const contentWidth = maxContentLength * 8 + 40;
+    
+    const optimalWidth = Math.max(headerLength, contentWidth, 80);
+    handleColumnResize(columnKey, Math.min(optimalWidth, 300));
+  };
+
+    const getUniqueValues = (columnKey) => {
+    const values = new Set();
+    let hasEmpty = false;
+    
+    data.forEach(item => {
+        const value = item[columnKey];
+        if (Array.isArray(value)) {
+        if (value.length === 0) {
+            hasEmpty = true;
+        } else {
+            value.forEach(v => {
+            if (v && v !== '') {
+                values.add(v);
+            } else {
+                hasEmpty = true;
+            }
+            });
+        }
+        } else if (value && value !== '') {
+        values.add(value);
+        } else {
+        hasEmpty = true;
+        }
+    });
+    
+    const sortedValues = Array.from(values).sort();
+    
+    // Don't add (empty) here since MultiSelectDropdown handles it
+    return sortedValues;
+    };
+    
+
+    // Apply filters and search
+    const filteredData = useMemo(() => {
+    let result = data;
+    
+    // Apply search term filter
+    if (searchTerm) {
+        result = result.filter(item => 
+        Object.values(item).some(value => {
+            if (Array.isArray(value)) {
+            return value.some(v => v && v.toString().toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+            return value && value.toString().toLowerCase().includes(searchTerm.toLowerCase());
+        })
+        );
+    }
+  
+    // Apply column filters with enhanced empty support
+    Object.entries(columnFilters).forEach(([columnKey, filterValue]) => {
+        if (filterValue) {
+        if (multiSelectColumns[columnKey] && Array.isArray(filterValue) && filterValue.length > 0) {
+            // Enhanced multi-select filter logic with empty support
+            result = result.filter(item => {
+            const itemValue = item[columnKey];
+            
+            // Check for empty values
+            if (filterValue.includes('(empty)')) {
+                const isEmpty = !itemValue || 
+                            (Array.isArray(itemValue) && itemValue.length === 0) ||
+                            itemValue === '' || 
+                            itemValue === null || 
+                            itemValue === undefined;
+                
+                if (isEmpty) return true;
+            }
+            
+            // Check for non-empty values
+            const nonEmptyFilters = filterValue.filter(f => f !== '(empty)');
+            if (nonEmptyFilters.length === 0) return false;
+            
+            if (Array.isArray(itemValue)) {
+                return itemValue.some(val => nonEmptyFilters.includes(val));
+            } else {
+                return nonEmptyFilters.includes(itemValue);
+            }
+            });
+        } else if (typeof filterValue === 'string' && filterValue.trim()) {
+            // Text filter logic
+            result = result.filter(item => {
+            const itemValue = item[columnKey];
+            if (itemValue == null) return false;
+            if (Array.isArray(itemValue)) {
+                return itemValue.some(val => 
+                val && val.toString().toLowerCase().includes(filterValue.toLowerCase())
+                );
+            }
+            return itemValue.toString().toLowerCase().includes(filterValue.toLowerCase());
+            });
+        }
+        }
+    });
+    
+    return result;
+    }, [data, searchTerm, columnFilters]);
+
+  const handleColumnFilterChange = (columnKey, value) => {
+    if (onColumnFilterChange) {
+      onColumnFilterChange(columnKey, value);
+    }
+  };
+
+  const renderFilterInput = (col) => {
+  if (multiSelectColumns[col.key]) {
+    const options = getUniqueValues(col.key);
+    const selectedValues = columnFilters[col.key] || [];
+    
+    return (
+      <MultiSelectDropdown
+        options={options}
+        selectedValues={selectedValues}
+        onChange={(values) => handleColumnFilterChange(col.key, values)}
+        placeholder={`Filter ${col.label}...`}
+        // Remove containerWidth prop - let it fill the container naturally
+      />
+    );
+  } else {
+    return (
+      <input
+        type="text"
+        placeholder={`Filter ${col.label}...`}
+        value={columnFilters[col.key] || ''}
+        onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
+        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+      />
+    );
+  }
+};
+
+  return (
+    <div className="relative">
+      {/* Column controls toolbar */}
+      <div className="mb-3 flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+        <span className="text-gray-600">
+          💡 Drag column borders to resize • Double-click to auto-fit
+        </span>
+        <button
+          onClick={resetColumnWidths}
+          className="text-blue-600 hover:text-blue-800 underline"
+        >
+          Reset Widths
+        </button>
+      </div>
+
+      <div className="overflow-x-auto border border-gray-200 rounded-lg">
+        <table className="min-w-full bg-white">
+          <thead className="bg-gray-50">
+            <tr>
+              {columns.map((col, index) => {
+                const width = columnWidths[col.key] || 150;
+                const isLastColumn = index === columns.length - 1;
+                
+                return (
+                  <th 
+                    key={col.key}
+                    style={{ width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` }}
+                    className="relative bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider select-none"
+                  >
+                    <div className="flex items-center justify-between px-6 py-3">
+                      <span 
+                        className="truncate cursor-pointer"
+                        onDoubleClick={() => autoFitColumn(col.key)}
+                        title={`Double-click to auto-fit "${col.label}"`}
+                      >
+                        {col.label}
+                      </span>
+                    </div>
+                    
+                    {/* Resize handle */}
+                    {!isLastColumn && (
+                      <ResizeHandle
+                        columnKey={col.key}
+                        onResize={handleColumnResize}
+                        currentWidth={width}
+                      />
+                    )}
+                  </th>
+                );
+              })}
+            </tr>
+            
+            {/* Filter Row */}
+            {showFilters && (
+                <tr className="bg-gray-100">
+                    {columns.map((col, index) => {
+                    const width = columnWidths[col.key] || 150;
+                    const isLastColumn = index === columns.length - 1;
+                    
+                    return (
+                        <th 
+                        key={`filter-${col.key}`}
+                        style={{ width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` }}
+                        className="relative px-2 py-2 bg-gray-100"
+                        >
+                        <div className="w-full">
+                            {renderFilterInput(col)}
+                        </div>
+                        
+                        {/* Resize handle for filter row too */}
+                        {!isLastColumn && (
+                            <div className="absolute right-0 top-0 bottom-0 w-1 bg-transparent" />
+                        )}
+                        </th>
+                    );
+                    })}
+                </tr>
+                )}
+          </thead>
+          
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredData.map((item) => (
+              <tr 
+                key={item.id} 
+                className="hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => onRowClick && onRowClick(item)}
+              >
+                {columns.map((col) => {
+                  const width = columnWidths[col.key] || 150;
+                  
+                  return (
+                    <td 
+                      key={col.key}
+                      style={{ width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` }}
+                      className="px-6 py-4 text-sm text-gray-900"
+                    >
+                      <div className="truncate" title={item[col.key]}>
+                        {col.render ? col.render(item[col.key], item) : item[col.key] || '-'}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        {filteredData.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No results found. Try adjusting your filters or search term.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Resize handle component
+const ResizeHandle = ({ columnKey, onResize, currentWidth }) => {
+  const [isResizing, setIsResizing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const startX = useRef(0);
+  const startWidth = useRef(0);
+
+  const handleMouseDown = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsResizing(true);
+    setIsDragging(true);
+    startX.current = e.clientX;
+    startWidth.current = currentWidth;
+    
+    // Add a class to body to prevent text selection while dragging
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+  }, [currentWidth]);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing) return;
+      
+      const deltaX = e.clientX - startX.current;
+      const newWidth = startWidth.current + deltaX;
+      
+      onResize(columnKey, newWidth);
+    };
+
+    const handleMouseUp = () => {
+      if (isResizing) {
+        setIsResizing(false);
+        setIsDragging(false);
+        
+        // Restore body styles
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      }
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      // Also handle mouse leave to stop resizing if mouse goes outside window
+      document.addEventListener('mouseleave', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseleave', handleMouseUp);
+    };
+  }, [isResizing, columnKey, onResize]);
+
+  return (
+    <div
+      className={`absolute right-0 top-0 bottom-0 w-2 cursor-col-resize group ${
+        isDragging ? 'bg-blue-400' : ''
+      }`}
+      onMouseDown={handleMouseDown}
+      style={{ marginRight: '-4px' }} // Center the handle on the border
+    >
+      {/* Visual indicator */}
+      <div className={`h-full w-1 ml-0.5 transition-colors ${
+        isDragging 
+          ? 'bg-blue-500' 
+          : 'bg-transparent group-hover:bg-blue-300'
+      }`} />
+    </div>
+  );
+};
+
+export default ResizableDataTable;
+
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\STATUSBADGE.JSX CODE IS BELOW
 // src/components/shared/StatusBadge.jsx
 import React from 'react';
 
@@ -1883,7 +3518,7 @@ const StatusBadge = ({ status }) => {
 
 export default StatusBadge;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\TABCONTAINER.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\SHARED\TABCONTAINER.JSX CODE IS BELOW
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 
@@ -1926,12 +3561,12 @@ const TabContainer = ({ title, tabs, activeTab, onTabChange, onBack, children })
 
 export default TabContainer;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\COMPONENTS\WILDFLOWERDATABASE.JSX CODE IS BELOW
-﻿import React, { useState } from 'react';
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\COMPONENTS\WILDFLOWERDATABASE.JSX CODE IS BELOW
+﻿import React, { useState, useEffect } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 
 // Import components
-import DataTable from './shared/DataTable';
+import ResizableDataTable from './shared/ResizableDataTable';
 import SchoolDetails from './schools/SchoolDetails';
 import EducatorDetails from './educators/EducatorDetails';
 import CharterDetails from './charters/CharterDetails';
@@ -1946,7 +3581,7 @@ import { useTabCounts } from '../hooks/useTabCounts';
 import { useEducatorFilters } from '../hooks/useEducatorFilters';
 
 // Import constants
-import { TABS } from '../utils/constants';
+import { TABS } from '../utils/constants.js';
 
 const WildflowerDatabase = () => {
     const [mainTab, setMainTab] = useState(TABS.SCHOOLS);
@@ -1971,22 +3606,25 @@ const WildflowerDatabase = () => {
     const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true }); // Always get all data
     const chartersResult = useUnifiedData(TABS.CHARTERS);
 
-    console.log('🔍 Raw educators result:', {
-        loading: educatorsResult.loading,
-        error: educatorsResult.error,
-        dataLength: educatorsResult.data?.length,
-        firstEducator: educatorsResult.data?.[0]
-    });
-
     // Apply filters to the data
     const { includeInactiveSchools, setIncludeInactiveSchools, filteredSchools } = useSchoolFilters(schoolsResult.data);
     const { includeInactiveEducators, setIncludeInactiveEducators, filteredEducators } = useEducatorFilters(educatorsResult.data);
+    // Add this temporary test after your hooks
+    useEffect(() => {
+        const testEducatorsAPI = async () => {
+            try {
+                console.log('🧪 Testing Educators API directly...');
+                const { airtableService } = await import('../airtableService.jsx');
+                const allEducators = await airtableService.fetchEducators(true);
+                console.log('🧪 Direct API call result:', allEducators.length, 'educators');
+            } catch (error) {
+                console.error('🧪 Direct API test failed:', error);
+            }
+        };
 
-    console.log('🔍 Filtered data:', {
-        schools: filteredSchools?.length,
-        educators: filteredEducators?.length,
-        includeInactiveEducators
-    });
+        testEducatorsAPI();
+    }, []); // Run once on mount
+
 
     // Get current data based on active tab
     const getCurrentData = () => {
@@ -2064,8 +3702,9 @@ const WildflowerDatabase = () => {
 
     return (
         <div className="h-screen flex flex-col bg-gray-50">
+            {/* Header with title and main tabs */}
             <div className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full px-6 lg:px-8 xl:px-12">
                     <div className="flex items-center justify-between py-4">
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
@@ -2091,23 +3730,18 @@ const WildflowerDatabase = () => {
                 </div>
             </div>
 
+            {/* Main content area */}
             <div className="flex-1 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-full">
+                <div className="w-full px-6 lg:px-8 xl:px-12">
                     <div className="bg-white rounded-lg shadow h-full flex flex-col">
+                        {/* Controls bar */}
                         <div className="p-6 border-b">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    {/* Debug info for educators tab */}
-                                    {mainTab === TABS.EDUCATORS && process.env.NODE_ENV === 'development' && (
-                                        <div className="text-xs text-gray-500">
-                                            Debug: {getCurrentData().length} educators shown,
-                                            Raw: {educatorsResult.data?.length || 0},
-                                            Include inactive: {includeInactiveEducators ? 'Yes' : 'No'}
-                                        </div>
-                                    )}
+                                    {/* Left side - empty for now */}
                                 </div>
                                 <div className="flex items-center space-x-4">
-                                    {/* Status Filter Toggle - show for schools and educators */}
+                                    {/* Status Filter Toggle */}
                                     {mainTab === TABS.SCHOOLS && (
                                         <label className="flex items-center space-x-2 text-sm">
                                             <input
@@ -2172,15 +3806,17 @@ const WildflowerDatabase = () => {
                             </div>
                         </div>
 
+                        {/* Data table */}
                         <div className="flex-1 overflow-auto">
-                            <DataTable
-                                data={getCurrentData()}
-                                columns={columns}
-                                onRowClick={handleRowClick}
-                                searchTerm={searchTerm}
-                                showFilters={showFilters}
-                                columnFilters={columnFilters}
-                                onColumnFilterChange={handleColumnFilterChange}
+                            <ResizableDataTable 
+                            data={getCurrentData()}
+                            columns={columns}
+                            onRowClick={handleRowClick}
+                            searchTerm={searchTerm}
+                            showFilters={showFilters}
+                            columnFilters={columnFilters}
+                            onColumnFilterChange={handleColumnFilterChange}
+                            tableKey={mainTab} // This saves different widths for schools vs educators vs charters
                             />
                         </div>
                     </div>
@@ -2192,9 +3828,10 @@ const WildflowerDatabase = () => {
 
 export default WildflowerDatabase;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\CREATEEDUCATORMODAL.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\CREATEEDUCATORMODAL.JSX CODE IS BELOW
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { EDUCATOR_ROLES } from './utils/constants.js';
 
 const CreateEducatorModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
   const [formData, setFormData] = useState({
@@ -2215,14 +3852,7 @@ const CreateEducatorModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
     currentlyActive: true
   });
 
-  const roleOptions = [
-    'Founder',
-    'Teacher Leader',
-    'Head of School',
-    'Assistant Teacher',
-    'Support Staff',
-    'Board Member'
-  ];
+  const roleOptions = EDUCATOR_ROLES;
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -2473,7 +4103,7 @@ const CreateEducatorModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
 
 export default CreateEducatorModal;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USEAIRTABLEDATA.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\HOOKS\USEAIRTABLEDATA.JSX CODE IS BELOW
 import { useState, useEffect, useCallback } from 'react';
 import { airtableService } from '../airtableService';
 
@@ -2548,6 +4178,7 @@ export const useSchools = (includeInactive = false) => {
 
 // Hook for fetching educators
 export const useEducators = (includeInactive = false) => {
+    console.log('🚨 useEducators hook called with includeInactive:', includeInactive);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -2558,100 +4189,31 @@ export const useEducators = (includeInactive = false) => {
             setError(null);
 
             try {
-                console.log('🔄 Fetching educators with includeInactive:', includeInactive);
 
-                // Fetch educators and relationships
-                const [educatorsData, educatorsXSchoolsData] = await Promise.all([
-                    airtableService.fetchEducators(includeInactive),
-                    airtableService.fetchEducatorsXSchools()
-                ]);
-
-                console.log('📊 Raw educators data:', {
-                    totalEducators: educatorsData.length,
-                    totalRelationships: educatorsXSchoolsData.length,
-                    firstEducator: educatorsData[0],
-                    educatorFields: educatorsData[0] ? Object.keys(educatorsData[0]) : []
-                });
-
-                // Filter educators based on relationships if not including inactive
-                let filteredEducators = educatorsData;
-
-                if (!includeInactive) {
-                    // Get educators who have active relationships
-                    const activeEducatorIds = new Set(
-                        educatorsXSchoolsData
-                            .filter(rel => rel['Currently Active'] === true)
-                            .map(rel => {
-                                if (Array.isArray(rel.Educator)) {
-                                    return rel.Educator[0];
-                                }
-                                return rel.Educator;
-                            })
-                            .filter(Boolean)
-                    );
-
-                    console.log('👥 Active educator IDs from relationships:', activeEducatorIds.size);
-
-                    filteredEducators = educatorsData.filter(educator => {
-                        const hasAnyRelationship = educatorsXSchoolsData.some(rel => {
-                            const relEducatorId = Array.isArray(rel.Educator) ? rel.Educator[0] : rel.Educator;
-                            return relEducatorId === educator.id;
-                        });
-                        const hasActiveRelationship = activeEducatorIds.has(educator.id);
-
-                        const shouldInclude = hasActiveRelationship || !hasAnyRelationship;
-
-                        if (!shouldInclude) {
-                            console.log('🚫 Filtering out educator:', educator['First Name'], educator['Last Name'], 'has relationships but none active');
-                        }
-
-                        return shouldInclude;
-                    });
-
-                    console.log('✅ After relationship filtering:', filteredEducators.length, 'educators');
-                }
+                // Always fetch ALL educators - let React filtering handle the rest
+                const educatorsData = await airtableService.fetchEducators(true);
 
                 // Transform the data using the clean email structure
-                const transformedEducators = filteredEducators.map(educator => {
+                const transformedEducators = educatorsData.map(educator => {
 
                     return {
                         id: educator.id,
                         fullName: educator[`Full Name`] || `Unknown`,
                         firstName: educator['First Name'] || '-',
                         lastName: educator['Last Name'] || '-',
-
-                        // Email handling - simplified to use only the two remaining fields
-                        email: Array.isArray(educator['Current Primary Email Address'])
-                            ? educator['Current Primary Email Address'][0]
-                            : educator['Current Primary Email Address'] || '',
-
-                        // Store reference to linked email records (for future use if needed)
+                        email: educator['Current Primary Email Address'] || '',
                         emailAddresses: educator['Email Addresses'] || [],
-
-                        // Contact info
                         phone: educator['Primary phone'] || '',
                         secondaryPhone: educator['Secondary phone'] || '',
                         homeAddress: educator['Home Address'] || '',
-
-                        // Personal info
                         pronouns: educator['Pronouns'] || '',
                         pronounsOther: educator['Pronouns Other'] || '',
                         nickname: educator['Nickname'] || '',
-
-                        // Professional info
                         discoveryStatus: educator['Discovery status'] || '',
                         individualType: educator['Individual Type'] || '',
                         montessoriCertified: educator['Montessori Certified'] || false,
-
-                        // Current school info (using lookup fields)
-                        currentSchool: Array.isArray(educator['Currently Active School'])
-                            ? educator['Currently Active School'][0]
-                            : educator['Currently Active School'] || '',
-                        role: Array.isArray(educator['Current Role'])
-                            ? educator['Current Role'][0]
-                            : educator['Current Role'] || '',
-
-                        // Demographics
+                        currentSchool: educator['Currently Active School'] || '',
+                        role: educator['Current Role'] || '',
                         raceEthnicity: educator['Race & Ethnicity'] || [],
                         raceEthnicityOther: educator['Race & Ethnicity Other'] || '',
                         gender: educator['Gender'] || '',
@@ -2659,35 +4221,23 @@ export const useEducators = (includeInactive = false) => {
                         householdIncome: educator['Household Income'] || '',
                         incomeBackground: educator['Income Background'] || [],
                         lgbtqia: educator['LGBTQIA'] || '',
-                        primaryLanguage: Array.isArray(educator['Primary Language'])
-                            ? educator['Primary Language'][0]
-                            : educator['Primary Language'] || '',
+                        primaryLanguage: educator['Primary Language'] || '',
                         otherLanguages: educator['Other languages'] || [],
-
-                        // Location/targeting
                         targetGeo: educator['Target geo combined'] || '',
                         targetCity: educator['Target city'] || '',
                         targetState: educator['Target state'] || '',
                         targetIntl: educator['Target - international'] || '',
-
-                        // Additional fields
                         holaspirit: educator['Active Holaspirit'] || false,
                         tcUserId: educator['TC User ID'] || '',
                         createdTime: educator['Created'] || educator.createdTime,
                         selfReflection: educator['Self-reflection'] || '',
-
-                        // School relationship info
+                        inactiveFlag: educator['Inactive Flag'] || false,
                         currentActiveSchool: educator['Currently Active School'] || '',
                         allSchools: educator['All Schools'] || [],
                         schoolStatuses: educator['School Statuses'] || [],
-                        activeSchoolAffiliationStatus: Array.isArray(educator['Active School Affiliation Status'])
-                            ? educator['Active School Affiliation Status'][0]
-                            : educator['Active School Affiliation Status'] || ''
+                        activeSchoolAffiliationStatus: educator['Active School Affiliation Status'] || ''
                     };
                 });
-
-                console.log('✅ Transformed educators:', transformedEducators.length);
-                console.log('📊 Sample transformed educator:', transformedEducators[0]);
 
                 setData(transformedEducators);
             } catch (err) {
@@ -2962,15 +4512,63 @@ export const useSchoolLocations = (schoolId) => {
 };
 
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USEEDUCATORFILTERS.JSX CODE IS BELOW
-﻿import { useState } from 'react';
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\HOOKS\USEEDUCATORFILTERS.JSX CODE IS BELOW
+﻿import { useState, useMemo } from 'react';
 
-export const useEducatorFilters = () => {
+export const useEducatorFilters = (educatorsData) => {
     const [includeInactiveEducators, setIncludeInactiveEducators] = useState(false);
-    return { includeInactiveEducators, setIncludeInactiveEducators };
+
+    const filteredEducators = useMemo(() => {
+        console.log('🔍 Filtering educators:', {
+            totalEducators: educatorsData?.length,
+            includeInactive: includeInactiveEducators,
+            sampleEducatorsData: educatorsData?.slice(0, 3)
+        });
+
+        if (!educatorsData || !Array.isArray(educatorsData)) {
+            console.log('⚠️ No educators data or not array');
+            return [];
+        }
+
+        if (includeInactiveEducators) {
+            console.log('✅ Including all educators:', educatorsData.length);
+            return educatorsData;
+        }
+
+        // Filter to only show active educators
+        const activeEducators = educatorsData.filter(educator => {
+            const discoveryStatus = educator.discoveryStatus;
+            const individualType = educator.individualType;
+
+            const isDiscoveryActive = discoveryStatus !== 'Paused';
+            const isNotCommunityMember = individualType !== 'Community member';
+
+            const isActive = isDiscoveryActive && isNotCommunityMember;
+
+            if (!isActive) {
+                console.log('🚫 Filtering out educator:', educator.fullName, {
+                    discoveryStatus,
+                    individualType,
+                    isDiscoveryActive,
+                    isNotCommunityMember
+                });
+            }
+
+            return isActive;
+        });
+
+        console.log('✅ Active educators filtered:', activeEducators.length, 'out of', educatorsData.length);
+        return activeEducators;
+    }, [educatorsData, includeInactiveEducators]); // Make sure includeInactiveEducators is in the dependency array
+
+    return {
+        includeInactiveEducators,
+        setIncludeInactiveEducators,
+        filteredEducators
+    };
 };
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USEFILTERS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\HOOKS\USEFILTERS.JSX CODE IS BELOW
 import { useState, useCallback, useMemo } from 'react';
 
 export const useFilters = () => {
@@ -3013,7 +4611,7 @@ export const useFilters = () => {
 
 
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USENAVIGATION.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\HOOKS\USENAVIGATION.JSX CODE IS BELOW
 import { useState, useCallback } from 'react';
 
 export const useNavigation = () => {
@@ -3045,7 +4643,7 @@ export const useNavigation = () => {
 
 
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USESCHOOLFILTERS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\HOOKS\USESCHOOLFILTERS.JSX CODE IS BELOW
 import { useState, useMemo } from 'react';
 
 export const useSchoolFilters = (schools) => {
@@ -3091,7 +4689,7 @@ export const useSchoolFilters = (schools) => {
     };
 };
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USETABCOUNTS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\HOOKS\USETABCOUNTS.JSX CODE IS BELOW
 import { useMemo } from 'react';
 
 export const useTabCounts = (schoolsData, schoolsLoading, educatorsData, chartersData, includeInactiveSchools) => {
@@ -3118,10 +4716,10 @@ export const useTabCounts = (schoolsData, schoolsLoading, educatorsData, charter
     }, [schoolsData?.length, schoolsLoading, educatorsData?.length, chartersData?.length, includeInactiveSchools]);
 };
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USETABLECOLUMNS.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\HOOKS\USETABLECOLUMNS.JSX CODE IS BELOW
 import { useMemo } from 'react';
 import StatusBadge from '../components/shared/StatusBadge';
-import { TABS } from '../utils/constants';
+import { TABS } from '../utils/constants.js';
 
 export const useTableColumns = (dataType) => {
     return useMemo(() => {
@@ -3131,49 +4729,57 @@ export const useTableColumns = (dataType) => {
                     {
                         key: 'fullName',
                         label: 'Name',
+                        defaultWidth: 100,
                         render: (value, item) => `${item.fullName}`
                     },
                     {
                         key: 'currentSchool',
                         label: 'Current School',
+                        defaultWidth: 160,
                         render: (value) => value || '-'
                     },
                     {
                         key: 'role',
                         label: 'Role(s)',
+                        defaultWidth: 120,
                         render: (value) => value || '-'
                     },
                     {
                         key: 'email',
                         label: 'Email',
+                        defaultWidth: 180,
                         render: (value) => value || '-'
                     },
                     {
                         key: 'raceEthnicity',
                         label: 'Race & Ethnicity',
+                        defaultWidth: 100,
                         render: (value) => Array.isArray(value) ? value.join(', ') : value || '-'
                     },
                     {
                         key: 'discoveryStatus',
                         label: 'Discovery Status',
+                        defaultWidth: 80,
                         render: (value) => value ? <StatusBadge status={value} /> : '-'
                     },
                     {
                         key: 'individualType',
                         label: 'Type',
+                        defaultWidth: 60,
                         render: (value) => value || '-'
                     }
                 ];
 
             case 'schools':
                 return [
-                    { key: 'shortName', label: 'Short Name' },
-                    { key: 'status', label: 'Status', render: (value) => <StatusBadge status={value} /> },
-                    { key: 'governanceModel', label: 'Governance' },
-                    { key: 'agesServed', label: 'Ages Served', render: (value) => Array.isArray(value) ? value.join(', ') : value },
+                    { key: 'shortName', label: 'Short Name' , defaultWidth: 120,},
+                    { key: 'status', label: 'Status', defaultWidth: 80, render: (value) => <StatusBadge status={value} />},
+                    { key: 'governanceModel', label: 'Governance', defaultWidth: 100},
+                    { key: 'agesServed', label: 'Ages Served', defaultWidth: 100, render: (value) => Array.isArray(value) ? value.join(', ') : value},
                     {
                         key: 'location',
                         label: 'Location',
+                        defaultWidth: 140,
                         render: (value, item) => {
                             if (item.activeLocationCity && item.activeLocationState) {
                                 return `${item.activeLocationCity}, ${item.activeLocationState}`;
@@ -3187,7 +4793,7 @@ export const useTableColumns = (dataType) => {
                             return '-';
                         }
                     },
-                    { key: 'membershipStatus', label: 'Membership', render: (value) => <StatusBadge status={value} /> }
+                    { key: 'membershipStatus', label: 'Membership', defaultWidth: 80, render: (value) => <StatusBadge status={value} /> }
                 ];
 
             case 'charters':
@@ -3203,11 +4809,11 @@ export const useTableColumns = (dataType) => {
     }, [dataType]);
 };
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\HOOKS\USEUNIFIEDDATA.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\HOOKS\USEUNIFIEDDATA.JSX CODE IS BELOW
 
 import { useMemo } from 'react';
 import { useSchools, useEducators } from './useAirtableData';
-import { transformSchoolsData } from '../utils/dataTransformers';
+import { transformSchoolsData } from '../utils/dataTransformers.js';
 import { 
   sampleSchools, 
   sampleEducators, 
@@ -3227,7 +4833,7 @@ import {
   sampleGrants,
   sampleLoans
 } from '../data/sampleData';
-import { TABS } from '../utils/constants';
+import { TABS } from '../utils/constants.js';
 
 const useUnifiedData = (dataType, options = {}) => {
     switch (dataType) {
@@ -3468,7 +5074,7 @@ export const useLoans = (schoolId) => {
 
 export default useUnifiedData;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\INDEX.CSS CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\INDEX.CSS CODE IS BELOW
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -3488,77 +5094,14 @@ C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\INDEX.CSS CODE IS BELOW
   </body>
 </html>
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\LOCATIONEDITMODAL.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\LOCATIONEDITMODAL.JSX CODE IS BELOW
+import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
+
 const LocationEditModal = ({ isOpen, onClose, onSubmit, location, isCreating = false }) => {
-  const [formData, setFormData] = useState({
-    address: '',
-    startDate: '',
-    endDate: '',
-    locationType: '',
-    currentMailingAddress: false,
-    currentPhysicalAddress: false,
-    currentlyActive: true,
-    squareFeet: '',
-    maxStudentsLicensedFor: '',
-    neighborhood: '',
-    coLocationType: '',
-    coLocationPartner: '',
-    leaseEndDate: '',
-    lease: '',
-    timeZone: ''
-  });
-
-  const locationTypeOptions = [
-    'School address and mailing address',
-    'School address only',
-    'Mailing address only',
-    'Former school address',
-    'Former mailing address',
-    'Temporary location'
-  ];
-
-  const coLocationTypeOptions = [
-    'None',
-    'Shared facility',
-    'Sublease',
-    'Partnership',
-    'Community center',
-    'Other'
-  ];
-
-  const timeZoneOptions = [
-    'Eastern Time (ET)',
-    'Central Time (CT)',
-    'Mountain Time (MT)',
-    'Pacific Time (PT)',
-    'Alaska Time (AKT)',
-    'Hawaii-Aleutian Time (HAT)'
-  ];
-
-  useEffect(() => {
-    if (location && isOpen && !isCreating) {
-      setFormData({
-        address: location.address || '',
-        startDate: location.startDate || '',
-        endDate: location.endDate || '',
-        locationType: location.locationType || '',
-        currentMailingAddress: location.currentMailingAddress || false,
-        currentPhysicalAddress: location.currentPhysicalAddress || false,
-        currentlyActive: location.currentlyActive || true,
-        squareFeet: location.squareFeet || '',
-        maxStudentsLicensedFor: location.maxStudentsLicensedFor || '',
-        neighborhood: location.neighborhood || '',
-        coLocationType: location.coLocationType || '',
-        coLocationPartner: location.coLocationPartner || '',
-        leaseEndDate: location.leaseEndDate || '',
-        lease: location.lease || '',
-        timeZone: location.timeZone || ''
-      });
-    } else if (isCreating) {
-      // Reset form for creating new location
-      setFormData({
+    const [formData, setFormData] = useState({
         address: '',
-        startDate: new Date().toISOString().split('T')[0],
+        startDate: '',
         endDate: '',
         locationType: '',
         currentMailingAddress: false,
@@ -3572,736 +5115,373 @@ const LocationEditModal = ({ isOpen, onClose, onSubmit, location, isCreating = f
         leaseEndDate: '',
         lease: '',
         timeZone: ''
-      });
-    }
-  }, [location, isOpen, isCreating]);
+    });
 
-const AddGuideAssignmentModal = ({ isOpen, onClose, onSubmit, schoolId, allGuides }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGuide, setSelectedGuide] = useState(null);
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState('');
-  const [currentlyActive, setCurrentlyActive] = useState(true);
-  const [role, setRole] = useState('');
+    const locationTypeOptions = [
+        'School address and mailing address',
+        'School address only',
+        'Mailing address only',
+        'Former school address',
+        'Former mailing address',
+        'Temporary location'
+    ];
 
-  const roleOptions = [
-    'Ops Guide',
-    'Regional Entrepreneur',
-    'Startup Guide',
-    'Partnership Lead',
-    'Mentor'
-  ];
+    const coLocationTypeOptions = [
+        'None',
+        'Shared facility',
+        'Sublease',
+        'Partnership',
+        'Community center',
+        'Other'
+    ];
 
-  const filteredGuides = useMemo(() => {
-    return (allGuides || []).filter(guide =>
-      `${guide.firstName} ${guide.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guide.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const timeZoneOptions = [
+        'Eastern Time (ET)',
+        'Central Time (CT)',
+        'Mountain Time (MT)',
+        'Pacific Time (PT)',
+        'Alaska Time (AKT)',
+        'Hawaii-Aleutian Time (HAT)'
+    ];
+
+    useEffect(() => {
+        if (location && isOpen && !isCreating) {
+            setFormData({
+                address: location.address || '',
+                startDate: location.startDate || '',
+                endDate: location.endDate || '',
+                locationType: location.locationType || '',
+                currentMailingAddress: location.currentMailingAddress || false,
+                currentPhysicalAddress: location.currentPhysicalAddress || false,
+                currentlyActive: location.currentlyActive || true,
+                squareFeet: location.squareFeet || '',
+                maxStudentsLicensedFor: location.maxStudentsLicensedFor || '',
+                neighborhood: location.neighborhood || '',
+                coLocationType: location.coLocationType || '',
+                coLocationPartner: location.coLocationPartner || '',
+                leaseEndDate: location.leaseEndDate || '',
+                lease: location.lease || '',
+                timeZone: location.timeZone || ''
+            });
+        } else if (isCreating) {
+            setFormData({
+                address: '',
+                startDate: new Date().toISOString().split('T')[0],
+                endDate: '',
+                locationType: '',
+                currentMailingAddress: false,
+                currentPhysicalAddress: false,
+                currentlyActive: true,
+                squareFeet: '',
+                maxStudentsLicensedFor: '',
+                neighborhood: '',
+                coLocationType: '',
+                coLocationPartner: '',
+                leaseEndDate: '',
+                lease: '',
+                timeZone: ''
+            });
+        }
+    }, [location, isOpen, isCreating]);
+
+    const handleInputChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!formData.address || !formData.startDate || !formData.locationType) {
+            return;
+        }
+
+        const locationData = isCreating ? formData : {
+            ...location,
+            ...formData
+        };
+
+        onSubmit(locationData);
+        onClose();
+    };
+
+    const handleClose = () => {
+        setFormData({
+            address: '',
+            startDate: '',
+            endDate: '',
+            locationType: '',
+            currentMailingAddress: false,
+            currentPhysicalAddress: false,
+            currentlyActive: true,
+            squareFeet: '',
+            maxStudentsLicensedFor: '',
+            neighborhood: '',
+            coLocationType: '',
+            coLocationPartner: '',
+            leaseEndDate: '',
+            lease: '',
+            timeZone: ''
+        });
+        onClose();
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">
+                        {isCreating ? 'Add New Location' : 'Edit Location'}
+                    </h3>
+                    <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Basic Information */}
+                    <div>
+                        <h4 className="text-md font-medium text-gray-900 mb-3">Basic Information</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Address *
+                                </label>
+                                <textarea
+                                    value={formData.address}
+                                    onChange={(e) => handleInputChange('address', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    rows="3"
+                                    placeholder="Enter full address..."
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Neighborhood
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.neighborhood}
+                                    onChange={(e) => handleInputChange('neighborhood', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Time Zone
+                                </label>
+                                <select
+                                    value={formData.timeZone}
+                                    onChange={(e) => handleInputChange('timeZone', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="">Select time zone...</option>
+                                    {timeZoneOptions.map(tz => (
+                                        <option key={tz} value={tz}>{tz}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Square Feet
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.squareFeet}
+                                    onChange={(e) => handleInputChange('squareFeet', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Max Students Licensed For
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.maxStudentsLicensedFor}
+                                    onChange={(e) => handleInputChange('maxStudentsLicensedFor', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Location Details */}
+                    <div>
+                        <h4 className="text-md font-medium text-gray-900 mb-3">Location Details</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Location Type *
+                                </label>
+                                <select
+                                    value={formData.locationType}
+                                    onChange={(e) => handleInputChange('locationType', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required
+                                >
+                                    <option value="">Select location type...</option>
+                                    {locationTypeOptions.map(type => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Co-Location Type
+                                </label>
+                                <select
+                                    value={formData.coLocationType}
+                                    onChange={(e) => handleInputChange('coLocationType', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="">Select co-location type...</option>
+                                    {coLocationTypeOptions.map(type => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Co-Location Partner
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.coLocationPartner}
+                                    onChange={(e) => handleInputChange('coLocationPartner', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Lease
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.lease}
+                                    onChange={(e) => handleInputChange('lease', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Lease details..."
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Dates */}
+                    <div>
+                        <h4 className="text-md font-medium text-gray-900 mb-3">Dates</h4>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Start of time at location *
+                                </label>
+                                <input
+                                    type="date"
+                                    value={formData.startDate}
+                                    onChange={(e) => handleInputChange('startDate', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    End of time at location
+                                </label>
+                                <input
+                                    type="date"
+                                    value={formData.endDate}
+                                    onChange={(e) => handleInputChange('endDate', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Lease End Date
+                                </label>
+                                <input
+                                    type="date"
+                                    value={formData.leaseEndDate}
+                                    onChange={(e) => handleInputChange('leaseEndDate', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Status */}
+                    <div>
+                        <h4 className="text-md font-medium text-gray-900 mb-3">Status</h4>
+                        <div className="space-y-2">
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.currentlyActive}
+                                    onChange={(e) => handleInputChange('currentlyActive', e.target.checked)}
+                                    className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Currently Active</span>
+                            </label>
+
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.currentMailingAddress}
+                                    onChange={(e) => handleInputChange('currentMailingAddress', e.target.checked)}
+                                    className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Current Mailing Address</span>
+                            </label>
+
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.currentPhysicalAddress}
+                                    onChange={(e) => handleInputChange('currentPhysicalAddress', e.target.checked)}
+                                    className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Current Physical Address</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="flex space-x-3 pt-4 border-t">
+                        <button
+                            type="button"
+                            onClick={handleClose}
+                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={!formData.address || !formData.startDate || !formData.locationType}
+                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        >
+                            {isCreating ? 'Add Location' : 'Update Location'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     );
-  }, [allGuides, searchTerm]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!selectedGuide || !role) return;
-
-    const newAssignment = {
-      guideId: selectedGuide.id,
-      schoolId: schoolId,
-      startDate: startDate,
-      endDate: endDate || null,
-      currentlyActive: currentlyActive,
-      role: role,
-      guideName: `${selectedGuide.firstName} ${selectedGuide.lastName}`
-    };
-
-    onSubmit(newAssignment);
-    handleClose();
-  };
-
-  const handleClose = () => {
-    setSearchTerm('');
-    setSelectedGuide(null);
-    setStartDate(new Date().toISOString().split('T')[0]);
-    setEndDate('');
-    setCurrentlyActive(true);
-    setRole('');
-    onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Add Guide Assignment</h3>
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Guide
-            </label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search guides..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            
-            {searchTerm && (
-              <div className="mt-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg">
-                {filteredGuides.map(guide => (
-                  <button
-                    key={guide.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedGuide(guide);
-                      setSearchTerm(`${guide.firstName} ${guide.lastName}`);
-                    }}
-                    className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${
-                      selectedGuide?.id === guide.id ? 'bg-blue-50' : ''
-                    }`}
-                  >
-                    <div className="font-medium">{guide.firstName} {guide.lastName}</div>
-                    <div className="text-sm text-gray-500">{guide.email}</div>
-                  </button>
-                ))}
-                {filteredGuides.length === 0 && (
-                  <div className="px-3 py-2 text-gray-500">No guides found</div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Role *
-            </label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            >
-              <option value="">Select role...</option>
-              {roleOptions.map(roleOption => (
-                <option key={roleOption} value={roleOption}>{roleOption}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                End Date
-              </label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={currentlyActive}
-                onChange={(e) => setCurrentlyActive(e.target.checked)}
-                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-sm font-medium text-gray-700">Currently Active</span>
-            </label>
-          </div>
-
-          <div className="flex space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!selectedGuide || !role}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              Add Assignment
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-const CreateGuideModal = ({ isOpen, onClose, onSubmit, schoolId }) => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    organization: '',
-    expertise: ''
-  });
-
-  const [assignment, setAssignment] = useState({
-    role: '',
-    startDate: new Date().toISOString().split('T')[0],
-    currentlyActive: true
-  });
-
-  const roleOptions = [
-    'Ops Guide',
-    'Regional Entrepreneur', 
-    'Startup Guide',
-    'Partnership Lead',
-    'Mentor'
-  ];
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleAssignmentChange = (field, value) => {
-    setAssignment(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.firstName || !formData.lastName || !formData.email || !assignment.role) {
-      return;
-    }
-
-    const newGuideId = `guide_${Date.now()}`;
-    
-    const newGuide = {
-      id: newGuideId,
-      ...formData
-    };
-
-    const guideAssignment = {
-      guideId: newGuideId,
-      schoolId: schoolId,
-      startDate: assignment.startDate,
-      endDate: null,
-      currentlyActive: assignment.currentlyActive,
-      role: assignment.role,
-      guideName: `${formData.firstName} ${formData.lastName}`
-    };
-
-    onSubmit({ guide: newGuide, assignment: guideAssignment });
-    handleClose();
-  };
-
-  const handleClose = () => {
-    setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      organization: '',
-      expertise: ''
-    });
-    setAssignment({
-      role: '',
-      startDate: new Date().toISOString().split('T')[0],
-      currentlyActive: true
-    });
-    onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Create New Guide</h3>
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-3">Guide Information</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Organization
-                </label>
-                <input
-                  type="text"
-                  value={formData.organization}
-                  onChange={(e) => handleInputChange('organization', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Expertise
-                </label>
-                <input
-                  type="text"
-                  value={formData.expertise}
-                  onChange={(e) => handleInputChange('expertise', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., Finance, Operations, Legal"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t pt-4">
-            <h4 className="text-md font-medium text-gray-900 mb-3">Assignment to School</h4>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Role *
-                </label>
-                <select
-                  value={assignment.role}
-                  onChange={(e) => handleAssignmentChange('role', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                >
-                  <option value="">Select role...</option>
-                  {roleOptions.map(role => (
-                    <option key={role} value={role}>{role}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  value={assignment.startDate}
-                  onChange={(e) => handleAssignmentChange('startDate', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="mt-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={assignment.currentlyActive}
-                  onChange={(e) => handleAssignmentChange('currentlyActive', e.target.checked)}
-                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">Currently Active</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex space-x-3 pt-4 border-t">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!formData.firstName || !formData.lastName || !formData.email || !assignment.role}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              Create Guide & Add Assignment
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.address || !formData.startDate || !formData.locationType) {
-      return;
-    }
-
-    const locationData = isCreating ? formData : {
-      ...location,
-      ...formData
-    };
-
-    onSubmit(locationData);
-    onClose();
-  };
-
-  const handleClose = () => {
-    setFormData({
-      address: '',
-      startDate: '',
-      endDate: '',
-      locationType: '',
-      currentMailingAddress: false,
-      currentPhysicalAddress: false,
-      currentlyActive: true,
-      squareFeet: '',
-      maxStudentsLicensedFor: '',
-      neighborhood: '',
-      coLocationType: '',
-      coLocationPartner: '',
-      leaseEndDate: '',
-      lease: '',
-      timeZone: ''
-    });
-    onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">
-            {isCreating ? 'Add New Location' : 'Edit Location'}
-          </h3>
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Information */}
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-3">Basic Information</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Address *
-                </label>
-                <textarea
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows="3"
-                  placeholder="Enter full address..."
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Neighborhood
-                </label>
-                <input
-                  type="text"
-                  value={formData.neighborhood}
-                  onChange={(e) => handleInputChange('neighborhood', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Time Zone
-                </label>
-                <select
-                  value={formData.timeZone}
-                  onChange={(e) => handleInputChange('timeZone', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select time zone...</option>
-                  {timeZoneOptions.map(tz => (
-                    <option key={tz} value={tz}>{tz}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Square Feet
-                </label>
-                <input
-                  type="number"
-                  value={formData.squareFeet}
-                  onChange={(e) => handleInputChange('squareFeet', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Max Students Licensed For
-                </label>
-                <input
-                  type="number"
-                  value={formData.maxStudentsLicensedFor}
-                  onChange={(e) => handleInputChange('maxStudentsLicensedFor', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Location Details */}
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-3">Location Details</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location Type *
-                </label>
-                <select
-                  value={formData.locationType}
-                  onChange={(e) => handleInputChange('locationType', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                >
-                  <option value="">Select location type...</option>
-                  {locationTypeOptions.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Co-Location Type
-                </label>
-                <select
-                  value={formData.coLocationType}
-                  onChange={(e) => handleInputChange('coLocationType', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select co-location type...</option>
-                  {coLocationTypeOptions.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Co-Location Partner
-                </label>
-                <input
-                  type="text"
-                  value={formData.coLocationPartner}
-                  onChange={(e) => handleInputChange('coLocationPartner', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Lease
-                </label>
-                <input
-                  type="text"
-                  value={formData.lease}
-                  onChange={(e) => handleInputChange('lease', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Lease details..."
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Dates */}
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-3">Dates</h4>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Start of time at location *
-                </label>
-                <input
-                  type="date"
-                  value={formData.startDate}
-                  onChange={(e) => handleInputChange('startDate', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  End of time at location
-                </label>
-                <input
-                  type="date"
-                  value={formData.endDate}
-                  onChange={(e) => handleInputChange('endDate', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Lease End Date
-                </label>
-                <input
-                  type="date"
-                  value={formData.leaseEndDate}
-                  onChange={(e) => handleInputChange('leaseEndDate', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-3">Status</h4>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.currentlyActive}
-                  onChange={(e) => handleInputChange('currentlyActive', e.target.checked)}
-                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">Currently Active</span>
-              </label>
-              
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.currentMailingAddress}
-                  onChange={(e) => handleInputChange('currentMailingAddress', e.target.checked)}
-                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">Current Mailing Address</span>
-              </label>
-              
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.currentPhysicalAddress}
-                  onChange={(e) => handleInputChange('currentPhysicalAddress', e.target.checked)}
-                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">Current Physical Address</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex space-x-3 pt-4 border-t">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!formData.address || !formData.startDate || !formData.locationType}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              {isCreating ? 'Add Location' : 'Update Location'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
 };
 
 export default LocationEditModal;
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\MAIN.JSX CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\MAIN.JSX CODE IS BELOW
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
@@ -4313,145 +5493,143 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\UTILS\CONSTANTS.JSX CODE IS BELOW
-// src/utils/constants.jsx
-
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\UTILS\CONSTANTS.JS CODE IS BELOW
+// Application tab constants
 export const TABS = {
-  SCHOOLS: 'schools',
-  EDUCATORS: 'educators',
-  CHARTERS: 'charters'
+    SCHOOLS: 'schools',
+    EDUCATORS: 'educators',
+    CHARTERS: 'charters'
 };
 
 export const SCHOOL_TABS = {
-  SUMMARY: 'summary',
-  TLS: 'tls',
-  LOCATIONS: 'locations',
-  GOVERNANCE: 'governance',
-  GUIDES: 'guides',
-  SSJ_OSS: 'ssj-oss',
-  MEMBERSHIP_FEES: 'membership-fees',
-  GRANTS_LOANS: 'grants-loans',
-  LINKED_MTGS: 'linked-mtgs',
-  NOTES_ACTIONS: 'notes-actions'
+    SUMMARY: 'summary',
+    TLS: 'tls',
+    LOCATIONS: 'locations',
+    GOVERNANCE: 'governance',
+    GUIDES: 'guides',
+    SSJ_OSS: 'ssj-oss',
+    MEMBERSHIP_FEES: 'membership-fees',
+    GRANTS_LOANS: 'grants-loans',
+    LINKED_MTGS_EMAILS: 'linked-mtgs-emails',
+    NOTES_ACTIONS: 'notes-actions'
 };
 
 export const EDUCATOR_TABS = {
-  SUMMARY: 'summary',
-  SCHOOLS: 'schools',
-  DEMOGRAPHICS: 'demographics',
-  CONTACT_INFO: 'contact-info',
-  ONLINE_FORMS: 'online-forms',
-  EARLY_CULTIVATION: 'early-cultivation',
-  EVENTS: 'events',
-  GUIDES: 'guides',
-  CERTS: 'certs',
-  NOTES: 'notes',
-  LINKED_EMAILS: 'linked-emails'
+    SUMMARY: 'summary',
+    DEMOGRAPHICS: 'demographics',
+    CONTACT_INFO: 'contact-info',
+    SCHOOLS: 'schools',
+    ONLINE_FORMS: 'online-forms',
+    EARLY_CULTIVATION: 'early-cultivation',
+    GUIDES: 'guides',
+    CERTS: 'certs',
+    NOTES: 'notes',
+    EVENTS: 'events',
+    LINKED_MTGS_EMAILS: 'linked-mtgs-emails'
 };
 
+// Status constants
 export const SCHOOL_STATUSES = {
-  OPEN: 'Open',
-  EMERGING: 'Emerging',
-  PERMANENTLY_CLOSED: 'Permanently Closed',
-  DISAFFILIATED: 'Disaffiliated',
-  DISAFFILIATING: 'Disaffiliating'
+    OPEN: 'Open',
+    EMERGING: 'Emerging',
+    PERMANENTLY_CLOSED: 'Permanently Closed',
+    DISAFFILIATED: 'Disaffiliated',
+    DISAFFILIATING: 'Disaffiliating',
+    PAUSED: 'Paused',
+    PLACEHOLDER: 'Placeholder'
 };
 
 export const MEMBERSHIP_STATUSES = {
-  MEMBER_SCHOOL: 'Member School',
-  PENDING: 'Pending',
-  FORMER_MEMBER: 'Former Member'
+    MEMBER_SCHOOL: 'Member School',
+    PENDING: 'Pending',
+    NON_MEMBER_SPECIAL: 'Non-Member - Special Situation',
+    FORMER_MEMBER: 'Former Member'
 };
 
 export const GOVERNANCE_MODELS = {
-  INDEPENDENT: 'Independent',
-  CHARTER: 'Charter',
-  DISTRICT: 'District'
+    INDEPENDENT: 'Independent',
+    CHARTER: 'Charter'
 };
 
 export const DISCOVERY_STATUSES = {
-  COMPLETE: 'Complete',
-  IN_PROGRESS: 'In Progress',
-  NOT_STARTED: 'Not Started'
+    COMPLETE: 'Complete',
+    IN_PROGRESS: 'In Progress',
+    NOT_STARTED: 'Not Started',
+    PAUSED: 'Paused'
 };
 
-export const NONPROFIT_STATUSES = {
-  FIVE_OH_ONE_C_THREE: '501(c)(3)',
-  GROUP_EXEMPTION: 'group exemption',
-  PENDING: 'pending',
-  FOR_PROFIT: 'for-profit'
+export const INDIVIDUAL_TYPES = {
+    EDUCATOR: 'Educator',
+    COMMUNITY_MEMBER: 'Community Member'
 };
 
-export const GROUP_EXEMPTION_STATUSES = {
-  ACTIVE: 'Active',
-  PENDING: 'Pending',
-  WITHDRAWN: 'Withdrawn',
-  NOT_APPLICABLE: 'Not Applicable'
+// Role constants
+export const EDUCATOR_ROLES = [
+    'Founder',
+    'Teacher Leader',
+    'Head of School',
+    'Assistant Teacher',
+    'Support Staff',
+    'Board Member'
+];
+
+export const GUIDE_ROLES = [
+    'Ops Guide',
+    'Regional Entrepreneur'
+];
+
+// Time zones
+export const TIME_ZONES = [
+    'Eastern Time (ET)',
+    'Central Time (CT)',
+    'Mountain Time (MT)',
+    'Pacific Time (PT)',
+    'Alaska Time (AKT)',
+    'Hawaii-Aleutian Time (HAT)'
+];
+
+// Location types
+export const LOCATION_TYPES = [
+    'School address and mailing address',
+    'School address only',
+    'Mailing address only',
+    'Former school address',
+    'Former mailing address',
+    'Temporary location'
+];
+
+export const CO_LOCATION_TYPES = [
+    'None',
+    'Shared facility',
+    'Sublease',
+    'Partnership',
+    'Community center',
+    'Other'
+];
+
+// Error messages
+export const ERROR_MESSAGES = {
+    NETWORK_ERROR: 'Network error. Please check your connection and try again.',
+    AIRTABLE_ERROR: 'Error connecting to database. Please try again later.',
+    VALIDATION_ERROR: 'Please check your input and try again.',
+    UNAUTHORIZED: 'You are not authorized to perform this action.',
+    NOT_FOUND: 'The requested item was not found.',
+    GENERIC_ERROR: 'Something went wrong. Please try again.'
 };
 
-export const BUTTON_STYLES = {
-  PRIMARY: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm",
-  SECONDARY: "bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center text-sm",
-  SUCCESS: "bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center text-sm",
-  DANGER: "bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center text-sm",
-  WARNING: "bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 flex items-center text-sm"
+// Success messages
+export const SUCCESS_MESSAGES = {
+    RECORD_CREATED: 'Record created successfully',
+    RECORD_UPDATED: 'Record updated successfully',
+    RECORD_DELETED: 'Record deleted successfully',
+    STINT_ADDED: 'Educator stint added successfully',
+    STINT_ENDED: 'Stint ended successfully'
 };
 
-export const TABLE_COLUMNS = {
-  SCHOOLS: [
-    { key: 'shortName', label: 'Short Name' },
-    { key: 'status', label: 'Status' },
-    { key: 'governanceModel', label: 'Governance' },
-    { key: 'agesServed', label: 'Ages Served' },
-    { key: 'location', label: 'Location' },
-    { key: 'membershipStatus', label: 'Membership' }
-  ],
-  EDUCATORS: [
-    { key: 'fullName', label: 'Full Name' },
-    { key: 'currentSchool', label: 'Current School' },
-    { key: 'role', label: 'Role' },
-    { key: 'email', label: 'Email' },
-    { key: 'raceEthnicity', label: 'Race & Ethnicity' },
-    { key: 'discoveryStatus', label: 'Discovery Status' }
-  ],
-  CHARTERS: [
-    { key: 'name', label: 'Charter Name' },
-    { key: 'status', label: 'Status' },
-    { key: 'initialTargetCommunity', label: 'Target Community' }
-  ]
-};
-
-export const MULTI_SELECT_COLUMNS = {
-  status: true,
-  agesServed: true,
-  governanceModel: true,
-  membershipStatus: true,
-  raceEthnicity: true
-};
-
-export const FIELD_TYPES = {
-  TEXT: 'text',
-  EMAIL: 'email',
-  TEL: 'tel',
-  URL: 'url',
-  DATE: 'date',
-  NUMBER: 'number',
-  BOOLEAN: 'boolean',
-  SELECT: 'select',
-  ARRAY: 'array'
-};
-
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\SRC\UTILS\DATATRANSFORMERS.JS CODE IS BELOW
+C:\USERS\MATTH\CODE_ROOT\WILDFLOWER-DATABASE\SRC\UTILS\DATATRANSFORMERS.JS CODE IS BELOW
 // Transform Airtable school record to match your React app format
 export const transformSchoolData = (airtableRecord, relatedData = {}) => {
   if (!airtableRecord) return null;
-
-  // Debug location fields
-  console.log('🔍 Location field debug for:', airtableRecord['Name']);
-  console.log('  Current Physical Address - City:', airtableRecord['Current Physical Address - City']);
-  console.log('  Current Physical Address - State:', airtableRecord['Current Physical Address - State']);
-  console.log('  SSJ - Target City:', airtableRecord['SSJ - Target City']);
-  console.log('  SSJ - Target State:', airtableRecord['SSJ - Target State']);
 
   return {
     id: airtableRecord.id,
@@ -4621,7 +5799,8 @@ export const transformEducatorData = (airtableRecord) => {
     fullName: airtableRecord['Full Name'] || '',
     firstName: airtableRecord['First Name'] || '',
     lastName: airtableRecord['Last Name'] || '',
-    email: airtableRecord['Current Primary Email Address'] || '',
+    primaryEmail: airtableRecord['Current Primary Email Address'] || '',
+    emailAddresses: airtableRecord['Email Addresses'] || [],
     currentSchool: airtableRecord['Currently Active School'] ? 
       (Array.isArray(airtableRecord['Currently Active School']) ? 
         airtableRecord['Currently Active School'][0] : 
@@ -4816,12 +5995,3 @@ export const transformChartersData = (airtableRecords) => {
 export const transformEducatorsXSchoolsData = (airtableRecords) => {
   return airtableRecords.map(transformEducatorXSchoolData).filter(Boolean);
 };
-
-C:\USERS\MATTH\SOURCE\REPOS\WILDFLOWER-DATABASE\VITE.CONFIG.JS CODE IS BELOW
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-})
-

@@ -52,7 +52,8 @@ export const MEMBERSHIP_STATUSES = {
 
 export const GOVERNANCE_MODELS = {
     INDEPENDENT: 'Independent',
-    CHARTER: 'Charter'
+    CHARTER: 'Charter',
+    DISTRICT: 'District'
 };
 
 export const DISCOVERY_STATUSES = {
@@ -74,7 +75,8 @@ export const EDUCATOR_ROLES = [
     'Head of School',
     'Assistant Teacher',
     'Support Staff',
-    'Board Member'
+    'Board Member',
+    'Board Chair'
 ];
 
 export const GUIDE_ROLES = [
@@ -84,6 +86,7 @@ export const GUIDE_ROLES = [
 
 // Time zones
 export const TIME_ZONES = [
+    'Atlantic Time (AT)',
     'Eastern Time (ET)',
     'Central Time (CT)',
     'Mountain Time (MT)',

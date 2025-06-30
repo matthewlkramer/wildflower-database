@@ -22,8 +22,10 @@ export const useEducatorFilters = (educatorsData) => {
 
         // Filter to only show active educators
         const activeEducators = educatorsData.filter(educator => {
-            const discoveryStatus = educator.discoveryStatus;
-            const individualType = educator.individualType;
+            // Try different possible field names for discovery status
+            const discoveryStatus = educator['Discovery Status'] || educator.discoveryStatus || educator.Status;
+            // Try different possible field names for individual type
+            const individualType = educator['Individual Type'] || educator.individualType || educator.Type;
 
             const isDiscoveryActive = discoveryStatus !== 'Paused';
             const isNotCommunityMember = individualType !== 'Community member';
@@ -31,7 +33,7 @@ export const useEducatorFilters = (educatorsData) => {
             const isActive = isDiscoveryActive && isNotCommunityMember;
 
             if (!isActive) {
-                console.log('🚫 Filtering out educator:', educator.fullName, {
+                console.log('🚫 Filtering out educator:', educator['Full Name'] || educator.fullName, {
                     discoveryStatus,
                     individualType,
                     isDiscoveryActive,

@@ -1,4 +1,7 @@
+// src/airtableService.jsx - Updated with correct field names from metadata
+
 import { AIRTABLE_CONFIG, TABLES } from './airtableConfig.js';
+
 
 class AirtableService {
     constructor() {
@@ -14,12 +17,23 @@ class AirtableService {
         try {
             const {
                 view,
-                maxRecords = 10000,
+                maxRecords = 100, // set to 100 for development, increase to 10,000 later
                 pageSize = 100,
                 sort,
                 filterByFormula,
                 fields
             } = options;
+
+            // Debug logging for locations table specifically
+            if (tableName === TABLES.LOCATIONS) {
+                console.log('🔍 fetchRecords for LOCATIONS table:', {
+                    tableName,
+                    filterByFormula,
+                    sort,
+                    maxRecords,
+                    pageSize
+                });
+            }
 
             let allRecords = [];
             let offset = null;
@@ -38,6 +52,12 @@ class AirtableService {
                 if (offset) params.append('offset', offset);
 
                 const url = `${this.baseUrl}/${encodeURIComponent(tableName)}?${params}`;
+                
+                // Debug the URL for locations specifically
+                if (tableName === TABLES.LOCATIONS) {
+                    console.log('🔗 Locations API URL:', url);
+                }
+                
                 console.log(`📄 Fetching page ${pageCount + 1} from ${tableName}...`);
 
                 console.log('🔗 Making Airtable request:', {
@@ -48,7 +68,10 @@ class AirtableService {
                     urlLength: url.length
                 });
 
-                const response = await fetch(url, { headers: this.headers });
+                const response = await fetch(url, { 
+                    headers: this.headers,
+                    mode: 'cors'
+                });
 
                 console.log('📡 Airtable response:', {
                     status: response.status,
@@ -114,11 +137,14 @@ class AirtableService {
 
     // Transform Airtable records to a more usable format
     transformRecords(records) {
-        return records.map(record => ({
+        console.log('🔄 Transforming records, first raw record:', records[0]);
+        const transformed = records.map(record => ({
             id: record.id,
             ...record.fields,
             createdTime: record.createdTime
         }));
+        console.log('✅ First transformed record:', transformed[0]);
+        return transformed;
     }
 
     // Create a new record
@@ -185,13 +211,34 @@ class AirtableService {
         }
     }
 
-    // Fetch schools
+    // Get table schema/fields
+    async getTableFields(tableName) {
+        try {
+            // Fetch just one record to inspect fields
+            const options = { maxRecords: 1 };
+            const records = await this.fetchRecords(tableName, options);
+            
+            if (records.length > 0) {
+                const fields = Object.keys(records[0]).filter(key => key !== 'id' && key !== 'createdTime');
+                console.log(`📋 ${tableName} fields:`, fields);
+                return fields;
+            }
+            
+            return [];
+        } catch (error) {
+            console.error(`Error getting fields for ${tableName}:`, error);
+            return [];
+        }
+    }
+
+    // Fetch schools - CORRECTED field names
     async fetchSchools(includeInactive = false) {
         const options = {
             sort: { field: 'Name', direction: 'asc' },
         };
 
         // Add filter for active schools only (default behavior)
+        // Using correct field name: 'School Status'
         if (!includeInactive) {
             options.filterByFormula = "OR({School Status} = 'Open', {School Status} = 'Emerging')";
         }
@@ -200,21 +247,26 @@ class AirtableService {
         return this.fetchRecords(TABLES.SCHOOLS, options);
     }
 
-    // Fetch educators
+    // Fetch educators - CORRECTED field names
     async fetchEducators(includeInactive = false) {
         console.log('🚨 DEBUG: fetchEducators called with includeInactive:', includeInactive);
 
         const options = {
             sort: { field: 'Last Name', direction: 'asc' },
-            // No filterByFormula - should get ALL educators
         };
 
         console.log('🚨 DEBUG: Calling fetchRecords with options:', options);
-        console.log('🚨 DEBUG: Should get ALL 3002 educators from Airtable');
+        console.log('🚨 DEBUG: Should get ALL educators from Airtable');
 
         const result = await this.fetchRecords(TABLES.EDUCATORS, options);
 
         console.log('🚨 DEBUG: fetchEducators result length:', result.length);
+        
+        // Log first educator to see field names
+        if (result.length > 0) {
+            console.log('📋 EDUCATOR FIELD NAMES:', Object.keys(result[0]));
+            console.log('📋 FIRST EDUCATOR DATA:', result[0]);
+        }
 
         return result;
     }
@@ -242,86 +294,104 @@ class AirtableService {
         });
     }
 
-    // Fetch school notes for a specific school
-    async fetchSchoolNotes(schoolId) {
-        return this.fetchRecords(TABLES.SCHOOL_NOTES, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'Date created', direction: 'desc' }
-        });
+    // CORRECTED: Generic method for fetching records by school_id
+    // Using the formula field 'school_id' that exists in related tables
+    async fetchBySchoolId(tableName, schoolId, sortField = null, sortDirection = 'desc') {
+        console.log(`🔍 fetchBySchoolId called for ${tableName} with schoolId: ${schoolId}`);
+        
+        // For tables that link to Schools, we need to use the correct linking approach
+        // Most tables have a 'School' field that links to the Schools table
+        let filterByFormula;
+        
+        if (tableName === TABLES.LOCATIONS) {
+            // Locations table has a 'School' field that links to Schools table
+            filterByFormula = `{School} = "${schoolId}"`;
+        } else if (tableName === TABLES.GRANTS) {
+            // Grants table has a 'School' field that links to Schools table  
+            filterByFormula = `{School} = "${schoolId}"`;
+        } else if (tableName === TABLES.LOANS) {
+            // Loans table has a 'School' field that links to Schools table
+            filterByFormula = `{School} = "${schoolId}"`;
+        } else if (tableName === TABLES.GUIDES_ASSIGNMENTS) {
+            // Guide Assignments table has a 'School' field that links to Schools table
+            filterByFormula = `{School} = "${schoolId}"`;
+        } else if (tableName === TABLES.ACTION_STEPS) {
+            // Action steps table has a 'Schools' field (plural) that links to Schools table
+            filterByFormula = `{Schools} = "${schoolId}"`;
+        } else if (tableName === TABLES.SCHOOL_NOTES) {
+            // School notes table has a 'School' field that links to Schools table
+            filterByFormula = `{School} = "${schoolId}"`;
+        } else if (tableName === TABLES.GOVERNANCE_DOCS) {
+            // Governance docs table has a 'School' field that links to Schools table
+            filterByFormula = `{School} = "${schoolId}"`;
+        } else {
+            // Fallback to school_id formula field if it exists
+            filterByFormula = `{school_id} = "${schoolId}"`;
+        }
+
+        const options = {
+            filterByFormula,
+        };
+        
+        if (sortField) {
+            options.sort = { field: sortField, direction: sortDirection };
+        }
+
+        console.log(`🔍 Using filter formula: ${filterByFormula}`);
+        
+        const result = await this.fetchRecords(tableName, options);
+        
+        console.log(`✅ fetchBySchoolId result for ${tableName}:`, result.length, 'records');
+        
+        return result;
     }
 
-    // Fetch educator notes for a specific educator
-    async fetchEducatorNotes(educatorId) {
-        return this.fetchRecords(TABLES.EDUCATOR_NOTES, {
-            filterByFormula: `FIND("${educatorId}", {Educator})`,
-            sort: { field: 'Date', direction: 'desc' }
-        });
-    }
+    // CORRECTED: School-specific data methods with proper field names
 
-    // Fetch grants for a specific school
-    async fetchSchoolGrants(schoolId) {
-        return this.fetchRecords(TABLES.GRANTS, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'Issue Date', direction: 'desc' }
-        });
-    }
-
-    // Fetch loans for a specific school
-    async fetchSchoolLoans(schoolId) {
-        return this.fetchRecords(TABLES.LOANS, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'Effective Issue Date', direction: 'desc' }
-        });
-    }
-
-    // Fetch action steps for a specific school
-    async fetchSchoolActionSteps(schoolId) {
-        return this.fetchRecords(TABLES.ACTION_STEPS, {
-            filterByFormula: `FIND("${schoolId}", {Schools})`,
-            sort: { field: 'Due date', direction: 'asc' }
-        });
-    }
-
-    // Fetch locations for a specific school
+    // Locations - using 'Start of time at location' field
     async fetchSchoolLocations(schoolId) {
-        return this.fetchRecords(TABLES.LOCATIONS, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'Start of time at location', direction: 'desc' }
-        });
+        return this.fetchBySchoolId(TABLES.LOCATIONS, schoolId, 'Start of time at location', 'desc');
     }
 
-    // Fetch membership fee records for a specific school
-    async fetchSchoolMembershipFees(schoolId) {
-        return this.fetchRecords(TABLES.MEMBERSHIP_FEE_OVERVIEW, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'School year', direction: 'desc' }
-        });
+    // School Notes - using 'Date created' field
+    async fetchSchoolNotes(schoolId) {
+        return this.fetchBySchoolId(TABLES.SCHOOL_NOTES, schoolId, 'Date created', 'desc');
     }
 
-    // Fetch 990s for a specific school
-    async fetchNineNineties(schoolId) {
-        return this.fetchRecords(TABLES.NINE_NINETIES, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: '990 Reporting Year', direction: 'desc' }
-        });
+    // Action Steps - using 'Due date' field, table name is 'Schools' (plural)
+    async fetchSchoolActionSteps(schoolId) {
+        return this.fetchBySchoolId(TABLES.ACTION_STEPS, schoolId, 'Due date', 'asc');
     }
 
-    // Fetch family surveys for a specific school
+    // Governance Documents - using 'Date' field
+    async fetchSchoolGovernanceDocs(schoolId) {
+        return this.fetchBySchoolId(TABLES.GOVERNANCE_DOCS, schoolId, 'Date', 'desc');
+    }
+
+    // Guide Assignments - using 'Start date' field
+    async fetchSchoolGuideAssignments(schoolId) {
+        return this.fetchBySchoolId(TABLES.GUIDES_ASSIGNMENTS, schoolId, 'Start date', 'desc');
+    }
+
+    // Grants - using 'Issue Date' field
+    async fetchSchoolGrants(schoolId) {
+        return this.fetchBySchoolId(TABLES.GRANTS, schoolId, 'Issue Date', 'desc');
+    }
+
+    // Loans - using 'Effective Issue Date' field
+    async fetchSchoolLoans(schoolId) {
+        return this.fetchBySchoolId(TABLES.LOANS, schoolId, 'Effective Issue Date', 'desc');
+    }
+
+    // Family Surveys
     async fetchFamilySurveys(schoolId) {
-        return this.fetchRecords(TABLES.FAMILY_SURVEYS, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'Survey Year', direction: 'desc' }
-        });
+        return this.fetchBySchoolId(TABLES.FAMILY_SURVEYS, schoolId, 'School year', 'desc');
     }
 
-    // Fetch assessment data for a specific school
-    async fetchAssessmentData(schoolId) {
-        return this.fetchRecords(TABLES.ASSESSMENT_DATA, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'Year', direction: 'desc' }
-        });
+    // Membership Fee Overview
+    async fetchSchoolMembershipFees(schoolId) {
+        return this.fetchBySchoolId(TABLES.MEMBERSHIP_FEE_OVERVIEW, schoolId, 'School year', 'desc');
     }
-
 
     // Fetch SSJ forms for a specific educator
     async fetchEducatorSSJForms(educatorId) {
@@ -344,22 +414,6 @@ class AirtableService {
         return this.fetchRecords(TABLES.MONTESSORI_CERTS, {
             filterByFormula: `FIND("${educatorId}", {Educator})`,
             sort: { field: 'Year Certified', direction: 'desc' }
-        });
-    }
-
-    // Fetch guide assignments for a specific school
-    async fetchSchoolGuideAssignments(schoolId) {
-        return this.fetchRecords(TABLES.GUIDES_ASSIGNMENTS, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'Start date', direction: 'desc' }
-        });
-    }
-
-    // Fetch governance documents for a specific school
-    async fetchSchoolGovernanceDocs(schoolId) {
-        return this.fetchRecords(TABLES.GOVERNANCE_DOCS, {
-            filterByFormula: `FIND("${schoolId}", {School})`,
-            sort: { field: 'Date', direction: 'desc' }
         });
     }
 }

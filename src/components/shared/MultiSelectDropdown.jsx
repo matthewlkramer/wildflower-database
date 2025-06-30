@@ -1,8 +1,16 @@
 // src/components/shared/MultiSelectDropdown.jsx
+// Replace your entire MultiSelectDropdown.jsx file with this:
+
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 
-const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder }) => {
+const MultiSelectDropdown = ({ 
+  options, 
+  selectedValues, 
+  onChange, 
+  placeholder,
+  containerWidth // New prop for width control
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -29,20 +37,55 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
     onChange([]);
   };
 
+  // Enhanced options with "empty" option
+  const enhancedOptions = React.useMemo(() => {
+    const opts = [...options];
+    
+    // Add "empty" option at the beginning if not already present
+    if (!opts.includes('(empty)')) {
+      opts.unshift('(empty)');
+    }
+    
+    return opts;
+  }, [options]);
+
+  // Container style for width control
+  const containerStyle = containerWidth ? { width: `${containerWidth}px` } : {};
+
+  // Display text for selected values
+  const getDisplayText = () => {
+    if (selectedValues.length === 0) {
+      return placeholder;
+    }
+    
+    if (selectedValues.length === 1) {
+      const value = selectedValues[0];
+      return value === '(empty)' ? 'Empty/None' : value;
+    }
+    
+    // Handle multiple selections
+    const hasEmpty = selectedValues.includes('(empty)');
+    const nonEmptyCount = selectedValues.filter(v => v !== '(empty)').length;
+    
+    if (hasEmpty && nonEmptyCount > 0) {
+      return `${selectedValues.length} selected (incl. empty)`;
+    } else if (hasEmpty) {
+      return 'Empty/None';
+    } else {
+      return `${selectedValues.length} selected`;
+    }
+  };
+
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} style={containerStyle}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-left flex items-center justify-between"
+        style={containerStyle}
       >
         <span className="truncate">
-          {selectedValues.length === 0 
-            ? placeholder 
-            : selectedValues.length === 1 
-              ? selectedValues[0] 
-              : `${selectedValues.length} selected`
-          }
+          {getDisplayText()}
         </span>
         <div className="flex items-center space-x-1">
           {selectedValues.length > 0 && (
@@ -59,23 +102,75 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-          {options.map((option) => (
-            <label
-              key={option}
-              className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={selectedValues.includes(option)}
-                onChange={() => handleToggleOption(option)}
-                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-sm">{option}</span>
-            </label>
-          ))}
-          {options.length === 0 && (
-            <div className="px-3 py-2 text-sm text-gray-500">No options available</div>
+        <div 
+          className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
+          style={containerWidth ? { width: `${containerWidth}px` } : {}}
+        >
+          {enhancedOptions.map((option) => {
+            const isEmptyOption = option === '(empty)';
+            const isSelected = selectedValues.includes(option);
+            
+            return (
+              <label
+                key={option}
+                className={`flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors ${
+                  isEmptyOption ? 'border-b border-gray-200 bg-gray-25' : ''
+                } ${isSelected ? 'bg-blue-50' : ''}`}
+              >
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => handleToggleOption(option)}
+                  className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className={`text-sm ${
+                  isEmptyOption ? 'italic text-gray-500 font-medium' : ''
+                }`}>
+                  {isEmptyOption ? 'Empty/None' : option}
+                </span>
+                {isEmptyOption && (
+                  <span className="ml-auto text-xs text-gray-400">
+                    (no value)
+                  </span>
+                )}
+              </label>
+            );
+          })}
+          
+          {enhancedOptions.length === 1 && enhancedOptions[0] === '(empty)' && (
+            <div className="px-3 py-2 text-sm text-gray-500 italic">
+              Only empty values found
+            </div>
+          )}
+          
+          {enhancedOptions.length === 0 && (
+            <div className="px-3 py-2 text-sm text-gray-500">
+              No options available
+            </div>
+          )}
+          
+          {/* Summary at bottom if multiple selections */}
+          {selectedValues.length > 1 && (
+            <div className="border-t border-gray-200 px-3 py-2 bg-gray-50">
+              <div className="text-xs text-gray-600">
+                {selectedValues.length} of {enhancedOptions.length} selected
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {selectedValues.includes('(empty)') && (
+                  <span className="inline-block bg-gray-200 rounded px-1 mr-1">
+                    Empty
+                  </span>
+                )}
+                {selectedValues.filter(v => v !== '(empty)').slice(0, 3).map(val => (
+                  <span key={val} className="inline-block bg-blue-100 rounded px-1 mr-1">
+                    {val.length > 8 ? val.substring(0, 8) + '...' : val}
+                  </span>
+                ))}
+                {selectedValues.filter(v => v !== '(empty)').length > 3 && (
+                  <span className="text-gray-400">+{selectedValues.filter(v => v !== '(empty)').length - 3} more</span>
+                )}
+              </div>
+            </div>
           )}
         </div>
       )}
