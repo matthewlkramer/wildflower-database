@@ -719,10 +719,6 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {grants.map((grant, index) => {
-                  if (index === 0) {
-                    console.log('Grant fields:', Object.keys(grant));
-                    console.log('First grant:', grant);
-                  }
                   return (
                   <tr key={grant.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{grant.issueDate || '-'}</td>
@@ -765,10 +761,6 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loans.map((loan, index) => {
-                  if (index === 0) {
-                    console.log('Loan fields:', Object.keys(loan));
-                    console.log('First loan:', loan);
-                  }
                   return (
                   <tr key={loan.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{loan.issueDate || '-'}</td>
