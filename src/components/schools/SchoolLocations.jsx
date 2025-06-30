@@ -205,4 +205,4 @@ const SchoolLocations = ({ school }) => {
     );
 };
 
-export default SchoolLocations;
+export default React.memo(SchoolLocations);

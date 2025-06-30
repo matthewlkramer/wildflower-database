@@ -40,11 +40,9 @@ export const useCachedData = (cacheKey, fetchFunction, options = {}) => {
 
       // Check if already loading to prevent duplicate requests
       if (dataCache.isLoading(cacheKey, options)) {
-        console.log(`⏳ Already loading ${cacheKey}, skipping duplicate request`);
+        // Already loading, skip duplicate request
         return;
       }
-
-      console.log(`🔄 Fetching fresh data for ${cacheKey}${forceRefresh ? ' (forced)' : ''}`);
       
       setLoading(true);
       setError(null);
@@ -60,7 +58,6 @@ export const useCachedData = (cacheKey, fetchFunction, options = {}) => {
       
       return result;
     } catch (err) {
-      console.error(`❌ Error fetching ${cacheKey}:`, err);
       setError(err);
       setLoading(false);
       
@@ -98,7 +95,6 @@ export const useCachedSchools = (includeInactive = false) => {
   const options = { includeInactive };
   
   const fetchFunction = useCallback(async () => {
-    console.log('🏫 Fetching schools from API, includeInactive:', includeInactive);
     return await airtableService.fetchSchools(includeInactive);
   }, [includeInactive]);
 
@@ -110,7 +106,6 @@ export const useCachedEducators = (includeInactive = false) => {
   const options = { includeInactive };
   
   const fetchFunction = useCallback(async () => {
-    console.log('👩‍🏫 Fetching educators from API, includeInactive:', includeInactive);
     return await airtableService.fetchEducators(includeInactive);
   }, [includeInactive]);
 
@@ -120,7 +115,6 @@ export const useCachedEducators = (includeInactive = false) => {
 // Cached EducatorsXSchools Hook
 export const useCachedEducatorsXSchools = () => {
   const fetchFunction = useCallback(async () => {
-    console.log('🔗 Fetching educators x schools from API');
     return await airtableService.fetchEducatorsXSchools();
   }, []);
 
@@ -151,7 +145,6 @@ export const useCachedSchoolLocations = (schoolId) => {
     
     // Check if already loading
     if (cache.loading) {
-      console.log('⏳ Locations already loading, waiting...');
       // Wait for loading to complete
       return new Promise((resolve) => {
         const checkInterval = setInterval(() => {
@@ -170,7 +163,6 @@ export const useCachedSchoolLocations = (schoolId) => {
     }
     
     // Fetch fresh data
-    console.log('📍 Fetching ALL locations from API...');
     globalTableCache[tableName].loading = true;
     
     try {
@@ -206,7 +198,6 @@ export const useCachedSchoolNotes = (schoolId) => {
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
-    console.log('📝 Fetching school notes from API for:', schoolId);
     return await airtableService.fetchSchoolNotes(schoolId);
   }, [schoolId]);
 
@@ -218,7 +209,6 @@ export const useCachedActionSteps = (schoolId) => {
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
-    console.log('✅ Fetching action steps from API for:', schoolId);
     
     // Fetch all and filter client-side
     const allSteps = await airtableService.fetchRecords('Action steps', { maxRecords: 10000 });
@@ -241,7 +231,6 @@ export const useCachedGovernanceDocs = (schoolId) => {
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
-    console.log('📋 Fetching governance docs from API for:', schoolId);
     
     // Fetch all and filter client-side
     const allDocs = await airtableService.fetchRecords('Governance docs', { maxRecords: 10000 });
@@ -264,7 +253,6 @@ export const useCachedGuideAssignments = (schoolId) => {
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
-    console.log('👥 Fetching guide assignments from API for:', schoolId);
     
     // Fetch all and filter client-side
     const allAssignments = await airtableService.fetchRecords('Guides assignments', { maxRecords: 10000 });
@@ -287,7 +275,6 @@ export const useCachedGrants = (schoolId) => {
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
-    console.log('💰 Fetching grants from API for:', schoolId);
     return await airtableService.fetchSchoolGrants(schoolId);
   }, [schoolId]);
 
@@ -299,7 +286,6 @@ export const useCachedLoans = (schoolId) => {
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
-    console.log('🏦 Fetching loans from API for:', schoolId);
     return await airtableService.fetchSchoolLoans(schoolId);
   }, [schoolId]);
 
@@ -311,7 +297,6 @@ export const useCachedMembershipFees = (schoolId) => {
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
-    console.log('💳 Fetching membership fees from API for:', schoolId);
     return await airtableService.fetchSchoolMembershipFees(schoolId);
   }, [schoolId]);
 
@@ -391,7 +376,6 @@ export const useCachedMutations = () => {
 
 // Helper function to invalidate cache based on table name
 const invalidateCacheForTable = (tableName) => {
-  console.log(`🗑️ Invalidating cache for table: ${tableName}`);
   
   switch (tableName) {
     case 'Schools':
@@ -428,6 +412,6 @@ const invalidateCacheForTable = (tableName) => {
       dataCache.invalidateType(CACHE_KEYS.MEMBERSHIP_FEES);
       break;
     default:
-      console.log(`⚠️ No cache invalidation rule for table: ${tableName}`);
+      // No cache invalidation rule for table
   }
 };

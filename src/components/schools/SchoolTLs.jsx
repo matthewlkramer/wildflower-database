@@ -1,19 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, CheckCircle, XCircle } from 'lucide-react';
 import { useEducatorsXSchools } from '../../hooks/useUnifiedData';
-import useUnifiedData from '../../hooks/useUnifiedData';
 import { useCachedMutations } from '../../hooks/useCachedData';
 import AddEducatorStintModal from '../modals/AddEducatorStintModal';
 import CreateEducatorModal from '../../CreateEducatorModal';
 import Pills from '../shared/Pills';
-import { TABS } from '../../utils/constants';
 
 const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
     const [showAddStintModal, setShowAddStintModal] = useState(false);
     const [showCreateEducatorModal, setShowCreateEducatorModal] = useState(false);
 
-    const { data: educatorsXSchools, refetch: refetchEducatorsXSchools } = useEducatorsXSchools();
-    const { data: allEducatorsData } = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
+    const { data: educatorsXSchools, loading: educatorsXSchoolsLoading, refetch: refetchEducatorsXSchools } = useEducatorsXSchools();
     const { createRecord, updateRecord, deleteRecord, loading: mutationLoading } = useCachedMutations();
 
     // Filter relationships for this school and enrich with educator names
@@ -22,10 +19,10 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
             return exs.schoolId === school.id;
         });
         
-        // Create educator map for quick lookup
+        // Create educator map for quick lookup using the allEducators prop
         const educatorMap = {};
-        if (allEducatorsData) {
-            allEducatorsData.forEach(educator => {
+        if (allEducators && allEducators.length > 0) {
+            allEducators.forEach(educator => {
                 educatorMap[educator.id] = educator;
             });
         }
@@ -36,7 +33,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
             educatorName: educatorMap[rel.educatorId]?.['Full Name'] || rel.educatorName || 'Unknown Educator',
             educatorEmail: educatorMap[rel.educatorId]?.['Current Primary Email Address'] || null
         }));
-    }, [educatorsXSchools, school.id, allEducatorsData]);
+    }, [educatorsXSchools, school.id, allEducators]);
 
     const handleEndStint = async (stintId) => {
         try {
@@ -227,7 +224,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
                     </tbody>
                 </table>
 
-                {(educatorsXSchoolsLoading || allEducatorsLoading) && (
+                {educatorsXSchoolsLoading && (
                     <div className="text-center py-12">
                         <div className="inline-flex flex-col items-center">
                             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
@@ -236,7 +233,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
                     </div>
                 )}
                 
-                {!educatorsXSchoolsLoading && !allEducatorsLoading && schoolEducators.length === 0 && (
+                {!educatorsXSchoolsLoading && schoolEducators.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
                         No educators assigned to this school yet.
                     </div>
@@ -262,4 +259,4 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
     );
 };
 
-export default SchoolTLs;
+export default React.memo(SchoolTLs);

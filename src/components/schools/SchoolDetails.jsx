@@ -95,7 +95,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
 
   // Edit functionality
   const handleEditSave = () => {
-    console.log('Saving school data:', editedSchool);
+    // Save school data
     setIsEditing(false);
   };
 

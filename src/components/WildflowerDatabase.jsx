@@ -90,7 +90,6 @@ const WildflowerDatabase = () => {
 
     // Event handlers
     const handleRowClick = (item) => {
-        console.log('Row clicked, item:', item);
         navigateToItem(mainTab, item);
     };
 

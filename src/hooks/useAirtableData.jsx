@@ -16,7 +16,7 @@ export const useAirtableData = (fetchFunction, dependencies = []) => {
       setData(result);
     } catch (err) {
       setError(err);
-      console.error('Error fetching data:', err);
+      // Error fetching data
     } finally {
       setLoading(false);
     }
@@ -42,15 +42,12 @@ export const useSchools = (includeInactive = false) => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🔄 Fetching schools, includeInactive:', includeInactive);
       
       const rawSchools = await airtableService.fetchSchools(includeInactive);
-      console.log('✅ Raw schools received:', rawSchools);
       
       setData(rawSchools || []);
       
     } catch (err) {
-      console.error('❌ Error fetching schools:', err);
       setError(err);
       setData([]);
     } finally {
@@ -72,7 +69,6 @@ export const useSchools = (includeInactive = false) => {
 
 // Hook for fetching educators
 export const useEducators = (includeInactive = false) => {
-    console.log('🚨 useEducators hook called with includeInactive:', includeInactive);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -135,7 +131,7 @@ export const useEducators = (includeInactive = false) => {
 
                 setData(transformedEducators);
             } catch (err) {
-                console.error('❌ Error fetching educators:', err);
+                // Error fetching educators
                 setError(err);
             } finally {
                 setLoading(false);
@@ -224,7 +220,7 @@ export const useSchoolData = (schoolId) => {
       });
     } catch (err) {
       setError(err);
-      console.error('Error fetching school data:', err);
+      // Error fetching school data
     } finally {
       setLoading(false);
     }
@@ -279,7 +275,7 @@ export const useEducatorData = (educatorId) => {
       });
     } catch (err) {
       setError(err);
-      console.error('Error fetching educator data:', err);
+      // Error fetching educator data
     } finally {
       setLoading(false);
     }
@@ -309,7 +305,7 @@ export const useAirtableMutations = () => {
       return result;
     } catch (err) {
       setError(err);
-      console.error('Error creating record:', err);
+      // Error creating record
       throw err;
     } finally {
       setLoading(false);
@@ -324,7 +320,7 @@ export const useAirtableMutations = () => {
       return result;
     } catch (err) {
       setError(err);
-      console.error('Error updating record:', err);
+      // Error updating record
       throw err;
     } finally {
       setLoading(false);
@@ -339,7 +335,7 @@ export const useAirtableMutations = () => {
       return result;
     } catch (err) {
       setError(err);
-      console.error('Error deleting record:', err);
+      // Error deleting record
       throw err;
     } finally {
       setLoading(false);
@@ -379,41 +375,28 @@ export const useDataFiltering = (data, searchTerm) => {
 // Replace your useSchoolLocations hook in useAirtableData.jsx with this fixed version:
 
 export const useSchoolLocations = (schoolId) => {
-  console.log('🚨 useSchoolLocations (REAL) hook called with schoolId:', schoolId);
-  
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log('🚨 useSchoolLocations useEffect triggered for schoolId:', schoolId);
-    
     const fetchLocations = async () => {
-      console.log('🚨 fetchLocations function called for schoolId:', schoolId);
-      
       if (!schoolId) {
-        console.log('⚠️ No schoolId provided to fetchLocations');
         setLoading(false);
         return;
       }
       
       try {
-        console.log('🔄 Starting fetchLocations for schoolId:', schoolId);
         setLoading(true);
         setError(null);
         
-        console.log('🔄 About to call airtableService.fetchSchoolLocations...');
         const locations = await airtableService.fetchSchoolLocations(schoolId);
-        console.log('✅ fetchSchoolLocations returned:', locations);
-        console.log('✅ Locations count:', locations?.length);
         
         setData(locations || []);
       } catch (err) {
-        console.error('❌ Error in fetchLocations:', err);
         setError(err);
         setData([]);
       } finally {
-        console.log('🏁 fetchLocations finished, setting loading to false');
         setLoading(false);
       }
     };
@@ -438,6 +421,5 @@ export const useSchoolLocations = (schoolId) => {
     }
   }, [schoolId]);
 
-  console.log('🚨 useSchoolLocations returning:', { data, loading, error, refetch });
   return { data, loading, error, refetch };
 };

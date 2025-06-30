@@ -38,16 +38,15 @@ const useUnifiedSchools = (options = {}) => {
         const { data: rawSchoolsData, loading, error } = schoolsResult;
 
         if (!loading && !error && Array.isArray(rawSchoolsData) && rawSchoolsData.length > 0) {
-            console.log('✅ Using schools data:', rawSchoolsData.length, 'schools');
             return transformSchoolsData(rawSchoolsData);
         }
 
         if (loading) {
-            console.log('⏳ Schools still loading...');
+            // Schools loading
         } else if (error) {
-            console.log('❌ Schools error:', error.message);
+            console.error('Schools error:', error.message);
         } else {
-            console.log('📭 No schools data available');
+            // No schools data available
         }
 
         return [];
@@ -74,11 +73,11 @@ const useUnifiedEducators = (options = {}) => {
         }
 
         if (loading) {
-            console.log('⏳ Educators still loading...');
+            // Educators loading
         } else if (error) {
-            console.log('❌ Educators error:', error.message);
+            console.error('Educators error:', error.message);
         } else {
-            console.log('📭 No educators data available');
+            // No educators data available
         }
 
         return [];
@@ -111,7 +110,6 @@ export const useEducatorsXSchools = () => {
         const { data: realData, loading, error } = realDataResult;
   
         if (!loading && !error && Array.isArray(realData) && realData.length > 0) {
-            console.log('✅ Using EducatorsXSchools data:', realData.length, 'relationships');
             const transformed = transformEducatorsXSchoolsData(realData);
             return {
                 data: transformed,
@@ -146,7 +144,7 @@ export const useSchoolLocations = (schoolId) => {
                     refetch: realDataResult.refetch
                 };
             } else {
-                console.log('📭 No locations found for school:', schoolId);
+                // No locations found for school
             }
         }
         
@@ -269,7 +267,7 @@ export const useMontessoriCerts = (educatorId) => {
 };
 
 export const useEducatorNotes = (educatorId) => {
-    console.log('⚠️ Educator Notes not implemented yet for educator:', educatorId);
+    // Educator Notes not implemented yet
     return {
         data: [],
         loading: false,
@@ -279,7 +277,7 @@ export const useEducatorNotes = (educatorId) => {
 };
 
 export const useMembershipFeeUpdates = (schoolId, schoolYear = null) => {
-    console.log('⚠️ Membership Fee Updates not implemented yet for school:', schoolId, 'year:', schoolYear);
+    // Membership Fee Updates not implemented yet
     return {
         data: [],
         loading: false,

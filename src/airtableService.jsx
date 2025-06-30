@@ -54,10 +54,7 @@ class AirtableService {
 
                 const url = `${this.baseUrl}/${encodeURIComponent(tableName)}?${params}`;
                 
-                // Debug the URL for locations specifically
-                if (tableName === TABLES.LOCATIONS) {
-                    console.log('🔗 Locations API URL:', url);
-                }
+                // Debug URL commented out
                 
                 // console.log(`📄 Fetching page ${pageCount + 1} from ${tableName}...`);
 
@@ -86,13 +83,7 @@ class AirtableService {
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('❌ Airtable API Error:', {
-                        status: response.status,
-                        statusText: response.statusText,
-                        error: errorText,
-                        tableName: tableName,
-                        url: url.substring(0, 100) + '...'
-                    });
+                    // Airtable API Error
                     throw new Error(`Airtable API error: ${response.status} - ${errorText}`);
                 }
 
@@ -107,18 +98,12 @@ class AirtableService {
 
                 // Stop if no more pages or we've reached maxRecords
                 if (!offset || allRecords.length >= maxRecords) {
-                    if (!offset) {
-                        console.log('✅ No more pages available');
-                    }
-                    if (allRecords.length >= maxRecords) {
-                        console.log(`✅ Reached maxRecords limit: ${maxRecords}`);
-                    }
                     break;
                 }
 
                 // Safety check to prevent infinite loops
                 if (pageCount > 100) {
-                    console.warn('⚠️ Stopping after 100 pages to prevent infinite loop');
+                    // Stopping after 100 pages to prevent infinite loop
                     break;
                 }
 
@@ -126,14 +111,10 @@ class AirtableService {
 
             // Trim to maxRecords if we got too many
             if (allRecords.length > maxRecords) {
-                console.log(`✂️ Trimming results from ${allRecords.length} to ${maxRecords}`);
                 allRecords = allRecords.slice(0, maxRecords);
             }
-
-            console.log(`✅ Final result for ${tableName}: ${allRecords.length} records from ${pageCount} pages`);
             return this.transformRecords(allRecords);
         } catch (error) {
-            console.error(`❌ Error fetching records from ${tableName}:`, error);
             throw error;
         }
     }
@@ -322,7 +303,6 @@ class AirtableService {
     // CORRECTED: Generic method for fetching records by school_id
     // Using the formula field 'school_id' that exists in related tables
     async fetchBySchoolId(tableName, schoolId, sortField = null, sortDirection = 'desc') {
-        console.log(`🔍 fetchBySchoolId called for ${tableName} with schoolId: ${schoolId}`);
         
         // First, let's fetch ALL records to see what we're working with
         const allRecords = await this.fetchRecords(tableName, { maxRecords: 10000 });
