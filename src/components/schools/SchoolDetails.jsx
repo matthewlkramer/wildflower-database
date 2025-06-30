@@ -487,7 +487,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     console.log('First governance doc:', doc);
                   }
                   return (
-                  <tr key={doc.id} className="hover:bg-gray-50">
+                    <tr key={doc.id} className="hover:bg-gray-50">
                     <td className="px-4 py-4">
                       <div className="text-sm font-medium text-gray-900">{doc['Document type'] || doc['Doc type'] || doc['Type'] || doc.type || doc.documentType || 'Unknown Type'}</div>
                       {(doc['Doc notes'] || doc['Notes'] || doc.notes || doc.docNotes) && <div className="text-sm text-gray-500 mt-1">{doc['Doc notes'] || doc['Notes'] || doc.notes || doc.docNotes}</div>}
@@ -502,7 +502,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
             {governanceDocs.length === 0 && <div className="text-center py-8 text-gray-500">No governance documents added yet.</div>}
@@ -745,7 +746,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
             {grants.length === 0 && <div className="text-center py-8 text-gray-500">No grants found for this school.</div>}
@@ -789,7 +791,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
             {loans.length === 0 && <div className="text-center py-8 text-gray-500">No loans found for this school.</div>}
@@ -877,7 +880,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
             {actionSteps.length === 0 && <div className="text-center py-8 text-gray-500">No action steps found for this school.</div>}
