@@ -280,9 +280,17 @@ class AirtableService {
 
     // Fetch relationships between educators and schools
     async fetchEducatorsXSchools() {
-        return this.fetchRecords(TABLES.EDUCATORS_X_SCHOOLS, {
+        const result = await this.fetchRecords(TABLES.EDUCATORS_X_SCHOOLS, {
             sort: { field: 'Start Date', direction: 'desc' }
         });
+        
+        // Log first record to see field structure
+        if (result.length > 0) {
+            console.log('🔗 EDUCATORS X SCHOOLS FIELDS:', Object.keys(result[0]));
+            console.log('🔗 First relationship:', result[0]);
+        }
+        
+        return result;
     }
 
     // Add a generic method to fetch all records from any table (for your hooks)
