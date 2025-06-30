@@ -319,30 +319,25 @@ class AirtableService {
         // Most tables have a 'School' field that links to the Schools table
         let filterByFormula;
         
+        // For linked record fields in Airtable, we need to use SEARCH or FIND
+        // The School field is a linked record field that contains record IDs
         if (tableName === TABLES.LOCATIONS) {
-            // Locations table has a 'School' field that links to Schools table
-            filterByFormula = `{School} = "${schoolId}"`;
+            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
         } else if (tableName === TABLES.GRANTS) {
-            // Grants table has a 'School' field that links to Schools table  
-            filterByFormula = `{School} = "${schoolId}"`;
+            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
         } else if (tableName === TABLES.LOANS) {
-            // Loans table has a 'School' field that links to Schools table
-            filterByFormula = `{School} = "${schoolId}"`;
+            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
         } else if (tableName === TABLES.GUIDES_ASSIGNMENTS) {
-            // Guide Assignments table has a 'School' field that links to Schools table
-            filterByFormula = `{School} = "${schoolId}"`;
+            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
         } else if (tableName === TABLES.ACTION_STEPS) {
-            // Action steps table has a 'Schools' field (plural) that links to Schools table
-            filterByFormula = `{Schools} = "${schoolId}"`;
+            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({Schools}))`;
         } else if (tableName === TABLES.SCHOOL_NOTES) {
-            // School notes table has a 'School' field that links to Schools table
-            filterByFormula = `{School} = "${schoolId}"`;
+            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
         } else if (tableName === TABLES.GOVERNANCE_DOCS) {
-            // Governance docs table has a 'School' field that links to Schools table
-            filterByFormula = `{School} = "${schoolId}"`;
+            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
         } else {
-            // Fallback to school_id formula field if it exists
-            filterByFormula = `{school_id} = "${schoolId}"`;
+            // Fallback - try both approaches
+            filterByFormula = `OR(SEARCH("${schoolId}", ARRAYJOIN({School})), {school_id} = "${schoolId}")`;
         }
 
         const options = {

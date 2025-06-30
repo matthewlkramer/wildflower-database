@@ -187,14 +187,22 @@ export const transformEducatorXSchoolData = (airtableRecord) => {
 
   return {
     id: airtableRecord.id,
-    educatorId: safeExtract(airtableRecord['Educator']),
-    schoolId: safeExtract(airtableRecord['School']),
-    startDate: airtableRecord['Start Date'] || '',
-    endDate: airtableRecord['End Date'] || null,
+    // Handle both direct fields and array references
+    educatorId: airtableRecord.educatorId || safeExtract(airtableRecord['Educator']),
+    schoolId: airtableRecord.schoolId || safeExtract(airtableRecord['School']),
+    startDate: airtableRecord.startDate || airtableRecord['Start Date'] || '',
+    endDate: airtableRecord.endDate || airtableRecord['End Date'] || null,
     currentlyActive: airtableRecord['Currently Active'] === true,
-    roles: airtableRecord['Roles'] || [],
-    educatorName: safeExtract(airtableRecord['Educator Full Name']) || 'Unknown',
-    schoolName: safeExtract(airtableRecord['School Name']) || 'Unknown',
+    roles: airtableRecord.role ? [airtableRecord.role] : (airtableRecord['Roles'] || airtableRecord['Role'] || []),
+    // These are lookup fields that might not exist
+    educatorName: airtableRecord['Educator Full Name'] || 
+                 airtableRecord['Educator Name'] || 
+                 safeExtract(airtableRecord['Educator Full Name']) || 
+                 'Unknown',
+    schoolName: airtableRecord['School Name'] || 
+               airtableRecord['School Short Name'] ||
+               safeExtract(airtableRecord['School Name']) || 
+               'Unknown',
     createdTime: airtableRecord.createdTime
   };
 };

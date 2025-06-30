@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, CheckCircle, XCircle } from 'lucide-react';
 import { useEducatorsXSchools } from '../../hooks/useUnifiedData';
+import useUnifiedData from '../../hooks/useUnifiedData';
 import { useAirtableMutations } from '../../hooks/useAirtableData';
 import AddEducatorStintModal from '../../AddEducatorStintModal';
 import CreateEducatorModal from '../../CreateEducatorModal';
+import Pills from '../shared/Pills';
+import { TABS } from '../../utils/constants';
 
 const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
     const [showAddStintModal, setShowAddStintModal] = useState(false);
     const [showCreateEducatorModal, setShowCreateEducatorModal] = useState(false);
 
     const { data: educatorsXSchools, refetch: refetchEducatorsXSchools } = useEducatorsXSchools();
+    const { data: allEducatorsData } = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
     const { createRecord, updateRecord, deleteRecord, loading: mutationLoading } = useAirtableMutations();
 
-    // Filter relationships for this school
-    const schoolEducators = educatorsXSchools.filter(exs => exs.schoolId === school.id);
+    // Filter relationships for this school and enrich with educator names
+    const schoolEducators = useMemo(() => {
+        const relationships = educatorsXSchools.filter(exs => exs.schoolId === school.id);
+        
+        // Create educator map for quick lookup
+        const educatorMap = {};
+        if (allEducatorsData) {
+            allEducatorsData.forEach(educator => {
+                educatorMap[educator.id] = educator;
+            });
+        }
+        
+        // Enrich relationships with educator data
+        return relationships.map(rel => ({
+            ...rel,
+            educatorName: educatorMap[rel.educatorId]?.['Full Name'] || rel.educatorName || 'Unknown Educator',
+            educatorEmail: educatorMap[rel.educatorId]?.['Current Primary Email Address'] || null
+        }));
+    }, [educatorsXSchools, school.id, allEducatorsData]);
 
     const handleEndStint = async (stintId) => {
         try {
@@ -158,15 +179,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex flex-wrap gap-1">
-                                        {relationship.roles?.map((role, index) => (
-                                            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                {role}
-                                            </span>
-                                        )) || (
-                                                <span className="text-sm text-gray-500">No roles assigned</span>
-                                            )}
-                                    </div>
+                                    <Pills values={relationship.roles} colorScheme="blue" />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {relationship.startDate || '-'}
