@@ -159,11 +159,6 @@ export const useCachedEducatorsXSchools = () => {
 export const useCachedSchoolLocations = (schoolId) => {
   const options = { schoolId };
   
-  // Early return if no schoolId
-  if (!schoolId) {
-    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
-  }
-  
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
     
@@ -240,11 +235,6 @@ export const useCachedSchoolNotes = (schoolId) => {
     return await airtableService.fetchSchoolNotes(schoolId);
   }, [schoolId]);
 
-  // Early return if no schoolId
-  if (!schoolId) {
-    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
-  }
-
   return useCachedData(CACHE_KEYS.SCHOOL_NOTES, fetchFunction, options);
 };
 
@@ -266,11 +256,6 @@ export const useCachedActionSteps = (schoolId) => {
       return step.school_id === schoolId || (Array.isArray(step.school_ids) && step.school_ids.includes(schoolId));
     });
   }, [schoolId]);
-
-  // Early return if no schoolId
-  if (!schoolId) {
-    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
-  }
 
   return useCachedData(CACHE_KEYS.ACTION_STEPS, fetchFunction, options);
 };
@@ -294,11 +279,6 @@ export const useCachedGovernanceDocs = (schoolId) => {
     });
   }, [schoolId]);
 
-  // Early return if no schoolId
-  if (!schoolId) {
-    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
-  }
-
   return useCachedData(CACHE_KEYS.GOVERNANCE_DOCS, fetchFunction, options);
 };
 
@@ -321,11 +301,6 @@ export const useCachedGuideAssignments = (schoolId) => {
     });
   }, [schoolId]);
 
-  // Early return if no schoolId
-  if (!schoolId) {
-    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
-  }
-
   return useCachedData(CACHE_KEYS.GUIDE_ASSIGNMENTS, fetchFunction, options);
 };
 
@@ -336,11 +311,6 @@ export const useCachedGrants = (schoolId) => {
     if (!schoolId) return [];
     return await airtableService.fetchSchoolGrants(schoolId);
   }, [schoolId]);
-
-  // Early return if no schoolId
-  if (!schoolId) {
-    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
-  }
 
   return useCachedData(CACHE_KEYS.GRANTS, fetchFunction, options);
 };
@@ -353,11 +323,6 @@ export const useCachedLoans = (schoolId) => {
     return await airtableService.fetchSchoolLoans(schoolId);
   }, [schoolId]);
 
-  // Early return if no schoolId
-  if (!schoolId) {
-    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
-  }
-
   return useCachedData(CACHE_KEYS.LOANS, fetchFunction, options);
 };
 
@@ -368,11 +333,6 @@ export const useCachedMembershipFees = (schoolId) => {
     if (!schoolId) return [];
     return await airtableService.fetchSchoolMembershipFees(schoolId);
   }, [schoolId]);
-
-  // Early return if no schoolId
-  if (!schoolId) {
-    return { data: [], loading: false, error: null, refetch: () => {}, invalidateCache: () => {} };
-  }
 
   return useCachedData(CACHE_KEYS.MEMBERSHIP_FEES, fetchFunction, options);
 };
