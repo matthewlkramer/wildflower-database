@@ -6,7 +6,6 @@ import DetailRow, { EditableDetailRow } from '../shared/DetailRow';
 import LocationEditModal from '../modals/LocationEditModal';
 import SchoolTLs from './SchoolTLs';
 import SchoolLocations from './SchoolLocations';
-import { fetchAllSchemas } from '../../utils/fetchSchema';
 
 // Import the hooks and data you need
 import { 
@@ -481,11 +480,6 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {governanceDocs.map((doc, index) => {
-                  // Debug: Log first doc to see field names
-                  if (index === 0) {
-                    console.log('Governance doc fields:', Object.keys(doc));
-                    console.log('First governance doc:', doc);
-                  }
                   return (
                     <tr key={doc.id} className="hover:bg-gray-50">
                     <td className="px-4 py-4">
@@ -537,10 +531,6 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {guideAssignments.map((assignment, index) => {
-                if (index === 0) {
-                  console.log('Guide assignment fields:', Object.keys(assignment));
-                  console.log('First guide assignment:', assignment);
-                }
                 return (
                 <tr key={assignment.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -891,12 +881,6 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     );
   };
 
-  // Debug function to fetch schemas
-  const handleFetchSchemas = async () => {
-    console.log('Fetching Airtable schemas...');
-    const schemas = await fetchAllSchemas();
-    console.log('All schemas:', schemas);
-  };
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -917,12 +901,6 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
             </button>
           ))}
           </div>
-          <button
-            onClick={handleFetchSchemas}
-            className="bg-gray-600 text-white px-3 py-1 rounded text-xs hover:bg-gray-700"
-          >
-            Debug: Fetch Schemas
-          </button>
         </div>
       </div>
 
