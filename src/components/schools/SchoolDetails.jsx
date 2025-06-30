@@ -839,17 +839,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
 
   return (
     <div className="h-full flex flex-col bg-white">
-      <div className="border-b bg-gray-50 px-6 py-4">
-        <div className="flex items-center mb-4">
-          <button 
-            onClick={onBack}
-            className="mr-4 p-2 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">{school.name}</h1>
-        </div>
-        
+      <div className="border-b bg-gray-50 px-6 py-3">
         <div className="flex space-x-8 overflow-x-auto">
           {tabs.map((tab) => (
             <button
