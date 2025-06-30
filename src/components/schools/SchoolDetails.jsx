@@ -502,7 +502,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
-                  ;
+                  );
                 })}
               </tbody>
             </table>
@@ -572,7 +572,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     <button className="text-red-600 hover:text-red-900">Delete</button>
                   </td>
                 </tr>
-              )})}
+                );
+              })}
             </tbody>
           </table>
           {guideAssignments.length === 0 && <div className="text-center py-8 text-gray-500">No guide assignments for this school yet.</div>}
