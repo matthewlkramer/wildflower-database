@@ -25,7 +25,15 @@ export const useEnrichedEducators = (options = {}) => {
         // Create a map of school IDs to school names
         const schoolMap = {};
         schools.forEach(school => {
-            schoolMap[school.id] = school.shortName || school.Name || school.name || school['Short Name'];
+            // Log first school to see available fields
+            if (Object.keys(schoolMap).length === 0) {
+                console.log('🏫 First school fields:', Object.keys(school));
+                console.log('🏫 First school data:', school);
+            }
+            const schoolName = school.shortName || school['Short Name'] || school.Name || school.name;
+            if (schoolName) {
+                schoolMap[school.id] = schoolName;
+            }
         });
         
         // Log to debug the mapping
@@ -36,15 +44,13 @@ export const useEnrichedEducators = (options = {}) => {
         return educators.map(educator => {
             // Find all relationships for this educator
             const educatorRelationships = relationships.filter(rel => {
-                // Check various possible field names for educator ID
-                const relEducatorId = rel.educatorId || rel.Educator?.[0] || rel['Educator']?.[0];
-                return relEducatorId === educator.id;
+                return rel.educatorId === educator.id;
             });
             
             // Find current (active) relationships
             const currentRelationships = educatorRelationships.filter(rel => {
                 // A relationship is current if it has no end date
-                return !rel.endDate && !rel['End Date'] && !rel['End date'];
+                return !rel.endDate;
             });
             
             // Get current school names and roles
@@ -52,17 +58,16 @@ export const useEnrichedEducators = (options = {}) => {
             const currentRoles = [];
             
             currentRelationships.forEach(rel => {
-                // Get school ID from various possible fields
-                const schoolId = rel.schoolId || rel.School?.[0] || rel['School']?.[0];
-                const schoolName = schoolId ? schoolMap[schoolId] : null;
+                // Get school name from the map
+                const schoolName = rel.schoolId ? schoolMap[rel.schoolId] : null;
                 
                 // If we have a school name, add it
                 if (schoolName && !currentSchools.includes(schoolName)) {
                     currentSchools.push(schoolName);
                 }
                 
-                // Get role from various possible fields
-                const role = rel.Role || rel.role || rel['Role'];
+                // Get role - it's directly on the relationship
+                const role = rel.role;
                 if (role && !currentRoles.includes(role)) {
                     currentRoles.push(role);
                 }
