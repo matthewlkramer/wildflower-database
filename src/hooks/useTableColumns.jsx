@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import StatusBadge from '../components/shared/StatusBadge';
+import Pills from '../components/shared/Pills';
 import { TABS } from '../utils/constants.js';
 
 export const useTableColumns = (dataType) => {
@@ -37,15 +38,10 @@ export const useTableColumns = (dataType) => {
                     {
                         key: 'role',
                         label: 'Role(s)',
-                        defaultWidth: 120,
+                        defaultWidth: 150,
                         render: (value, item) => {
                             const role = item['Current Role'];
-                            
-                            // If it's an array, join them
-                            if (Array.isArray(role)) {
-                                return role.join(', ') || '-';
-                            }
-                            return role || '-';
+                            return <Pills values={role} colorScheme="blue" />;
                         }
                     },
                     {
@@ -59,13 +55,10 @@ export const useTableColumns = (dataType) => {
                     {
                         key: 'raceEthnicity',
                         label: 'Race & Ethnicity',
-                        defaultWidth: 100,
+                        defaultWidth: 200,
                         render: (value, item) => {
                             const race = item['Race & Ethnicity'];
-                            if (Array.isArray(race)) {
-                                return race.join(', ') || '-';
-                            }
-                            return race || '-';
+                            return <Pills values={race} colorScheme="purple" />;
                         }
                     },
                     {
@@ -92,7 +85,7 @@ export const useTableColumns = (dataType) => {
                     { key: 'shortName', label: 'Name' , defaultWidth: 120,},
                     { key: 'status', label: 'Status', defaultWidth: 80, render: (value) => <StatusBadge status={value} />},
                     { key: 'governanceModel', label: 'Governance', defaultWidth: 100},
-                    { key: 'agesServed', label: 'Ages Served', defaultWidth: 100, render: (value) => Array.isArray(value) ? value.join(', ') : value},
+                    { key: 'agesServed', label: 'Ages Served', defaultWidth: 150, render: (value) => <Pills values={value} colorScheme=\"green\" />},
                     {
                         key: 'location',
                         label: 'Location',
