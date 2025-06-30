@@ -9,6 +9,7 @@ import CharterDetails from './charters/CharterDetails';
 
 // Import hooks
 import useUnifiedData from '../hooks/useUnifiedData';
+import { useEnrichedEducators } from '../hooks/useEnrichedEducators';
 import { useNavigation } from '../hooks/useNavigation';
 import { useFilters } from '../hooks/useFilters';
 import { useSchoolFilters } from '../hooks/useSchoolFilters';
@@ -40,7 +41,7 @@ const WildflowerDatabase = () => {
 
     // Data fetching - get all data first, then filter
     const schoolsResult = useUnifiedData(TABS.SCHOOLS, { includeInactive: true });
-    const educatorsResult = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
+    const educatorsResult = useEnrichedEducators({ includeInactive: true });
     const chartersResult = useUnifiedData(TABS.CHARTERS);
     
 

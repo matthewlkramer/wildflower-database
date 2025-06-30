@@ -22,24 +22,17 @@ export const useEducatorFilters = (educatorsData) => {
 
         // Filter to only show active educators
         const activeEducators = educatorsData.filter(educator => {
-            // Try different possible field names for discovery status
-            const discoveryStatus = educator['Discovery Status'] || educator.discoveryStatus || educator.Status;
-            // Try different possible field names for individual type
-            const individualType = educator['Individual Type'] || educator.individualType || educator.Type;
+            // Use correct field names from Airtable
+            const discoveryStatus = educator['Discovery status']; // lowercase 's'
+            const individualType = educator['Individual Type'];
+            const inactiveFlag = educator['Inactive Flag'];
 
+            // Check if educator is active
             const isDiscoveryActive = discoveryStatus !== 'Paused';
             const isNotCommunityMember = individualType !== 'Community member';
+            const isNotInactive = !inactiveFlag;
 
-            const isActive = isDiscoveryActive && isNotCommunityMember;
-
-            if (!isActive) {
-                console.log('🚫 Filtering out educator:', educator['Full Name'] || educator.fullName, {
-                    discoveryStatus,
-                    individualType,
-                    isDiscoveryActive,
-                    isNotCommunityMember
-                });
-            }
+            const isActive = isDiscoveryActive && isNotCommunityMember && isNotInactive;
 
             return isActive;
         });

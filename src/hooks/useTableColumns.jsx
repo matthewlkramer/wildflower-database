@@ -31,12 +31,8 @@ export const useTableColumns = (dataType) => {
                         label: 'Current School',
                         defaultWidth: 160,
                         render: (value, item) => {
-                            // Handle array of school names or single school
-                            const schools = item['Current Schools'] || item.currentSchool || item['Current School'];
-                            if (Array.isArray(schools)) {
-                                return schools.join(', ') || '-';
-                            }
-                            return schools || '-';
+                            // Use enriched data if available, otherwise fall back to Assigned Partner
+                            return item.currentSchools || item['Assigned Partner'] || '-';
                         }
                     },
                     {
@@ -44,11 +40,8 @@ export const useTableColumns = (dataType) => {
                         label: 'Role(s)',
                         defaultWidth: 120,
                         render: (value, item) => {
-                            const role = item.Role || item.role || item['Primary Role'] || item.Roles;
-                            if (Array.isArray(role)) {
-                                return role.join(', ') || '-';
-                            }
-                            return role || '-';
+                            // Use enriched data for current roles
+                            return item.currentRoles || '-';
                         }
                     },
                     {
@@ -56,7 +49,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Email',
                         defaultWidth: 180,
                         render: (value, item) => {
-                            return item.Email || item.email || item['Primary Email'] || '-';
+                            return item['Current Primary Email Address'] || item['Email Addresses'] || '-';
                         }
                     },
                     {
@@ -64,7 +57,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Race & Ethnicity',
                         defaultWidth: 100,
                         render: (value, item) => {
-                            const race = item['Race & Ethnicity'] || item.raceEthnicity || item['Race/Ethnicity'];
+                            const race = item['Race & Ethnicity'];
                             if (Array.isArray(race)) {
                                 return race.join(', ') || '-';
                             }
@@ -76,7 +69,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Discovery Status',
                         defaultWidth: 80,
                         render: (value, item) => {
-                            const status = item['Discovery Status'] || item.discoveryStatus || item.Status;
+                            const status = item['Discovery status']; // Note: lowercase 's' in 'status'
                             return status ? <StatusBadge status={status} /> : '-';
                         }
                     },
@@ -85,7 +78,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Type',
                         defaultWidth: 60,
                         render: (value, item) => {
-                            return item['Individual Type'] || item.individualType || item.Type || '-';
+                            return item['Individual Type'] || '-';
                         }
                     }
                 ];
