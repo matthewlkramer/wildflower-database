@@ -120,7 +120,42 @@ export const useCachedSchoolLocations = (schoolId) => {
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
     console.log('📍 Fetching school locations from API for:', schoolId);
-    return await airtableService.fetchSchoolLocations(schoolId);
+    
+    // Fetch ALL locations and filter client-side due to Airtable filter issues
+    const allLocations = await airtableService.fetchRecords('Locations', { maxRecords: 1000 });
+    console.log('🌍 All locations fetched:', allLocations.length);
+    
+    // Debug first few locations to see the structure
+    if (allLocations.length > 0) {
+      console.log('🔍 First location structure:', allLocations[0]);
+      console.log('🔍 Location field names:', Object.keys(allLocations[0]));
+      console.log('🔍 School field:', allLocations[0].School);
+      console.log('🔍 Schools field:', allLocations[0].Schools);
+      console.log('🔍 school_id field:', allLocations[0].school_id);
+    }
+    
+    // Filter locations that belong to this school
+    const schoolLocations = allLocations.filter(location => {
+      // Prioritize school_id field as it works better
+      if (location.school_id === schoolId) {
+        console.log('✅ Location matches via school_id:', location.Address || location.address);
+        return true;
+      }
+      // Check school_ids array field as fallback
+      if (Array.isArray(location.school_ids) && location.school_ids.includes(schoolId)) {
+        console.log('✅ Location matches via school_ids array:', location.Address || location.address);
+        return true;
+      }
+      // Last resort - check School linked field
+      if (Array.isArray(location.School) && location.School.includes(schoolId)) {
+        console.log('✅ Location matches via School array:', location.Address || location.address, location.School);
+        return true;
+      }
+      return false;
+    });
+    
+    console.log(`🎯 Filtered ${schoolLocations.length} locations for school ${schoolId}`);
+    return schoolLocations;
   }, [schoolId]);
 
   return useCachedData(CACHE_KEYS.SCHOOL_LOCATIONS, fetchFunction, options);
@@ -144,7 +179,18 @@ export const useCachedActionSteps = (schoolId) => {
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
     console.log('✅ Fetching action steps from API for:', schoolId);
-    return await airtableService.fetchSchoolActionSteps(schoolId);
+    
+    // Fetch all and filter client-side
+    const allSteps = await airtableService.fetchRecords('Action steps', { maxRecords: 1000 });
+    return allSteps.filter(step => {
+      if (Array.isArray(step.School)) {
+        return step.School.includes(schoolId);
+      }
+      if (Array.isArray(step.Schools)) {
+        return step.Schools.includes(schoolId);
+      }
+      return step.school_id === schoolId || (Array.isArray(step.school_ids) && step.school_ids.includes(schoolId));
+    });
   }, [schoolId]);
 
   return useCachedData(CACHE_KEYS.ACTION_STEPS, fetchFunction, options);
@@ -156,7 +202,18 @@ export const useCachedGovernanceDocs = (schoolId) => {
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
     console.log('📋 Fetching governance docs from API for:', schoolId);
-    return await airtableService.fetchSchoolGovernanceDocs(schoolId);
+    
+    // Fetch all and filter client-side
+    const allDocs = await airtableService.fetchRecords('Governance docs', { maxRecords: 1000 });
+    return allDocs.filter(doc => {
+      if (Array.isArray(doc.School)) {
+        return doc.School.includes(schoolId);
+      }
+      if (Array.isArray(doc.Schools)) {
+        return doc.Schools.includes(schoolId);
+      }
+      return doc.school_id === schoolId || (Array.isArray(doc.school_ids) && doc.school_ids.includes(schoolId));
+    });
   }, [schoolId]);
 
   return useCachedData(CACHE_KEYS.GOVERNANCE_DOCS, fetchFunction, options);
@@ -168,7 +225,18 @@ export const useCachedGuideAssignments = (schoolId) => {
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
     console.log('👥 Fetching guide assignments from API for:', schoolId);
-    return await airtableService.fetchSchoolGuideAssignments(schoolId);
+    
+    // Fetch all and filter client-side
+    const allAssignments = await airtableService.fetchRecords('Guides assignments', { maxRecords: 1000 });
+    return allAssignments.filter(assignment => {
+      if (Array.isArray(assignment.School)) {
+        return assignment.School.includes(schoolId);
+      }
+      if (Array.isArray(assignment.Schools)) {
+        return assignment.Schools.includes(schoolId);
+      }
+      return assignment.school_id === schoolId || (Array.isArray(assignment.school_ids) && assignment.school_ids.includes(schoolId));
+    });
   }, [schoolId]);
 
   return useCachedData(CACHE_KEYS.GUIDE_ASSIGNMENTS, fetchFunction, options);
