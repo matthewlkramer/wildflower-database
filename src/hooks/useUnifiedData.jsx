@@ -14,7 +14,17 @@ import {
   useCachedLoans,
   useCachedMembershipFees
 } from './useCachedData';
-import { transformSchoolsData, transformEducatorsXSchoolsData, transformLocationsData } from '../utils/dataTransformers.js';
+import { 
+  transformSchoolsData, 
+  transformEducatorsXSchoolsData, 
+  transformLocationsData,
+  transformGovernanceDocData,
+  transformGuideAssignmentData,
+  transformGrantData,
+  transformLoanData,
+  transformActionStepData,
+  transformSchoolNoteData
+} from '../utils/dataTransformers.js';
 import { TABS } from '../utils/constants.js';
 
 const useUnifiedData = (dataType, options = {}) => {
@@ -161,67 +171,151 @@ export const useSchoolLocations = (schoolId) => {
 export const useSchoolNotes = (schoolId) => {
     const result = useCachedSchoolNotes(schoolId);
     
-    return {
-        data: result.data || [],
-        loading: result.loading,
-        error: result.error,
-        refetch: result.refetch
-    };
+    return useMemo(() => {
+        const { data: rawData, loading, error } = result;
+        
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            const transformed = rawData.map(note => transformSchoolNoteData(note)).filter(Boolean);
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch: result.refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch: result.refetch
+        };
+    }, [result]);
 };
 
 export const useActionSteps = (schoolId) => {
     const result = useCachedActionSteps(schoolId);
     
-    return {
-        data: result.data || [],
-        loading: result.loading,
-        error: result.error,
-        refetch: result.refetch
-    };
+    return useMemo(() => {
+        const { data: rawData, loading, error } = result;
+        
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            const transformed = rawData.map(step => transformActionStepData(step)).filter(Boolean);
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch: result.refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch: result.refetch
+        };
+    }, [result]);
 };
 
 export const useGovernanceDocs = (schoolId) => {
     const result = useCachedGovernanceDocs(schoolId);
     
-    return {
-        data: result.data || [],
-        loading: result.loading,
-        error: result.error,
-        refetch: result.refetch
-    };
+    return useMemo(() => {
+        const { data: rawData, loading, error } = result;
+        
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            const transformed = rawData.map(doc => transformGovernanceDocData(doc)).filter(Boolean);
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch: result.refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch: result.refetch
+        };
+    }, [result]);
 };
 
 export const useGuideAssignments = (schoolId) => {
     const result = useCachedGuideAssignments(schoolId);
     
-    return {
-        data: result.data || [],
-        loading: result.loading,
-        error: result.error,
-        refetch: result.refetch
-    };
+    return useMemo(() => {
+        const { data: rawData, loading, error } = result;
+        
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            const transformed = rawData.map(assignment => transformGuideAssignmentData(assignment)).filter(Boolean);
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch: result.refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch: result.refetch
+        };
+    }, [result]);
 };
 
 export const useGrants = (schoolId) => {
     const result = useCachedGrants(schoolId);
     
-    return {
-        data: result.data || [],
-        loading: result.loading,
-        error: result.error,
-        refetch: result.refetch
-    };
+    return useMemo(() => {
+        const { data: rawData, loading, error } = result;
+        
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            const transformed = rawData.map(grant => transformGrantData(grant)).filter(Boolean);
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch: result.refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch: result.refetch
+        };
+    }, [result]);
 };
 
 export const useLoans = (schoolId) => {
     const result = useCachedLoans(schoolId);
     
-    return {
-        data: result.data || [],
-        loading: result.loading,
-        error: result.error,
-        refetch: result.refetch
-    };
+    return useMemo(() => {
+        const { data: rawData, loading, error } = result;
+        
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            const transformed = rawData.map(loan => transformLoanData(loan)).filter(Boolean);
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch: result.refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch: result.refetch
+        };
+    }, [result]);
 };
 
 export const useMembershipFeeRecords = (schoolId) => {

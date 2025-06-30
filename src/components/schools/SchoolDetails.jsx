@@ -489,20 +489,20 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                   return (
                     <tr key={doc.id} className="hover:bg-gray-50">
                     <td className="px-4 py-4">
-                      <div className="text-sm font-medium text-gray-900">{doc['Document type'] || doc['Doc type'] || doc['Type'] || doc.type || doc.documentType || 'Unknown Type'}</div>
-                      {(doc['Doc notes'] || doc['Notes'] || doc.notes || doc.docNotes) && <div className="text-sm text-gray-500 mt-1">{doc['Doc notes'] || doc['Notes'] || doc.notes || doc.docNotes}</div>}
+                      <div className="text-sm font-medium text-gray-900">{doc.documentType || 'Unknown Type'}</div>
+                      {doc.docNotes && <div className="text-sm text-gray-500 mt-1">{doc.docNotes}</div>}
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{doc['Date'] || doc['Doc date'] || doc.date || '-'}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{doc.date || '-'}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                      {(doc['Doc link'] || doc['Link'] || doc['URL'] || doc.url || doc.link || doc.docLink) && (
-                        <button onClick={() => window.open(doc['Doc link'] || doc['Link'] || doc['URL'] || doc.url || doc.link || doc.docLink, '_blank')} className="text-blue-600 hover:text-blue-900 mr-3">
+                      {doc.docLink && (
+                        <button onClick={() => window.open(doc.docLink, '_blank')} className="text-blue-600 hover:text-blue-900 mr-3">
                           <ExternalLink className="w-4 h-4" />
                         </button>
                       )}
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
-                  );
+                  ;
                 })}
               </tbody>
             </table>
@@ -548,24 +548,24 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       <div className="flex-shrink-0 h-8 w-8">
                         <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
                           <span className="text-sm font-medium text-gray-600">
-                            {(typeof assignment.guideShortName === 'string' ? assignment.guideShortName.split(' ').map(n => n[0]).join('') : null) || '??'}
+                            {(typeof assignment.guideName === 'string' ? assignment.guideName.split(' ').map(n => n[0]).join('') : null) || '??'}
                           </span>
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{assignment['Guide short name'] || assignment['Guide'] || assignment['Guide Name'] || assignment.guide || assignment.guideShortName || 'Unknown Guide'}</div>
+                        <div className="text-sm font-medium text-gray-900">{assignment.guideName || 'Unknown Guide'}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {assignment['Role'] || assignment['Guide role'] || assignment.role || 'Unknown Role'}
+                      {assignment.role || 'Unknown Role'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment['Start date'] || assignment['Start Date'] || assignment.startDate || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment['End date'] || assignment['End Date'] || assignment.endDate || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment.startDate || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment.endDate || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {(assignment['Currently active'] || assignment['Currently Active'] || assignment['Active'] || assignment.active || assignment.currentlyActive) ? <CheckCircle className="w-5 h-5 text-green-600" /> : <XCircle className="w-5 h-5 text-red-600" />}
+                    {assignment.currentlyActive ? <CheckCircle className="w-5 h-5 text-green-600" /> : <XCircle className="w-5 h-5 text-red-600" />}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
@@ -734,13 +734,13 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                   }
                   return (
                   <tr key={grant.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{grant['Issue date'] || grant['Date'] || grant.date || grant.issueDate || '-'}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${(grant['Amount'] || grant['Grant amount'] || grant.amount || 0).toLocaleString()}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{grant.issueDate || '-'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${(grant.amount || 0).toLocaleString()}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{grant['Issued by'] || grant['Issued By'] || grant['Partner'] || grant.partner || grant.issuedBy || '-'}</div>
-                      <div className="text-sm text-gray-500">{grant['Partner name'] || grant['Partner Name'] || grant.partnerName || ''}</div>
+                      <div className="text-sm font-medium text-gray-900">{grant.issuedBy || '-'}</div>
+                      <div className="text-sm text-gray-500">{grant.partnerName || ''}</div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={grant['Status'] || grant['Grant status'] || grant.status || 'Unknown'} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={grant.status || 'Unknown'} /></td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
                       <button className="text-red-600 hover:text-red-900">Delete</button>
@@ -780,12 +780,12 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                   }
                   return (
                   <tr key={loan.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{loan['Issue date'] || loan['Date'] || loan.date || loan.issueDate || '-'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{loan.issueDate || '-'}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">${(loan['Amount'] || loan['Loan amount'] || loan.amount || 0).toLocaleString()}</div>
-                      <div className="text-sm text-gray-500">{((loan['Interest rate'] || loan['Interest Rate'] || loan['Rate'] || loan.rate || loan.interestRate || 0) * 100).toFixed(1)}% interest</div>
+                      <div className="text-sm font-medium text-gray-900">${(loan.amount || 0).toLocaleString()}</div>
+                      <div className="text-sm text-gray-500">{((loan.interestRate || 0) * 100).toFixed(1)}% interest</div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={loan['Status'] || loan['Loan status'] || loan.status || 'Unknown'} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={loan.status || 'Unknown'} /></td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
                       <button className="text-red-600 hover:text-red-900">Delete</button>
@@ -870,18 +870,17 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 {actionSteps.map(action => (
                   <tr key={action.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
-                      <div className="text-sm font-medium text-gray-900">{action['Item'] || action.item || 'No description'}</div>
+                      <div className="text-sm font-medium text-gray-900">{action.item || 'No description'}</div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{action['Assignee'] || action.assignee || '-'}</td>
-                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={action['Status'] || action.status || 'Unknown'} /></td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{action['Due Date'] || action.dueDate || '-'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{action.assignee || '-'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={action.status || 'Unknown'} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{action.dueDate || '-'}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
-                  );
-                })}
+                ))}
               </tbody>
             </table>
             {actionSteps.length === 0 && <div className="text-center py-8 text-gray-500">No action steps found for this school.</div>}
