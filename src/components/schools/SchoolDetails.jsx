@@ -6,6 +6,7 @@ import DetailRow, { EditableDetailRow } from '../shared/DetailRow';
 import LocationEditModal from '../modals/LocationEditModal';
 import SchoolTLs from './SchoolTLs';
 import SchoolLocations from './SchoolLocations';
+import { fetchAllSchemas } from '../../utils/fetchSchema';
 
 // Import the hooks and data you need
 import { 
@@ -479,16 +480,22 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {governanceDocs.map(doc => (
+                {governanceDocs.map((doc, index) => {
+                  // Debug: Log first doc to see field names
+                  if (index === 0) {
+                    console.log('Governance doc fields:', Object.keys(doc));
+                    console.log('First governance doc:', doc);
+                  }
+                  return (
                   <tr key={doc.id} className="hover:bg-gray-50">
                     <td className="px-4 py-4">
-                      <div className="text-sm font-medium text-gray-900">{doc['Document Type'] || doc.documentType || 'Unknown Type'}</div>
-                      {(doc['Doc Notes'] || doc.docNotes) && <div className="text-sm text-gray-500 mt-1">{doc['Doc Notes'] || doc.docNotes}</div>}
+                      <div className="text-sm font-medium text-gray-900">{doc['Document type'] || doc['Doc type'] || doc['Type'] || doc.type || doc.documentType || 'Unknown Type'}</div>
+                      {(doc['Doc notes'] || doc['Notes'] || doc.notes || doc.docNotes) && <div className="text-sm text-gray-500 mt-1">{doc['Doc notes'] || doc['Notes'] || doc.notes || doc.docNotes}</div>}
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{doc['Date'] || doc.date || '-'}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{doc['Date'] || doc['Doc date'] || doc.date || '-'}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                      {(doc['Doc Link'] || doc.docLink) && (
-                        <button onClick={() => window.open(doc['Doc Link'] || doc.docLink, '_blank')} className="text-blue-600 hover:text-blue-900 mr-3">
+                      {(doc['Doc link'] || doc['Link'] || doc['URL'] || doc.url || doc.link || doc.docLink) && (
+                        <button onClick={() => window.open(doc['Doc link'] || doc['Link'] || doc['URL'] || doc.url || doc.link || doc.docLink, '_blank')} className="text-blue-600 hover:text-blue-900 mr-3">
                           <ExternalLink className="w-4 h-4" />
                         </button>
                       )}
@@ -528,7 +535,12 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {guideAssignments.map(assignment => (
+              {guideAssignments.map((assignment, index) => {
+                if (index === 0) {
+                  console.log('Guide assignment fields:', Object.keys(assignment));
+                  console.log('First guide assignment:', assignment);
+                }
+                return (
                 <tr key={assignment.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -540,26 +552,26 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{assignment['Guide Short Name'] || assignment.guideShortName || 'Unknown Guide'}</div>
+                        <div className="text-sm font-medium text-gray-900">{assignment['Guide short name'] || assignment['Guide'] || assignment['Guide Name'] || assignment.guide || assignment.guideShortName || 'Unknown Guide'}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {assignment['Role'] || assignment.role || 'Unknown Role'}
+                      {assignment['Role'] || assignment['Guide role'] || assignment.role || 'Unknown Role'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment['Start Date'] || assignment.startDate || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment['End Date'] || assignment.endDate || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment['Start date'] || assignment['Start Date'] || assignment.startDate || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{assignment['End date'] || assignment['End Date'] || assignment.endDate || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {(assignment['Currently Active'] || assignment.currentlyActive) ? <CheckCircle className="w-5 h-5 text-green-600" /> : <XCircle className="w-5 h-5 text-red-600" />}
+                    {(assignment['Currently active'] || assignment['Currently Active'] || assignment['Active'] || assignment.active || assignment.currentlyActive) ? <CheckCircle className="w-5 h-5 text-green-600" /> : <XCircle className="w-5 h-5 text-red-600" />}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
                     <button className="text-red-600 hover:text-red-900">Delete</button>
                   </td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
           {guideAssignments.length === 0 && <div className="text-center py-8 text-gray-500">No guide assignments for this school yet.</div>}
@@ -714,15 +726,20 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {grants.map(grant => (
+                {grants.map((grant, index) => {
+                  if (index === 0) {
+                    console.log('Grant fields:', Object.keys(grant));
+                    console.log('First grant:', grant);
+                  }
+                  return (
                   <tr key={grant.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{grant['Issue Date'] || grant.issueDate || '-'}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${(grant['Amount'] || grant.amount || 0).toLocaleString()}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{grant['Issue date'] || grant['Date'] || grant.date || grant.issueDate || '-'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${(grant['Amount'] || grant['Grant amount'] || grant.amount || 0).toLocaleString()}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{grant['Issued By'] || grant.issuedBy || '-'}</div>
-                      <div className="text-sm text-gray-500">{grant['Partner Name'] || grant.partnerName || ''}</div>
+                      <div className="text-sm font-medium text-gray-900">{grant['Issued by'] || grant['Issued By'] || grant['Partner'] || grant.partner || grant.issuedBy || '-'}</div>
+                      <div className="text-sm text-gray-500">{grant['Partner name'] || grant['Partner Name'] || grant.partnerName || ''}</div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={grant['Status'] || grant.status || 'Unknown'} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={grant['Status'] || grant['Grant status'] || grant.status || 'Unknown'} /></td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
                       <button className="text-red-600 hover:text-red-900">Delete</button>
@@ -754,14 +771,19 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {loans.map(loan => (
+                {loans.map((loan, index) => {
+                  if (index === 0) {
+                    console.log('Loan fields:', Object.keys(loan));
+                    console.log('First loan:', loan);
+                  }
+                  return (
                   <tr key={loan.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{loan['Issue Date'] || loan.issueDate || '-'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{loan['Issue date'] || loan['Date'] || loan.date || loan.issueDate || '-'}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">${(loan['Amount'] || loan.amount || 0).toLocaleString()}</div>
-                      <div className="text-sm text-gray-500">{((loan['Interest Rate'] || loan.interestRate || 0) * 100).toFixed(1)}% interest</div>
+                      <div className="text-sm font-medium text-gray-900">${(loan['Amount'] || loan['Loan amount'] || loan.amount || 0).toLocaleString()}</div>
+                      <div className="text-sm text-gray-500">{((loan['Interest rate'] || loan['Interest Rate'] || loan['Rate'] || loan.rate || loan.interestRate || 0) * 100).toFixed(1)}% interest</div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={loan['Status'] || loan.status || 'Unknown'} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={loan['Status'] || loan['Loan status'] || loan.status || 'Unknown'} /></td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900 mr-3">Open</button>
                       <button className="text-red-600 hover:text-red-900">Delete</button>
@@ -865,10 +887,18 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
     );
   };
 
+  // Debug function to fetch schemas
+  const handleFetchSchemas = async () => {
+    console.log('Fetching Airtable schemas...');
+    const schemas = await fetchAllSchemas();
+    console.log('All schemas:', schemas);
+  };
+
   return (
     <div className="h-full flex flex-col bg-white">
       <div className="border-b bg-gray-50 px-6 py-3">
-        <div className="flex space-x-8 overflow-x-auto">
+        <div className="flex items-center justify-between">
+          <div className="flex space-x-8 overflow-x-auto flex-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -882,6 +912,13 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
               {tab.label}
             </button>
           ))}
+          </div>
+          <button
+            onClick={handleFetchSchemas}
+            className="bg-gray-600 text-white px-3 py-1 rounded text-xs hover:bg-gray-700"
+          >
+            Debug: Fetch Schemas
+          </button>
         </div>
       </div>
 
