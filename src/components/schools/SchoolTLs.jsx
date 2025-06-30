@@ -30,7 +30,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
         // Enrich relationships with educator data
         return relationships.map(rel => ({
             ...rel,
-            educatorName: educatorMap[rel.educatorId]?.['Full Name'] || rel.educatorName || 'Unknown Educator',
+            educatorName: String(educatorMap[rel.educatorId]?.['Full Name'] || rel.educatorName || 'Unknown Educator'),
             educatorEmail: educatorMap[rel.educatorId]?.['Current Primary Email Address'] || null
         }));
     }, [educatorsXSchools, school.id, allEducators]);
@@ -166,7 +166,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
                                         <div className="flex-shrink-0 h-8 w-8">
                                             <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
                                                 <span className="text-sm font-medium text-gray-600">
-                                                    {relationship.educatorName?.split(' ').map(n => n[0]).join('') || '??'}
+                                                    {(typeof relationship.educatorName === 'string' ? relationship.educatorName.split(' ').map(n => n[0]).join('') : null) || '??'}
                                                 </span>
                                             </div>
                                         </div>

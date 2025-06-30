@@ -533,7 +533,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       <div className="flex-shrink-0 h-8 w-8">
                         <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
                           <span className="text-sm font-medium text-gray-600">
-                            {assignment.guideShortName?.split(' ').map(n => n[0]).join('') || '??'}
+                            {(typeof assignment.guideShortName === 'string' ? assignment.guideShortName.split(' ').map(n => n[0]).join('') : null) || '??'}
                           </span>
                         </div>
                       </div>
@@ -794,7 +794,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     <div className="flex-shrink-0 h-8 w-8">
                       <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
                         <span className="text-sm font-medium text-gray-600">
-                          {note.createdBy?.split(' ').map(n => n[0]).join('') || '??'}
+                          {(typeof note.createdBy === 'string' ? note.createdBy.split(' ').map(n => n[0]).join('') : null) || '??'}
                         </span>
                       </div>
                     </div>

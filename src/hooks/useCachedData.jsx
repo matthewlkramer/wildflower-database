@@ -152,7 +152,7 @@ export const useCachedEducatorsXSchools = () => {
     return await airtableService.fetchEducatorsXSchools();
   }, []);
 
-  return useCachedData(CACHE_KEYS.EDUCATORS_X_SCHOOLS, fetchFunction);
+  return useCachedData(CACHE_KEYS.EDUCATORS_X_SCHOOLS, fetchFunction, {});
 };
 
 // Cached School-specific data hooks (these can be cached per school)
