@@ -17,7 +17,7 @@ class AirtableService {
         try {
             const {
                 view,
-                maxRecords = 100, // set to 100 for development, increase to 10,000 later
+                maxRecords = 10000, // Get all records by default
                 pageSize = 100,
                 sort,
                 filterByFormula,
@@ -316,7 +316,7 @@ class AirtableService {
         console.log(`🔍 fetchBySchoolId called for ${tableName} with schoolId: ${schoolId}`);
         
         // First, let's fetch ALL records to see what we're working with
-        const allRecords = await this.fetchRecords(tableName, { maxRecords: 10 });
+        const allRecords = await this.fetchRecords(tableName, { maxRecords: 10000 });
         console.log(`📊 Sample ${tableName} records:`, allRecords.slice(0, 2));
         if (allRecords.length > 0) {
             console.log(`📋 ${tableName} field names:`, Object.keys(allRecords[0]));

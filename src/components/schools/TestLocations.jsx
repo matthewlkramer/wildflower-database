@@ -10,7 +10,7 @@ const TestLocations = ({ schoolId }) => {
         const fetchData = async () => {
             try {
                 // Fetch ALL locations without any filter
-                const all = await airtableService.fetchRecords('Locations', { maxRecords: 100 });
+                const all = await airtableService.fetchRecords('Locations', { maxRecords: 10000 });
                 console.log('🌍 ALL Locations:', all);
                 console.log('🌍 Total locations count:', all.length);
                 

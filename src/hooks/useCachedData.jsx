@@ -176,7 +176,7 @@ export const useCachedSchoolLocations = (schoolId) => {
     globalTableCache[tableName].loading = true;
     
     try {
-      const allLocations = await airtableService.fetchRecords(tableName, { maxRecords: 1000 });
+      const allLocations = await airtableService.fetchRecords(tableName, { maxRecords: 10000 });
       console.log('🌍 All locations fetched:', allLocations.length);
       
       // Update global cache
@@ -225,7 +225,7 @@ export const useCachedActionSteps = (schoolId) => {
     console.log('✅ Fetching action steps from API for:', schoolId);
     
     // Fetch all and filter client-side
-    const allSteps = await airtableService.fetchRecords('Action steps', { maxRecords: 1000 });
+    const allSteps = await airtableService.fetchRecords('Action steps', { maxRecords: 10000 });
     return allSteps.filter(step => {
       if (Array.isArray(step.School)) {
         return step.School.includes(schoolId);
@@ -248,7 +248,7 @@ export const useCachedGovernanceDocs = (schoolId) => {
     console.log('📋 Fetching governance docs from API for:', schoolId);
     
     // Fetch all and filter client-side
-    const allDocs = await airtableService.fetchRecords('Governance docs', { maxRecords: 1000 });
+    const allDocs = await airtableService.fetchRecords('Governance docs', { maxRecords: 10000 });
     return allDocs.filter(doc => {
       if (Array.isArray(doc.School)) {
         return doc.School.includes(schoolId);
@@ -271,7 +271,7 @@ export const useCachedGuideAssignments = (schoolId) => {
     console.log('👥 Fetching guide assignments from API for:', schoolId);
     
     // Fetch all and filter client-side
-    const allAssignments = await airtableService.fetchRecords('Guides assignments', { maxRecords: 1000 });
+    const allAssignments = await airtableService.fetchRecords('Guides assignments', { maxRecords: 10000 });
     return allAssignments.filter(assignment => {
       if (Array.isArray(assignment.School)) {
         return assignment.School.includes(schoolId);
