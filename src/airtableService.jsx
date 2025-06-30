@@ -315,6 +315,13 @@ class AirtableService {
     async fetchBySchoolId(tableName, schoolId, sortField = null, sortDirection = 'desc') {
         console.log(`🔍 fetchBySchoolId called for ${tableName} with schoolId: ${schoolId}`);
         
+        // First, let's fetch ALL records to see what we're working with
+        const allRecords = await this.fetchRecords(tableName, { maxRecords: 10 });
+        console.log(`📊 Sample ${tableName} records:`, allRecords.slice(0, 2));
+        if (allRecords.length > 0) {
+            console.log(`📋 ${tableName} field names:`, Object.keys(allRecords[0]));
+        }
+        
         // For tables that link to Schools, we need to use the correct linking approach
         // Most tables have a 'School' field that links to the Schools table
         let filterByFormula;
