@@ -3,7 +3,7 @@ import { Plus, CheckCircle, XCircle } from 'lucide-react';
 import { useEducatorsXSchools } from '../../hooks/useUnifiedData';
 import useUnifiedData from '../../hooks/useUnifiedData';
 import { useAirtableMutations } from '../../hooks/useAirtableData';
-import AddEducatorStintModal from '../../AddEducatorStintModal';
+import AddEducatorStintModal from '../modals/AddEducatorStintModal';
 import CreateEducatorModal from '../../CreateEducatorModal';
 import Pills from '../shared/Pills';
 import { TABS } from '../../utils/constants';
