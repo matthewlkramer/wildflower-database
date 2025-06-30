@@ -5,6 +5,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { dataCache, CACHE_KEYS } from '../utils/dataCache';
 import { airtableService } from '../airtableService';
 
+// Global cache for all locations/tables to prevent multiple fetches
+const globalTableCache = {
+  Locations: { data: null, loading: false, timestamp: 0 },
+  'Action steps': { data: null, loading: false, timestamp: 0 },
+  'Governance docs': { data: null, loading: false, timestamp: 0 },
+  'Guides assignments': { data: null, loading: false, timestamp: 0 },
+  'School notes': { data: null, loading: false, timestamp: 0 },
+  'Grants': { data: null, loading: false, timestamp: 0 },
+  'Loans': { data: null, loading: false, timestamp: 0 },
+  'Membership fee overview': { data: null, loading: false, timestamp: 0 }
+};
+
+const GLOBAL_CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
 // Generic cached data hook
 export const useCachedData = (cacheKey, fetchFunction, options = {}) => {
   const [data, setData] = useState([]);
@@ -119,43 +133,73 @@ export const useCachedSchoolLocations = (schoolId) => {
   
   const fetchFunction = useCallback(async () => {
     if (!schoolId) return [];
-    console.log('📍 Fetching school locations from API for:', schoolId);
     
-    // Fetch ALL locations and filter client-side due to Airtable filter issues
-    const allLocations = await airtableService.fetchRecords('Locations', { maxRecords: 1000 });
-    console.log('🌍 All locations fetched:', allLocations.length);
+    const tableName = 'Locations';
+    const cache = globalTableCache[tableName];
     
-    // Debug first few locations to see the structure
-    if (allLocations.length > 0) {
-      console.log('🔍 First location structure:', allLocations[0]);
-      console.log('🔍 Location field names:', Object.keys(allLocations[0]));
-      console.log('🔍 School field:', allLocations[0].School);
-      console.log('🔍 Schools field:', allLocations[0].Schools);
-      console.log('🔍 school_id field:', allLocations[0].school_id);
+    // Check if we have valid cached data
+    if (cache.data && (Date.now() - cache.timestamp < GLOBAL_CACHE_TIMEOUT)) {
+      console.log('✅ Using cached Locations data');
+      // Filter from cache
+      const filtered = cache.data.filter(location => {
+        if (location.school_id === schoolId) return true;
+        if (Array.isArray(location.school_ids) && location.school_ids.includes(schoolId)) return true;
+        if (Array.isArray(location.School) && location.School.includes(schoolId)) return true;
+        return false;
+      });
+      console.log(`🎯 Filtered ${filtered.length} locations for school ${schoolId} from cache`);
+      return filtered;
     }
     
-    // Filter locations that belong to this school
-    const schoolLocations = allLocations.filter(location => {
-      // Prioritize school_id field as it works better
-      if (location.school_id === schoolId) {
-        console.log('✅ Location matches via school_id:', location.Address || location.address);
-        return true;
-      }
-      // Check school_ids array field as fallback
-      if (Array.isArray(location.school_ids) && location.school_ids.includes(schoolId)) {
-        console.log('✅ Location matches via school_ids array:', location.Address || location.address);
-        return true;
-      }
-      // Last resort - check School linked field
-      if (Array.isArray(location.School) && location.School.includes(schoolId)) {
-        console.log('✅ Location matches via School array:', location.Address || location.address, location.School);
-        return true;
-      }
-      return false;
-    });
+    // Check if already loading
+    if (cache.loading) {
+      console.log('⏳ Locations already loading, waiting...');
+      // Wait for loading to complete
+      return new Promise((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (!globalTableCache[tableName].loading && globalTableCache[tableName].data) {
+            clearInterval(checkInterval);
+            const filtered = globalTableCache[tableName].data.filter(location => {
+              if (location.school_id === schoolId) return true;
+              if (Array.isArray(location.school_ids) && location.school_ids.includes(schoolId)) return true;
+              if (Array.isArray(location.School) && location.School.includes(schoolId)) return true;
+              return false;
+            });
+            resolve(filtered);
+          }
+        }, 100);
+      });
+    }
     
-    console.log(`🎯 Filtered ${schoolLocations.length} locations for school ${schoolId}`);
-    return schoolLocations;
+    // Fetch fresh data
+    console.log('📍 Fetching ALL locations from API...');
+    globalTableCache[tableName].loading = true;
+    
+    try {
+      const allLocations = await airtableService.fetchRecords(tableName, { maxRecords: 1000 });
+      console.log('🌍 All locations fetched:', allLocations.length);
+      
+      // Update global cache
+      globalTableCache[tableName] = {
+        data: allLocations,
+        loading: false,
+        timestamp: Date.now()
+      };
+      
+      // Filter for this school
+      const schoolLocations = allLocations.filter(location => {
+        if (location.school_id === schoolId) return true;
+        if (Array.isArray(location.school_ids) && location.school_ids.includes(schoolId)) return true;
+        if (Array.isArray(location.School) && location.School.includes(schoolId)) return true;
+        return false;
+      });
+      
+      console.log(`🎯 Filtered ${schoolLocations.length} locations for school ${schoolId}`);
+      return schoolLocations;
+    } catch (error) {
+      globalTableCache[tableName].loading = false;
+      throw error;
+    }
   }, [schoolId]);
 
   return useCachedData(CACHE_KEYS.SCHOOL_LOCATIONS, fetchFunction, options);

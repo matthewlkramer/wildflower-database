@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Plus, CheckCircle, XCircle } from 'lucide-react';
 import { useEducatorsXSchools } from '../../hooks/useUnifiedData';
 import useUnifiedData from '../../hooks/useUnifiedData';
-import { useAirtableMutations } from '../../hooks/useAirtableData';
+import { useCachedMutations } from '../../hooks/useCachedData';
 import AddEducatorStintModal from '../modals/AddEducatorStintModal';
 import CreateEducatorModal from '../../CreateEducatorModal';
 import Pills from '../shared/Pills';
@@ -14,7 +14,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
 
     const { data: educatorsXSchools, refetch: refetchEducatorsXSchools } = useEducatorsXSchools();
     const { data: allEducatorsData } = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
-    const { createRecord, updateRecord, deleteRecord, loading: mutationLoading } = useAirtableMutations();
+    const { createRecord, updateRecord, deleteRecord, loading: mutationLoading } = useCachedMutations();
 
     // Filter relationships for this school and enrich with educator names
     const schoolEducators = useMemo(() => {
