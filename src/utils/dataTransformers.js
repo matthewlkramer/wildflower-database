@@ -21,6 +21,19 @@ const safeInterestRate = (field) => {
   return rate; // Airtable percent fields are already decimals
 };
 
+// Transform schools data
+export const transformSchoolsData = (schools) => {
+  if (!schools || !Array.isArray(schools)) return [];
+  
+  // Log first school to see structure
+  if (schools.length > 0) {
+    console.log('🏫 First school raw data:', schools[0]);
+    console.log('🏫 School field names:', Object.keys(schools[0]));
+  }
+  
+  return schools;
+};
+
 // CORRECTED: Transform grant data with actual Airtable field names
 export const transformGrantData = (airtableRecord) => {
   if (!airtableRecord) return null;

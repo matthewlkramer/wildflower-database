@@ -12,12 +12,6 @@ export const useTableColumns = (dataType) => {
                         label: 'Name',
                         defaultWidth: 100,
                         render: (value, item) => {
-                            // Log first item only to see field structure
-                            if (!window._educatorLogged) {
-                                console.log('🔍 Educator item fields:', Object.keys(item));
-                                console.log('🔍 Full educator item:', item);
-                                window._educatorLogged = true;
-                            }
                             // Try different possible field names
                             const name = item.fullName || item['Full Name'] || 
                                        (item['First Name'] && item['Last Name'] ? 
@@ -31,8 +25,13 @@ export const useTableColumns = (dataType) => {
                         label: 'Current School',
                         defaultWidth: 160,
                         render: (value, item) => {
-                            // Use enriched data if available, otherwise fall back to Assigned Partner
-                            return item.currentSchools || item['Assigned Partner'] || '-';
+                            const currentSchool = item['Currently Active School'];
+                            
+                            // If it's an array, join them
+                            if (Array.isArray(currentSchool)) {
+                                return currentSchool.join(', ') || '-';
+                            }
+                            return currentSchool || '-';
                         }
                     },
                     {
@@ -40,8 +39,13 @@ export const useTableColumns = (dataType) => {
                         label: 'Role(s)',
                         defaultWidth: 120,
                         render: (value, item) => {
-                            // Use enriched data for current roles
-                            return item.currentRoles || '-';
+                            const role = item['Current Role'];
+                            
+                            // If it's an array, join them
+                            if (Array.isArray(role)) {
+                                return role.join(', ') || '-';
+                            }
+                            return role || '-';
                         }
                     },
                     {

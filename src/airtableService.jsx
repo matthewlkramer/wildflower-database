@@ -244,7 +244,15 @@ class AirtableService {
         }
 
         console.log('🔄 Fetching schools with options:', options);
-        return this.fetchRecords(TABLES.SCHOOLS, options);
+        const schools = await this.fetchRecords(TABLES.SCHOOLS, options);
+        
+        // Log first school to see field names
+        if (schools.length > 0) {
+            console.log('🏫 SCHOOL FIELD NAMES:', Object.keys(schools[0]));
+            console.log('🏫 First school:', schools[0]);
+        }
+        
+        return schools;
     }
 
     // Fetch educators - CORRECTED field names
