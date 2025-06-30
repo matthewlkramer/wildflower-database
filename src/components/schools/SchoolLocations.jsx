@@ -10,6 +10,10 @@ const SchoolLocations = ({ school }) => {
 
     const { data: schoolLocations, refetch: refetchLocations } = useSchoolLocations(school.id);
     const { updateRecord, deleteRecord, loading: mutationLoading } = useAirtableMutations();
+    
+    console.log('🔍 SchoolLocations - school:', school);
+    console.log('🔍 SchoolLocations - school.id:', school.id);
+    console.log('🔍 SchoolLocations - locations data:', schoolLocations);
 
     const handleEditLocation = (location) => {
         setSelectedLocation(location);

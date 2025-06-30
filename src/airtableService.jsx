@@ -320,31 +320,36 @@ class AirtableService {
         console.log(`📊 Sample ${tableName} records:`, allRecords.slice(0, 2));
         if (allRecords.length > 0) {
             console.log(`📋 ${tableName} field names:`, Object.keys(allRecords[0]));
+            // Check what the School field contains
+            const firstRecord = allRecords[0];
+            console.log(`🔍 First record School field:`, firstRecord.School);
+            console.log(`🔍 First record school_id field:`, firstRecord.school_id);
         }
         
         // For tables that link to Schools, we need to use the correct linking approach
         // Most tables have a 'School' field that links to the Schools table
         let filterByFormula;
         
-        // For linked record fields in Airtable, we need to use SEARCH or FIND
-        // The School field is a linked record field that contains record IDs
-        if (tableName === TABLES.LOCATIONS) {
-            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
-        } else if (tableName === TABLES.GRANTS) {
-            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
-        } else if (tableName === TABLES.LOANS) {
-            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
-        } else if (tableName === TABLES.GUIDES_ASSIGNMENTS) {
-            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
-        } else if (tableName === TABLES.ACTION_STEPS) {
-            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({Schools}))`;
-        } else if (tableName === TABLES.SCHOOL_NOTES) {
-            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
-        } else if (tableName === TABLES.GOVERNANCE_DOCS) {
-            filterByFormula = `SEARCH("${schoolId}", ARRAYJOIN({School}))`;
+        // First, let's try without any filter to see if we get data
+        if (tableName === TABLES.LOCATIONS && schoolId === 'TEST_NO_FILTER') {
+            filterByFormula = null; // No filter, get all locations
+        } else if (allRecords.length > 0 && allRecords[0].school_id) {
+            // If records have a school_id field, use that
+            filterByFormula = `{school_id} = "${schoolId}"`;
+        } else if (allRecords.length > 0 && allRecords[0].School) {
+            // If School field exists and is an array, we need special handling
+            const firstSchool = allRecords[0].School;
+            if (Array.isArray(firstSchool)) {
+                // School is a linked record field (array of IDs)
+                filterByFormula = `FIND("${schoolId}", ARRAYJOIN({School}, ","))`;
+            } else {
+                // School is a simple field
+                filterByFormula = `{School} = "${schoolId}"`;
+            }
         } else {
-            // Fallback - try both approaches
-            filterByFormula = `OR(SEARCH("${schoolId}", ARRAYJOIN({School})), {school_id} = "${schoolId}")`;
+            // Fallback
+            console.warn(`⚠️ Could not determine correct filter for ${tableName}`);
+            filterByFormula = `FIND("${schoolId}", ARRAYJOIN({School}, ","))`;
         }
 
         const options = {

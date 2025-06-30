@@ -114,8 +114,11 @@ export const useEducatorsXSchools = () => {
   
         if (!loading && !error && Array.isArray(realData) && realData.length > 0) {
             console.log('✅ Using EducatorsXSchools data:', realData.length, 'relationships');
+            console.log('🔍 Sample EducatorsXSchools record:', realData[0]);
+            const transformed = transformEducatorsXSchoolsData(realData);
+            console.log('🔍 Sample transformed record:', transformed[0]);
             return {
-                data: transformEducatorsXSchoolsData(realData),
+                data: transformed,
                 loading: false,
                 error: null,
                 refetch: realDataResult.refetch
