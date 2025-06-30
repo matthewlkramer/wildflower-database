@@ -85,23 +85,27 @@ export const useCachedData = (cacheKey, fetchFunction, options = {}) => {
     }
   }, [cacheKey]); // Remove fetchFunction and options from dependencies
 
+  const prevOptionsKeyRef = useRef(JSON.stringify(options));
+  
   useEffect(() => {
-    // Skip fetching if critical options are missing
-    if (options.schoolId === null || options.schoolId === undefined) {
+    // For school-specific hooks, skip if schoolId is explicitly null
+    if ('schoolId' in options && options.schoolId === null) {
       setData([]);
       setLoading(false);
       return;
     }
     
-    // Only fetch if this is the first time or if schoolId changed
-    const shouldFetch = !hasInitializedRef.current || 
-                       (hasInitializedRef.current && optionsRef.current.schoolId !== options.schoolId);
+    // Only fetch if this is the first time or if key options changed
+    const optionsKey = JSON.stringify(options);
+    
+    const shouldFetch = !hasInitializedRef.current || prevOptionsKeyRef.current !== optionsKey;
     
     if (shouldFetch) {
       hasInitializedRef.current = true;
+      prevOptionsKeyRef.current = optionsKey;
       fetchData();
     }
-  }, [fetchData, options.schoolId]);
+  }, [fetchData, options]);
 
   const refetch = useCallback(() => {
     return fetchData(true); // Force refresh
