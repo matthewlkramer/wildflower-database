@@ -57,7 +57,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   }
 
   // Get all educators for the stint functionality
-  const { data: allEducators } = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
+  const { data: allEducators, loading: allEducatorsLoading } = useUnifiedData(TABS.EDUCATORS, { includeInactive: true });
   
   // Get educators x schools relationships
   const { data: educatorsXSchools } = useEducatorsXSchools();
@@ -441,7 +441,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
   );
 
   const renderTLsTab = () => {
-    return <SchoolTLs school={school} onEducatorOpen={onEducatorOpen} allEducators={allEducators} />;
+    return <SchoolTLs school={school} onEducatorOpen={onEducatorOpen} allEducators={allEducators} allEducatorsLoading={allEducatorsLoading} />;
   };
 
   const renderLocationsTab = () => {

@@ -6,7 +6,7 @@ import AddEducatorStintModal from '../modals/AddEducatorStintModal';
 import CreateEducatorModal from '../../CreateEducatorModal';
 import Pills from '../shared/Pills';
 
-const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
+const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoading = false }) => {
     const [showAddStintModal, setShowAddStintModal] = useState(false);
     const [showCreateEducatorModal, setShowCreateEducatorModal] = useState(false);
 
@@ -135,31 +135,40 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
             </div>
 
             <div className="bg-white border rounded-lg overflow-hidden">
-                <table className="min-w-full">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Educator
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Role(s)
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Start Date
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                End Date
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Currently Active
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {schoolEducators.map(relationship => (
+                {(educatorsXSchoolsLoading || allEducatorsLoading) ? (
+                    <div className="text-center py-12">
+                        <div className="inline-flex flex-col items-center">
+                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
+                            <p className="text-gray-600">Loading educators...</p>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <table className="min-w-full">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Educator
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Role(s)
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Start Date
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        End Date
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Currently Active
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {schoolEducators.map(relationship => (
                             <tr key={relationship.id} className="hover:bg-gray-50">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
@@ -223,20 +232,13 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [] }) => {
                         ))}
                     </tbody>
                 </table>
-
-                {educatorsXSchoolsLoading && (
-                    <div className="text-center py-12">
-                        <div className="inline-flex flex-col items-center">
-                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
-                            <p className="text-gray-600">Loading educators...</p>
-                        </div>
-                    </div>
-                )}
                 
-                {!educatorsXSchoolsLoading && schoolEducators.length === 0 && (
+                {schoolEducators.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
                         No educators assigned to this school yet.
                     </div>
+                )}
+                    </>
                 )}
             </div>
 
