@@ -142,14 +142,16 @@ const ResizableDataTable = ({
   };
 
 
+    // Check if there are active filters
+    const hasActiveFilters = useMemo(() => {
+        return Object.values(columnFilters).some(filter => 
+            filter && (Array.isArray(filter) ? filter.length > 0 : true)
+        );
+    }, [columnFilters]);
+
     // Apply filters and search
     const filteredData = useMemo(() => {
     let result = data;
-    
-    // Check if there are active filters
-    const hasActiveFilters = Object.values(columnFilters).some(filter => 
-      filter && (Array.isArray(filter) ? filter.length > 0 : true)
-    );
 
     // Apply search term filter
     if (searchTerm) {
