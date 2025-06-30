@@ -115,18 +115,16 @@ const useUnifiedCharters = () => {
 
 // Related data hooks - all real data, no fallbacks
 export const useEducatorsXSchools = () => {
-    const realDataResult = useCachedEducatorsXSchools();
+    const { data: realData, loading, error, refetch } = useCachedEducatorsXSchools();
     
     return useMemo(() => {
-        const { data: realData, loading, error } = realDataResult;
-  
         if (!loading && !error && Array.isArray(realData) && realData.length > 0) {
             const transformed = transformEducatorsXSchoolsData(realData);
             return {
                 data: transformed,
                 loading: false,
                 error: null,
-                refetch: realDataResult.refetch
+                refetch
             };
         }
         
@@ -134,17 +132,15 @@ export const useEducatorsXSchools = () => {
             data: [],
             loading,
             error,
-            refetch: realDataResult.refetch
+            refetch
         };
-    }, [realDataResult]);
+    }, [realData, loading, error, refetch]);
 };
 
 export const useSchoolLocations = (schoolId) => {
-    const realDataResult = useCachedSchoolLocations(schoolId);
+    const { data: realData, loading, error, refetch } = useCachedSchoolLocations(schoolId);
     
     return useMemo(() => {
-        const { data: realData, loading, error } = realDataResult;
-        
         if (!loading && !error && Array.isArray(realData)) {
             if (realData.length > 0) {
                 // Using locations data for school
@@ -152,7 +148,7 @@ export const useSchoolLocations = (schoolId) => {
                     data: transformLocationsData(realData),
                     loading: false,
                     error: null,
-                    refetch: realDataResult.refetch
+                    refetch
                 };
             } else {
                 // No locations found for school
@@ -163,9 +159,9 @@ export const useSchoolLocations = (schoolId) => {
             data: [],
             loading,
             error,
-            refetch: realDataResult.refetch
+            refetch
         };
-    }, [realDataResult, schoolId]);
+    }, [realData, loading, error, refetch, schoolId]);
 };
 
 // Clean school-specific data hooks
