@@ -59,16 +59,16 @@ src/components/
   ```
 
 ### Color Scheme
-- Primary action buttons: `bg-cyan-600 hover:bg-cyan-700`
-- Links: `text-cyan-600`
-- Active states: `bg-cyan-100 text-cyan-700`
-- Borders: `border-cyan-500`
+- Primary action buttons: `bg-teal-600 hover:bg-teal-700`
+- Links: `text-teal-600`
+- Active states: `bg-teal-100 text-teal-700`
+- Borders: `border-teal-500`
 
 ### Recent Updates
 1. Header redesigned to show "Wildflower" with entity name as subtitle
 2. Tabs (Schools, Educators, Charters) are permanently visible
 3. All educator detail tabs now show linked Airtable data
-4. Consistent cyan color scheme throughout
+4. Consistent teal color scheme throughout
 
 ## Data Model
 

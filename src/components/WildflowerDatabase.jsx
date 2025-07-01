@@ -107,7 +107,7 @@ const WildflowerDatabase = () => {
         return (
             <div className="h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
                     <p className="text-gray-600">Loading educators data...</p>
                 </div>
             </div>
@@ -170,7 +170,7 @@ const WildflowerDatabase = () => {
                                     }}
                                     className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
                                         !selectedItem && mainTab === tab.id
-                                            ? 'bg-cyan-100 text-cyan-700'
+                                            ? 'bg-teal-100 text-teal-700'
                                             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                                     }`}
                                 >
@@ -207,7 +207,7 @@ const WildflowerDatabase = () => {
                                                     type="checkbox"
                                                     checked={includeInactiveSchools}
                                                     onChange={(e) => setIncludeInactiveSchools(e.target.checked)}
-                                                    className="rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                                                    className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                                                 />
                                                 <span className="text-gray-700">Include inactive schools</span>
                                             </label>
@@ -219,7 +219,7 @@ const WildflowerDatabase = () => {
                                                     type="checkbox"
                                                     checked={includeInactiveEducators}
                                                     onChange={(e) => setIncludeInactiveEducators(e.target.checked)}
-                                                    className="rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                                                    className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                                                 />
                                                 <span className="text-gray-700">Include inactive educators</span>
                                             </label>
@@ -229,7 +229,7 @@ const WildflowerDatabase = () => {
                                             <button
                                                 onClick={() => setShowFilters(!showFilters)}
                                                 className={`p-2 transition-colors ${showFilters
-                                                        ? 'text-cyan-600 bg-cyan-50'
+                                                        ? 'text-teal-600 bg-teal-50'
                                                         : 'text-gray-400 hover:text-gray-600'
                                                     }`}
                                             >
@@ -251,15 +251,15 @@ const WildflowerDatabase = () => {
                                             <input
                                                 type="text"
                                                 placeholder="Search..."
-                                                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent w-64"
+                                                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent w-64"
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
                                             />
                                         </div>
 
                                         <button 
-                                            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center"
-                                            style={{ backgroundColor: '#0891b2', color: 'white' }}
+                                            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center"
+                                            style={{ backgroundColor: '#0d9488', color: 'white' }}
                                         >
                                             <Plus className="w-4 h-4 mr-2" />
                                             Add

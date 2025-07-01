@@ -81,7 +81,7 @@ const MultiSelectDropdown = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 bg-white text-left flex items-center justify-between"
+        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 focus:border-teal-500 bg-white text-left flex items-center justify-between"
         style={containerStyle}
       >
         <span className="truncate">
@@ -115,13 +115,13 @@ const MultiSelectDropdown = ({
                 key={option}
                 className={`flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors ${
                   isEmptyOption ? 'border-b border-gray-200 bg-gray-25' : ''
-                } ${isSelected ? 'bg-cyan-50' : ''}`}
+                } ${isSelected ? 'bg-teal-50' : ''}`}
               >
                 <input
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => handleToggleOption(option)}
-                  className="mr-2 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                  className="mr-2 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                 />
                 <span className={`text-sm ${
                   isEmptyOption ? 'italic text-gray-500 font-medium' : ''
@@ -162,7 +162,7 @@ const MultiSelectDropdown = ({
                   </span>
                 )}
                 {selectedValues.filter(v => v !== '(empty)').slice(0, 3).map(val => (
-                  <span key={val} className="inline-block bg-cyan-100 rounded px-1 mr-1">
+                  <span key={val} className="inline-block bg-teal-100 rounded px-1 mr-1">
                     {val.length > 8 ? val.substring(0, 8) + '...' : val}
                   </span>
                 ))}

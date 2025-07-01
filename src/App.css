@@ -9,33 +9,33 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom cyan button styles as fallback */
-.bg-cyan-600 {
-  background-color: #0891b2 !important;
+/* Custom teal button styles as fallback */
+.bg-teal-600 {
+  background-color: #0d9488 !important;
 }
 
-.bg-cyan-700 {
-  background-color: #0e7490 !important;
+.bg-teal-700 {
+  background-color: #0f766e !important;
 }
 
-.hover\:bg-cyan-700:hover {
-  background-color: #0e7490 !important;
+.hover\:bg-teal-700:hover {
+  background-color: #0f766e !important;
 }
 
-.text-cyan-600 {
-  color: #0891b2 !important;
+.text-teal-600 {
+  color: #0d9488 !important;
 }
 
-.bg-cyan-100 {
-  background-color: #cffafe !important;
+.bg-teal-100 {
+  background-color: #ccfbf1 !important;
 }
 
-.text-cyan-700 {
-  color: #0e7490 !important;
+.text-teal-700 {
+  color: #0f766e !important;
 }
 
-.border-cyan-500 {
-  border-color: #06b6d4 !important;
+.border-teal-500 {
+  border-color: #14b8a6 !important;
 }
 
 /* Ensure white text is visible */
@@ -43,9 +43,9 @@ body {
   color: #ffffff !important;
 }
 
-/* Debug: Make all buttons with bg-cyan-600 visible */
-button.bg-cyan-600 {
-  background-color: #0891b2 !important;
+/* Debug: Make all buttons with bg-teal-600 visible */
+button.bg-teal-600 {
+  background-color: #0d9488 !important;
   color: #ffffff !important;
   opacity: 1 !important;
   visibility: visible !important;

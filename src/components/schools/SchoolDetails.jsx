@@ -47,7 +47,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <p className="text-gray-600 mb-4">School data was not provided to this component.</p>
           <button 
             onClick={onBack}
-            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700"
+            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
           >
             Go Back
           </button>
@@ -182,7 +182,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
           >
             Edit
           </button>
@@ -190,7 +190,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <div className="flex space-x-2">
             <button
               onClick={handleEditSave}
-              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
             >
               Update
             </button>
@@ -455,8 +455,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Board Members</h3>
             <button 
-              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
-              style={{ backgroundColor: '#0891b2', color: 'white' }}
+              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0d9488', color: 'white' }}
             >
               <Plus className="w-4 h-4 mr-2" />Add Member
             </button>
@@ -469,8 +469,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Policies and Documents</h3>
             <button 
-              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
-              style={{ backgroundColor: '#0891b2', color: 'white' }}
+              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0d9488', color: 'white' }}
             >
               <Plus className="w-4 h-4 mr-2" />Add Document
             </button>
@@ -495,7 +495,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{doc.date || '-'}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                       {doc.docLink && (
-                        <button onClick={() => window.open(doc.docLink, '_blank')} className="text-cyan-600 hover:text-cyan-900 mr-3">
+                        <button onClick={() => window.open(doc.docLink, '_blank')} className="text-teal-600 hover:text-teal-900 mr-3">
                           <ExternalLink className="w-4 h-4" />
                         </button>
                       )}
@@ -519,8 +519,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold">Guide Assignments</h3>
           <button 
-            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
-            style={{ backgroundColor: '#0891b2', color: 'white' }}
+            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+            style={{ backgroundColor: '#0d9488', color: 'white' }}
           >
             <Plus className="w-4 h-4 mr-2" />Add Assignment
           </button>
@@ -567,7 +567,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     {assignment.currentlyActive ? <CheckCircle className="w-5 h-5 text-green-600" /> : <XCircle className="w-5 h-5 text-red-600" />}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-cyan-600 hover:text-cyan-900 mr-3">Open</button>
+                    <button className="text-teal-600 hover:text-teal-900 mr-3">Open</button>
                     <button className="text-red-600 hover:text-red-900">Delete</button>
                   </td>
                 </tr>
@@ -638,7 +638,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                 key={record.id}
                 onClick={() => setSelectedSchoolYear(record['School Year'] || record.schoolYear)}
                 className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
-                  selectedSchoolYear === (record['School Year'] || record.schoolYear) ? 'bg-cyan-50 border-cyan-500 text-cyan-700' : 'bg-white border-gray-200 hover:bg-gray-50'
+                  selectedSchoolYear === (record['School Year'] || record.schoolYear) ? 'bg-teal-50 border-teal-500 text-teal-700' : 'bg-white border-gray-200 hover:bg-gray-50'
                 }`}
               >
                 {record['School Year'] || record.schoolYear || 'Unknown Year'}
@@ -688,7 +688,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                       <div className="text-sm text-green-600 mb-1">Amount: ${update.amountPaid.toLocaleString()}</div>
                     )}
                     {update.revisedFeeAmount && (
-                      <div className="text-sm text-cyan-600 mb-1">New Fee: ${update.revisedFeeAmount.toLocaleString()}</div>
+                      <div className="text-sm text-teal-600 mb-1">New Fee: ${update.revisedFeeAmount.toLocaleString()}</div>
                     )}
                     <div className="text-sm text-gray-600">{update.explanation}</div>
                   </div>
@@ -711,8 +711,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Grants</h3>
             <button 
-              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
-              style={{ backgroundColor: '#0891b2', color: 'white' }}
+              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0d9488', color: 'white' }}
             >
               <Plus className="w-4 h-4 mr-2" />Create New Grant
             </button>
@@ -741,7 +741,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={grant.status || 'Unknown'} /></td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                      <button className="text-cyan-600 hover:text-cyan-900 mr-3">Open</button>
+                      <button className="text-teal-600 hover:text-teal-900 mr-3">Open</button>
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
@@ -757,8 +757,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Loans</h3>
             <button 
-              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
-              style={{ backgroundColor: '#0891b2', color: 'white' }}
+              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0d9488', color: 'white' }}
             >
               <Plus className="w-4 h-4 mr-2" />Create New Loan
             </button>
@@ -785,7 +785,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={loan.status || 'Unknown'} /></td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                      <button className="text-cyan-600 hover:text-cyan-900 mr-3">Open</button>
+                      <button className="text-teal-600 hover:text-teal-900 mr-3">Open</button>
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
@@ -807,8 +807,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">School Notes</h3>
             <button 
-              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
-              style={{ backgroundColor: '#0891b2', color: 'white' }}
+              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0d9488', color: 'white' }}
             >
               <Plus className="w-4 h-4 mr-2" />Add Note
             </button>
@@ -837,7 +837,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     )}
                   </div>
                   <div className="flex items-center space-x-2">
-                    <button className="text-cyan-600 hover:text-cyan-900 text-sm">Edit</button>
+                    <button className="text-teal-600 hover:text-teal-900 text-sm">Edit</button>
                     <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
                   </div>
                 </div>
@@ -852,8 +852,8 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Action Steps</h3>
             <button 
-              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
-              style={{ backgroundColor: '#0891b2', color: 'white' }}
+              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0d9488', color: 'white' }}
             >
               <Plus className="w-4 h-4 mr-2" />Add Action
             </button>
@@ -880,7 +880,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
                     <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={action.status || 'Unknown'} /></td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{action.dueDate || '-'}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                      <button className="text-cyan-600 hover:text-cyan-900 mr-3">Edit</button>
+                      <button className="text-teal-600 hover:text-teal-900 mr-3">Edit</button>
                       <button className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   </tr>
@@ -906,7 +906,7 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
               onClick={() => setActiveTab(tab.id)}
               className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === tab.id
-                  ? 'border-cyan-500 text-cyan-600'
+                  ? 'border-teal-500 text-teal-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >

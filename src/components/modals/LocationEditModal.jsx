@@ -331,7 +331,7 @@ const LocationEditModal = ({ isOpen, onClose, onSubmit, location, isCreating = f
                                     type="checkbox"
                                     checked={formData.currentMailingAddress}
                                     onChange={(e) => handleInputChange('currentMailingAddress', e.target.checked)}
-                                    className="mr-2 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                                    className="mr-2 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                                 />
                                 <span className="text-sm font-medium text-gray-700">Current Mailing Address</span>
                             </label>
@@ -341,7 +341,7 @@ const LocationEditModal = ({ isOpen, onClose, onSubmit, location, isCreating = f
                                     type="checkbox"
                                     checked={formData.currentPhysicalAddress}
                                     onChange={(e) => handleInputChange('currentPhysicalAddress', e.target.checked)}
-                                    className="mr-2 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                                    className="mr-2 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                                 />
                                 <span className="text-sm font-medium text-gray-700">Current Physical Address</span>
                             </label>
@@ -359,7 +359,7 @@ const LocationEditModal = ({ isOpen, onClose, onSubmit, location, isCreating = f
                         <button
                             type="submit"
                             disabled={!formData.address || !formData.startDate || !formData.locationType}
-                            className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            className="flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         >
                             {isCreating ? 'Add Location' : 'Update Location'}
                         </button>

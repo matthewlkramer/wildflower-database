@@ -81,8 +81,8 @@ const SchoolLocations = ({ school }) => {
                 <h3 className="text-lg font-semibold">Locations</h3>
                 <button
                     onClick={handleAddLocation}
-                    className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
-                    style={{ backgroundColor: '#0891b2', color: 'white' }}
+                    className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+                    style={{ backgroundColor: '#0d9488', color: 'white' }}
                 >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Location
@@ -148,7 +148,7 @@ const SchoolLocations = ({ school }) => {
                                     <div className="flex space-x-2">
                                         <button
                                             onClick={() => handleEditLocation(location)}
-                                            className="bg-cyan-600 text-white px-3 py-1 rounded text-xs hover:bg-cyan-700"
+                                            className="bg-teal-600 text-white px-3 py-1 rounded text-xs hover:bg-teal-700"
                                             disabled={mutationLoading}
                                         >
                                             Edit
@@ -179,7 +179,7 @@ const SchoolLocations = ({ school }) => {
                 {locationsLoading && (
                     <div className="text-center py-12">
                         <div className="inline-flex flex-col items-center">
-                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-600 mb-4"></div>
+                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600 mb-4"></div>
                             <p className="text-gray-600">Loading locations...</p>
                         </div>
                     </div>
