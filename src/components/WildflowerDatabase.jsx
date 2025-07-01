@@ -150,8 +150,12 @@ const WildflowerDatabase = () => {
                     <div className="flex items-center justify-between py-4">
                         <div className="flex items-center space-x-8">
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Wildflower Schools Database</h1>
-                                <p className="text-gray-600">Manage schools, educators, and network data</p>
+                                <h1 className="text-2xl font-bold text-gray-900">Wildflower</h1>
+                                {selectedItem && (
+                                    <p className="text-gray-600">
+                                        {selectedItem.data.name || selectedItem.data.fullName || selectedItem.data.Name || 'Details'}
+                                    </p>
+                                )}
                             </div>
                             
                             {/* Breadcrumb trail when viewing details */}
@@ -172,25 +176,27 @@ const WildflowerDatabase = () => {
                             )}
                         </div>
 
-                        {/* Main tabs - only show when not viewing details */}
-                        {!selectedItem && (
-                            <div className="flex space-x-8">
-                                {mainTabs.map((tab) => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => {
-                                            setMainTab(tab.id);
-                                        }}
-                                        className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${mainTab === tab.id
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        {tab.label} ({tab.count})
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                        {/* Main tabs - always visible */}
+                        <div className="flex space-x-8">
+                            {mainTabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => {
+                                        if (selectedItem) {
+                                            navigateBack();
+                                        }
+                                        setMainTab(tab.id);
+                                    }}
+                                    className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
+                                        !selectedItem && mainTab === tab.id
+                                            ? 'bg-blue-100 text-blue-700'
+                                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                                    }`}
+                                >
+                                    {tab.label} ({tab.count})
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
