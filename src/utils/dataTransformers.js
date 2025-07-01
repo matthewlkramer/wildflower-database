@@ -274,6 +274,19 @@ export const transformSchoolData = (airtableRecord) => {
     facebook: airtableRecord['Facebook'] || '', // Single line text
     instagram: airtableRecord['Instagram'] || '', // Single line text
     
+    // Logo - check for attachment field
+    logo: (airtableRecord['Logo'] && 
+           Array.isArray(airtableRecord['Logo']) && 
+           airtableRecord['Logo'].length > 0) ? 
+             airtableRecord['Logo'][0].url : null, // Attachment field
+    logoThumbnail: (airtableRecord['Logo'] && 
+                    Array.isArray(airtableRecord['Logo']) && 
+                    airtableRecord['Logo'].length > 0 &&
+                    airtableRecord['Logo'][0].thumbnails) ? 
+                      airtableRecord['Logo'][0].thumbnails.large?.url || 
+                      airtableRecord['Logo'][0].thumbnails.small?.url || 
+                      airtableRecord['Logo'][0].url : null
+    
     // Legal entity
     legalStructure: airtableRecord['Legal structure'] || '', // Single select
     institutionalPartner: airtableRecord['Institutional partner'] || null, // Single line text
