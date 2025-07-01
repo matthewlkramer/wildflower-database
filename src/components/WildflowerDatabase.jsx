@@ -24,7 +24,7 @@ const WildflowerDatabase = () => {
     
 
     // Navigation
-    const { selectedItem, navigateToItem, navigateBack, navigateToEducator } = useNavigation();
+    const { selectedItem, navigateToItem, navigateBack, navigateToEducator, navigateToSchool } = useNavigation();
 
     // Filters
     const {
@@ -97,6 +97,10 @@ const WildflowerDatabase = () => {
         navigateToEducator(educatorId, educatorsResult.data);
     };
 
+    const handleSchoolOpen = (schoolId) => {
+        navigateToSchool(schoolId, schoolsResult.data);
+    };
+
     // Show loading state
     if (educatorsResult.loading && mainTab === TABS.EDUCATORS) {
         console.log('🔄 Showing educators loading state');
@@ -130,7 +134,7 @@ const WildflowerDatabase = () => {
             case TABS.SCHOOLS:
                 return <SchoolDetails school={selectedItem.data} onBack={navigateBack} onEducatorOpen={handleEducatorOpen} />;
             case TABS.EDUCATORS:
-                return <EducatorDetails educator={selectedItem.data} onBack={navigateBack} />;
+                return <EducatorDetails educator={selectedItem.data} onBack={navigateBack} onSchoolOpen={handleSchoolOpen} />;
             case TABS.CHARTERS:
                 return <CharterDetails charter={selectedItem.data} onBack={navigateBack} />;
             default:

@@ -19,11 +19,19 @@ export const useNavigation = () => {
     }
   }, []);
 
+  const navigateToSchool = useCallback((schoolId, allSchools) => {
+    const school = allSchools.find(s => s.id === schoolId);
+    if (school) {
+      setSelectedItem({ type: 'schools', data: school });
+    }
+  }, []);
+
   return { 
     selectedItem, 
     navigateToItem, 
     navigateBack, 
-    navigateToEducator 
+    navigateToEducator,
+    navigateToSchool
   };
 };
 

@@ -365,4 +365,44 @@ export const useMembershipFeeUpdates = (schoolId, schoolYear = null) => {
     };
 };
 
+export const useOnlineForms = (educatorId) => {
+    // Online Forms not implemented yet
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
+};
+
+export const useEarlyCultivation = (educatorId) => {
+    // Early Cultivation not implemented yet
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
+};
+
+export const useCertifications = (educatorId) => {
+    // Certifications not implemented yet
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
+};
+
+export const useEvents = (educatorId) => {
+    // Events not implemented yet
+    return {
+        data: [],
+        loading: false,
+        error: null,
+        refetch: () => Promise.resolve([])
+    };
+};
+
 export default useUnifiedData;
