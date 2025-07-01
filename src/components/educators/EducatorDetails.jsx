@@ -342,7 +342,10 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold">Email Addresses</h3>
-          <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+          <button 
+            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+            style={{ backgroundColor: '#0891b2', color: 'white' }}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Email
           </button>
@@ -446,7 +449,10 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold">School Affiliations</h3>
-          <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+          <button 
+            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+            style={{ backgroundColor: '#0891b2', color: 'white' }}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add School Stint
           </button>
@@ -527,7 +533,10 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">SSJ Fillout Forms</h3>
-        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+        <button 
+          className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+          style={{ backgroundColor: '#0891b2', color: 'white' }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Form
         </button>
@@ -614,7 +623,10 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">Montessori Certifications</h3>
-        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+        <button 
+          className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+          style={{ backgroundColor: '#0891b2', color: 'white' }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Certification
         </button>
@@ -689,7 +701,10 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">Educator Notes</h3>
-        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+        <button 
+          className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+          style={{ backgroundColor: '#0891b2', color: 'white' }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Note
         </button>
@@ -774,7 +789,10 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">Event Attendance</h3>
-        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+        <button 
+          className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+          style={{ backgroundColor: '#0891b2', color: 'white' }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Event
         </button>

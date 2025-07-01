@@ -454,7 +454,10 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Board Members</h3>
-            <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+            <button 
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0891b2', color: 'white' }}
+            >
               <Plus className="w-4 h-4 mr-2" />Add Member
             </button>
           </div>
@@ -465,7 +468,10 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Policies and Documents</h3>
-            <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+            <button 
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0891b2', color: 'white' }}
+            >
               <Plus className="w-4 h-4 mr-2" />Add Document
             </button>
           </div>
@@ -512,7 +518,10 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold">Guide Assignments</h3>
-          <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+          <button 
+            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+            style={{ backgroundColor: '#0891b2', color: 'white' }}
+          >
             <Plus className="w-4 h-4 mr-2" />Add Assignment
           </button>
         </div>
@@ -701,7 +710,10 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Grants</h3>
-            <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+            <button 
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0891b2', color: 'white' }}
+            >
               <Plus className="w-4 h-4 mr-2" />Create New Grant
             </button>
           </div>
@@ -744,7 +756,10 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Loans</h3>
-            <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+            <button 
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0891b2', color: 'white' }}
+            >
               <Plus className="w-4 h-4 mr-2" />Create New Loan
             </button>
           </div>
@@ -791,7 +806,10 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">School Notes</h3>
-            <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+            <button 
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0891b2', color: 'white' }}
+            >
               <Plus className="w-4 h-4 mr-2" />Add Note
             </button>
           </div>
@@ -833,7 +851,10 @@ const SchoolDetails = ({ school, onBack, onEducatorOpen }) => {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Action Steps</h3>
-            <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
+            <button 
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+              style={{ backgroundColor: '#0891b2', color: 'white' }}
+            >
               <Plus className="w-4 h-4 mr-2" />Add Action
             </button>
           </div>

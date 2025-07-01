@@ -257,7 +257,10 @@ const WildflowerDatabase = () => {
                                             />
                                         </div>
 
-                                        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center">
+                                        <button 
+                                            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center"
+                                            style={{ backgroundColor: '#0891b2', color: 'white' }}
+                                        >
                                             <Plus className="w-4 h-4 mr-2" />
                                             Add
                                         </button>

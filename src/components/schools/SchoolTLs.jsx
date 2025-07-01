@@ -121,6 +121,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoad
                     <button
                         onClick={() => setShowAddStintModal(true)}
                         className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+                        style={{ backgroundColor: '#0891b2', color: 'white' }}
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Add stint for educator in database
@@ -128,6 +129,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoad
                     <button
                         onClick={() => setShowCreateEducatorModal(true)}
                         className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+                        style={{ backgroundColor: '#0891b2', color: 'white' }}
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Create new educator in database

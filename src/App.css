@@ -37,3 +37,16 @@ body {
 .border-cyan-500 {
   border-color: #06b6d4 !important;
 }
+
+/* Ensure white text is visible */
+.text-white {
+  color: #ffffff !important;
+}
+
+/* Debug: Make all buttons with bg-cyan-600 visible */
+button.bg-cyan-600 {
+  background-color: #0891b2 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
