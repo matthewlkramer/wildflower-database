@@ -50,7 +50,22 @@ export const useTableColumns = (dataType) => {
                         label: 'Race & Ethnicity',
                         defaultWidth: 200,
                         render: (value, item) => {
-                            return <Pills values={item.raceEthnicity} colorScheme="purple" />;
+                            // Map full names to shortened versions
+                            const shortLabels = {
+                                'Black or African American': 'Black',
+                                'White': 'White',
+                                'Asian or Asian American': 'Asian-Am',
+                                'Hispanic or Latino': 'Latino',
+                                'American Indian or Alaska Native': 'Native',
+                                'Middle Eastern or North African': 'MENA',
+                                'Native Hawaiian or Other Pacific Islander': 'Pac. Isl.',
+                                'Other': 'Other'
+                            };
+                            
+                            const values = Array.isArray(item.raceEthnicity) ? item.raceEthnicity : [];
+                            const shortValues = values.map(v => shortLabels[v] || v);
+                            
+                            return <Pills values={shortValues} colorScheme="purple" />;
                         }
                     },
                     {
