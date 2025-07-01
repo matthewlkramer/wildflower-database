@@ -7,6 +7,10 @@ import SchoolDetails from './schools/SchoolDetails';
 import EducatorDetails from './educators/EducatorDetails';
 import CharterDetails from './charters/CharterDetails';
 
+// Import refactored components for testing
+import SchoolDetailsRefactored from './schools/SchoolDetailsRefactored';
+import EducatorDetailsRefactored from './educators/EducatorDetailsRefactored';
+
 // Import hooks
 import useUnifiedData from '../hooks/useUnifiedData';
 import { useNavigation } from '../hooks/useNavigation';
@@ -21,6 +25,7 @@ import { TABS } from '../utils/constants.js';
 
 const WildflowerDatabase = () => {
     const [mainTab, setMainTab] = useState(TABS.SCHOOLS);
+    const [useRefactored, setUseRefactored] = useState(false); // Toggle for testing
     
 
     // Navigation
@@ -132,9 +137,13 @@ const WildflowerDatabase = () => {
         
         switch (selectedItem.type) {
             case TABS.SCHOOLS:
-                return <SchoolDetails school={selectedItem.data} onBack={navigateBack} onEducatorOpen={handleEducatorOpen} />;
+                return useRefactored ? 
+                    <SchoolDetailsRefactored school={selectedItem.data} onBack={navigateBack} onEducatorOpen={handleEducatorOpen} /> :
+                    <SchoolDetails school={selectedItem.data} onBack={navigateBack} onEducatorOpen={handleEducatorOpen} />;
             case TABS.EDUCATORS:
-                return <EducatorDetails educator={selectedItem.data} onBack={navigateBack} onSchoolOpen={handleSchoolOpen} />;
+                return useRefactored ?
+                    <EducatorDetailsRefactored educator={selectedItem.data} onBack={navigateBack} onSchoolOpen={handleSchoolOpen} /> :
+                    <EducatorDetails educator={selectedItem.data} onBack={navigateBack} onSchoolOpen={handleSchoolOpen} />;
             case TABS.CHARTERS:
                 return <CharterDetails charter={selectedItem.data} onBack={navigateBack} />;
             default:
@@ -148,12 +157,33 @@ const WildflowerDatabase = () => {
             <div className="bg-white shadow-sm border-b">
                 <div className="w-full px-6 lg:px-8 xl:px-12">
                     <div className="flex items-center justify-between py-4">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Wildflower</h1>
+                        <div className="flex items-center space-x-4">
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-900">Wildflower</h1>
+                                {selectedItem && (
+                                    <p className="text-gray-600">
+                                        {selectedItem.data.name || selectedItem.data.fullName || selectedItem.data.Name || 'Details'}
+                                    </p>
+                                )}
+                            </div>
+                            
+                            {/* Test toggle for refactored components */}
                             {selectedItem && (
-                                <p className="text-gray-600">
-                                    {selectedItem.data.name || selectedItem.data.fullName || selectedItem.data.Name || 'Details'}
-                                </p>
+                                <div className="flex items-center space-x-2 ml-8">
+                                    <label className="text-sm text-gray-600">Use Refactored:</label>
+                                    <button
+                                        onClick={() => setUseRefactored(!useRefactored)}
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                            useRefactored ? 'bg-teal-600' : 'bg-gray-200'
+                                        }`}
+                                    >
+                                        <span
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                useRefactored ? 'translate-x-6' : 'translate-x-1'
+                                            }`}
+                                        />
+                                    </button>
+                                </div>
                             )}
                         </div>
 
