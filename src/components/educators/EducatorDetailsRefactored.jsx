@@ -1,4 +1,5 @@
 import React from 'react';
+import { CheckCircle } from 'lucide-react';
 import UnifiedDetail from '../shared/unifiedDetail';
 import EducatorSummary from './EducatorSummary';
 import DetailRow, { EditableDetailRow } from '../shared/DetailRow';
@@ -112,6 +113,19 @@ const EducatorDetailsRefactored = ({ educator, onBack, onSchoolOpen }) => {
             )}
           </div>
         </div>
+        
+        {/* Target Location Information */}
+        {educator.targetGeography && (
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Target Location</h3>
+            <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+              <DetailRow label="Target Geography" value={educator.targetGeography} />
+              <DetailRow label="Target City" value={educator.targetCity} />
+              <DetailRow label="Target State" value={educator.targetState} />
+              <DetailRow label="Target Start Date" value={educator.targetStartDate} type="date" />
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -267,7 +281,59 @@ const EducatorDetailsRefactored = ({ educator, onBack, onSchoolOpen }) => {
           </div>
         </div>
 
-        {/* Email addresses would be rendered using the default table renderer */}
+        {/* Email Addresses Table */}
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">Email Addresses</h3>
+            <button 
+              onClick={() => onActionClick && onActionClick('add', null, 'contact-info')}
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
+            >
+              Add Email
+            </button>
+          </div>
+          
+          {/* Let the default table renderer handle the email addresses */}
+          {tabData.data && tabData.data.length > 0 ? (
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Address</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Primary</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {tabData.data.map(email => (
+                    <tr key={email.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <a href={`mailto:${email.emailAddress}`} className="text-cyan-600 hover:underline">
+                          {email.emailAddress || '-'}
+                        </a>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{email.emailType || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {email.isPrimary ? <CheckCircle className="w-5 h-5 text-green-600" /> : <span className="text-gray-400">-</span>}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{email.notes || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onClick={() => onActionClick && onActionClick('edit', email, 'contact-info')} className="text-cyan-600 hover:text-cyan-900 mr-3">Edit</button>
+                        <button onClick={() => onActionClick && onActionClick('delete', email, 'contact-info')} className="text-red-600 hover:text-red-900">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="bg-white border rounded-lg p-6">
+              <div className="text-center py-8 text-gray-500">No email addresses found.</div>
+            </div>
+          )}
+        </div>
       </div>
     );
   };

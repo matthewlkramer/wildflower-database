@@ -117,7 +117,42 @@ const SchoolDetailsRefactored = ({ school, onBack, onEducatorOpen }) => {
           </div>
         </div>
         
-        {/* Additional sections can be added here */}
+        {/* School Information */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">School Information</h3>
+          <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+            <DetailRow label="Program Focus" value={school.programFocus} />
+            <DetailRow label="Max Capacity" value={school.maxCapacityEnrollments} />
+            <DetailRow label="Number of Classrooms" value={school.numberOfClassrooms} />
+            <DetailRow label="Ages Served" value={school.agesServed} />
+            <DetailRow label="Governance Model" value={school.governanceModel} />
+            <DetailRow label="Founders" value={school.founders} />
+            <DetailRow label="Current TLs" value={school.currentTLs} />
+            <DetailRow label="School Open Date" value={school.schoolOpenDate || school.opened} type="date" />
+          </div>
+        </div>
+        
+        {/* Contact Information */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">Contact Information</h3>
+          <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+            <DetailRow label="School Email" value={school.schoolEmail} type="email" />
+            <DetailRow label="School Phone" value={school.phone} type="phone" />
+            <DetailRow label="Website" value={school.website} type="url" />
+            <DetailRow label="Email Domain" value={school.emailDomain} />
+          </div>
+        </div>
+        
+        {/* Legal Information */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">Legal Entity</h3>
+          <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+            <DetailRow label="EIN" value={school.ein} />
+            <DetailRow label="Legal Name" value={school.legalName} />
+            <DetailRow label="Incorporation Date" value={school.incorporationDate} type="date" />
+            <DetailRow label="Nonprofit Status" value={school.nonprofitStatus} />
+          </div>
+        </div>
       </div>
     );
   };

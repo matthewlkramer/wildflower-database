@@ -197,7 +197,13 @@ const UnifiedDetail = ({
 
   // Generic table renderer
   const renderTable = (data, tableConfig, tableType) => {
+    if (!tableConfig) {
+      console.error('No table config for:', tableType);
+      return <div className="text-center py-8 text-gray-500">No table configuration found.</div>;
+    }
+    
     const { columns, actions } = tableConfig;
+    const dataArray = Array.isArray(data) ? data : [];
     
     return (
       <div className="bg-white border rounded-lg overflow-hidden">
@@ -220,7 +226,7 @@ const UnifiedDetail = ({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data.map((item, index) => (
+            {dataArray.map((item, index) => (
               <tr key={item.id || index} className="hover:bg-gray-50">
                 {columns.map(column => (
                   <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -232,7 +238,7 @@ const UnifiedDetail = ({
             ))}
           </tbody>
         </table>
-        {data.length === 0 && (
+        {dataArray.length === 0 && (
           <div className="text-center py-8 text-gray-500">
             {getTabConfig(entityType, activeTab)?.emptyMessage || 'No data found.'}
           </div>
@@ -243,6 +249,8 @@ const UnifiedDetail = ({
 
   // Render tab content
   const renderTabContent = () => {
+    console.log('Rendering tab:', activeTab, 'Tab data:', tabData);
+    
     // Check for custom tab renderer first
     if (renderCustomTab) {
       const customContent = renderCustomTab(activeTab, entity, tabData, {
@@ -272,10 +280,12 @@ const UnifiedDetail = ({
     const tabConfig = getTabConfig(entityType, activeTab);
     const tableConfig = getTableConfig(activeTab);
     
+    console.log('Tab config:', tabConfig, 'Table config:', tableConfig);
+    
     if (!tabConfig) {
       return (
         <div className="text-center py-8 text-gray-500">
-          <p>Tab configuration not found.</p>
+          <p>Tab configuration not found for: {activeTab}</p>
         </div>
       );
     }
