@@ -34,6 +34,11 @@ export const useTableColumns = (dataType) => {
                         label: 'Stage Status',
                         defaultWidth: 120,
                         render: (value, item) => {
+                            // Debug: log available fields for first item
+                            if (Math.random() < 0.05) {
+                                console.log('Educator fields:', Object.keys(item).filter(k => k.toLowerCase().includes('stage')));
+                                console.log('All fields:', Object.keys(item));
+                            }
                             return item.stageStatus ? <StatusBadge status={item.stageStatus} /> : '-';
                         }
                     },
