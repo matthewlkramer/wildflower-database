@@ -26,13 +26,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Current School',
                         defaultWidth: 160,
                         render: (value, item) => {
-                            const currentSchool = item['Currently Active School'];
-                            
-                            // If it's an array, join them
-                            if (Array.isArray(currentSchool)) {
-                                return currentSchool.join(', ') || '-';
-                            }
-                            return currentSchool || '-';
+                            return item.currentSchool || '-';
                         }
                     },
                     {
@@ -40,8 +34,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Role(s)',
                         defaultWidth: 150,
                         render: (value, item) => {
-                            const role = item['Current Role'];
-                            return <Pills values={role} colorScheme="blue" />;
+                            return <Pills values={item.role} colorScheme="blue" />;
                         }
                     },
                     {
@@ -49,7 +42,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Email',
                         defaultWidth: 180,
                         render: (value, item) => {
-                            return item['Current Primary Email Address'] || item['Email Addresses'] || '-';
+                            return item.email || '-';
                         }
                     },
                     {
@@ -57,8 +50,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Race & Ethnicity',
                         defaultWidth: 200,
                         render: (value, item) => {
-                            const race = item['Race & Ethnicity'];
-                            return <Pills values={race} colorScheme="purple" />;
+                            return <Pills values={item.raceEthnicity} colorScheme="purple" />;
                         }
                     },
                     {
@@ -66,8 +58,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Discovery Status',
                         defaultWidth: 80,
                         render: (value, item) => {
-                            const status = item['Discovery status']; // Note: lowercase 's' in 'status'
-                            return status ? <StatusBadge status={status} /> : '-';
+                            return item.discoveryStatus ? <StatusBadge status={item.discoveryStatus} /> : '-';
                         }
                     },
                     {
@@ -75,7 +66,7 @@ export const useTableColumns = (dataType) => {
                         label: 'Type',
                         defaultWidth: 60,
                         render: (value, item) => {
-                            return item['Individual Type'] || '-';
+                            return item.individualType || '-';
                         }
                     }
                 ];

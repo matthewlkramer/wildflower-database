@@ -4,6 +4,7 @@ import StatusBadge from '../shared/StatusBadge';
 import DetailRow, { EditableDetailRow } from '../shared/DetailRow';
 import Pills from '../shared/Pills';
 import TabContainer from '../shared/TabContainer';
+import EducatorSummary from './EducatorSummary';
 
 // Import hooks
 import { 
