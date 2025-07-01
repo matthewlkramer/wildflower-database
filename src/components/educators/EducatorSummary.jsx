@@ -11,7 +11,7 @@ const EducatorSummary = ({ educator }) => {
             <div className="flex justify-end">
                 <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center text-sm"
+                    className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
                 >
                     {isEditing ? 'Save' : 'Edit'}
                 </button>
@@ -26,7 +26,7 @@ const EducatorSummary = ({ educator }) => {
                 <div className="flex-1">
                     <h2 className="text-xl font-bold text-gray-900">{educator.fullName}</h2>
                     <div className="mt-1 space-y-1">
-                        <div className="text-blue-600">{educator.email || 'No email address'}</div>
+                        <div className="text-teal-600">{educator.email || 'No email address'}</div>
                         <div className="text-gray-600">{educator.role || 'No current role'}</div>
                         <div className="text-gray-600">{educator.pronouns}</div>
                     </div>

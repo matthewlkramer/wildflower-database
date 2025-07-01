@@ -5,7 +5,8 @@
       "Bash(rg:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "WebFetch(domain:wildflowerschools.org)"
     ],
     "deny": []
   }

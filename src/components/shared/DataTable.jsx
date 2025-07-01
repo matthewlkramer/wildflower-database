@@ -124,7 +124,7 @@ const DataTable = ({
                     placeholder={`Filter ${col.label}...`}
                     value={columnFilters[col.key] || ''}
                     onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
-                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
                 />
             );
         }

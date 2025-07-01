@@ -93,7 +93,7 @@ const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducato
                       setSearchTerm(`${educator.firstName} ${educator.lastName}`);
                     }}
                     className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${
-                      selectedEducator?.id === educator.id ? 'bg-blue-50' : ''
+                      selectedEducator?.id === educator.id ? 'bg-teal-50' : ''
                     }`}
                   >
                     <div className="font-medium">{educator.firstName} {educator.lastName}</div>
@@ -128,7 +128,7 @@ const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducato
                 type="checkbox"
                 checked={currentlyActive}
                 onChange={(e) => setCurrentlyActive(e.target.checked)}
-                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="mr-2 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
               />
               <span className="text-sm font-medium text-gray-700">Currently Active</span>
             </label>
@@ -146,7 +146,7 @@ const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducato
                     type="checkbox"
                     checked={selectedRoles.includes(role)}
                     onChange={() => toggleRole(role)}
-                    className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="mr-2 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                   />
                   <span className="text-sm">{role}</span>
                 </label>
@@ -165,7 +165,7 @@ const AddEducatorStintModal = ({ isOpen, onClose, onSubmit, schoolId, allEducato
             <button
               type="submit"
               disabled={!selectedEducator || selectedRoles.length === 0}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Add Stint
             </button>
