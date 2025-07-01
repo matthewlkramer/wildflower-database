@@ -12,7 +12,12 @@ import {
   useCachedGuideAssignments,
   useCachedGrants,
   useCachedLoans,
-  useCachedMembershipFees
+  useCachedMembershipFees,
+  useCachedEmailAddresses,
+  useCachedSSJForms,
+  useCachedMontessoriCerts,
+  useCachedEducatorNotes,
+  useCachedEventAttendance
 } from './useCachedData';
 import { 
   transformSchoolsData,
@@ -346,13 +351,38 @@ export const useMontessoriCerts = (educatorId) => {
 };
 
 export const useEducatorNotes = (educatorId) => {
-    // Educator Notes not implemented yet
-    return {
-        data: [],
-        loading: false,
-        error: null,
-        refetch: () => Promise.resolve([])
-    };
+    const { data: rawData, loading, error, refetch } = useCachedEducatorNotes(educatorId);
+    
+    return useMemo(() => {
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            // Transform educator notes data
+            const transformed = rawData.map(note => ({
+                id: note.id,
+                noteText: note['Note Text'] || note.note_text || note.Note || note.Notes || '',
+                noteType: note['Note Type'] || note.note_type || note.Type || '',
+                createdBy: note['Created By'] || note.created_by || note.Author || '',
+                createdDate: note['Created Date'] || note.created_date || note.Created || '',
+                modifiedDate: note['Modified Date'] || note.modified_date || note.Modified || '',
+                category: note.Category || note.category || '',
+                priority: note.Priority || note.priority || '',
+                educatorId: note.Educator || note.educator_id || educatorId
+            })).filter(Boolean);
+            
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch
+        };
+    }, [rawData, loading, error, refetch, educatorId]);
 };
 
 export const useMembershipFeeUpdates = (schoolId, schoolYear = null) => {
@@ -366,13 +396,37 @@ export const useMembershipFeeUpdates = (schoolId, schoolYear = null) => {
 };
 
 export const useOnlineForms = (educatorId) => {
-    // Online Forms not implemented yet
-    return {
-        data: [],
-        loading: false,
-        error: null,
-        refetch: () => Promise.resolve([])
-    };
+    const { data: rawData, loading, error, refetch } = useCachedSSJForms(educatorId);
+    
+    return useMemo(() => {
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            // Transform SSJ forms data
+            const transformed = rawData.map(form => ({
+                id: form.id,
+                formName: form['Form Name'] || form.form_name || form.Name || '',
+                submissionDate: form['Submission Date'] || form.submission_date || form.Submitted || '',
+                status: form.Status || form.status || '',
+                formType: form['Form Type'] || form.form_type || form.Type || '',
+                notes: form.Notes || form.notes || '',
+                link: form.Link || form.link || form.URL || '',
+                educatorId: form.Educator || form.educator_id || educatorId
+            })).filter(Boolean);
+            
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch
+        };
+    }, [rawData, loading, error, refetch, educatorId]);
 };
 
 export const useEarlyCultivation = (educatorId) => {
@@ -386,23 +440,107 @@ export const useEarlyCultivation = (educatorId) => {
 };
 
 export const useCertifications = (educatorId) => {
-    // Certifications not implemented yet
-    return {
-        data: [],
-        loading: false,
-        error: null,
-        refetch: () => Promise.resolve([])
-    };
+    const { data: rawData, loading, error, refetch } = useCachedMontessoriCerts(educatorId);
+    
+    return useMemo(() => {
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            // Transform Montessori certification data
+            const transformed = rawData.map(cert => ({
+                id: cert.id,
+                certificationName: cert['Certification Name'] || cert.certification_name || cert.Name || '',
+                certificationLevel: cert['Certification Level'] || cert.certification_level || cert.Level || '',
+                trainingCenter: cert['Training Center'] || cert.training_center || cert.Center || '',
+                completionDate: cert['Completion Date'] || cert.completion_date || cert.Completed || '',
+                expirationDate: cert['Expiration Date'] || cert.expiration_date || cert.Expires || '',
+                status: cert.Status || cert.status || '',
+                notes: cert.Notes || cert.notes || '',
+                educatorId: cert.Educator || cert.educator_id || educatorId
+            })).filter(Boolean);
+            
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch
+        };
+    }, [rawData, loading, error, refetch, educatorId]);
 };
 
 export const useEvents = (educatorId) => {
-    // Events not implemented yet
-    return {
-        data: [],
-        loading: false,
-        error: null,
-        refetch: () => Promise.resolve([])
-    };
+    const { data: rawData, loading, error, refetch } = useCachedEventAttendance(educatorId);
+    
+    return useMemo(() => {
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            // Transform event attendance data
+            const transformed = rawData.map(event => ({
+                id: event.id,
+                eventName: event['Event Name'] || event.event_name || event.Event || '',
+                eventDate: event['Event Date'] || event.event_date || event.Date || '',
+                eventType: event['Event Type'] || event.event_type || event.Type || '',
+                attendanceStatus: event['Attendance Status'] || event.attendance_status || event.Status || '',
+                registrationDate: event['Registration Date'] || event.registration_date || event.Registered || '',
+                role: event.Role || event.role || '',
+                notes: event.Notes || event.notes || '',
+                location: event.Location || event.location || '',
+                educatorId: event.Educator || event.educator_id || educatorId
+            })).filter(Boolean);
+            
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch
+        };
+    }, [rawData, loading, error, refetch, educatorId]);
+};
+
+export const useEmailAddresses = (educatorId) => {
+    const { data: rawData, loading, error, refetch } = useCachedEmailAddresses(educatorId);
+    
+    return useMemo(() => {
+        if (!loading && !error && Array.isArray(rawData) && rawData.length > 0) {
+            // Transform email addresses data if needed
+            const transformed = rawData.map(email => ({
+                id: email.id,
+                emailAddress: email['Email Address'] || email.email_address || email.Email || '',
+                emailType: email['Email Type'] || email.email_type || email.Type || '',
+                isPrimary: email['Is Primary'] || email.is_primary || email.Primary || false,
+                notes: email.Notes || email.notes || '',
+                createdDate: email['Created Date'] || email.created_date || email.Created || '',
+                educatorId: email.Educator || email.educator_id || educatorId
+            })).filter(Boolean);
+            
+            return {
+                data: transformed,
+                loading: false,
+                error: null,
+                refetch
+            };
+        }
+        
+        return {
+            data: [],
+            loading,
+            error,
+            refetch
+        };
+    }, [rawData, loading, error, refetch, educatorId]);
 };
 
 export default useUnifiedData;

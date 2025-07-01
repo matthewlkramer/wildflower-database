@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { dataCache, CACHE_KEYS } from '../utils/dataCache';
 import { airtableService } from '../airtableService';
+import { TABLES } from '../airtableConfig';
 
 // Global cache for all locations/tables to prevent multiple fetches
 const globalTableCache = {
@@ -335,6 +336,111 @@ export const useCachedMembershipFees = (schoolId) => {
   }, [schoolId]);
 
   return useCachedData(CACHE_KEYS.MEMBERSHIP_FEES, fetchFunction, options);
+};
+
+export const useCachedEmailAddresses = (educatorId) => {
+  const options = { educatorId };
+  
+  const fetchFunction = useCallback(async () => {
+    if (!educatorId) return [];
+    
+    // Fetch all email addresses and filter by educator ID
+    const allEmailAddresses = await airtableService.fetchRecords(TABLES.EMAIL_ADDRESSES, { maxRecords: 10000 });
+    return allEmailAddresses.filter(email => {
+      // Check various possible field names for educator ID
+      if (email.educator_id === educatorId) return true;
+      if (email.Educator === educatorId) return true;
+      if (Array.isArray(email.Educator) && email.Educator.includes(educatorId)) return true;
+      if (Array.isArray(email.educator_ids) && email.educator_ids.includes(educatorId)) return true;
+      return false;
+    });
+  }, [educatorId]);
+
+  return useCachedData(CACHE_KEYS.EMAIL_ADDRESSES, fetchFunction, options);
+};
+
+export const useCachedSSJForms = (educatorId) => {
+  const options = { educatorId };
+  
+  const fetchFunction = useCallback(async () => {
+    if (!educatorId) return [];
+    
+    // Fetch all SSJ Fillout Forms and filter by educator ID
+    const allForms = await airtableService.fetchRecords(TABLES.SSJ_FILLOUT_FORMS, { maxRecords: 10000 });
+    return allForms.filter(form => {
+      // Check various possible field names for educator ID
+      if (form.educator_id === educatorId) return true;
+      if (form.Educator === educatorId) return true;
+      if (Array.isArray(form.Educator) && form.Educator.includes(educatorId)) return true;
+      if (Array.isArray(form.educator_ids) && form.educator_ids.includes(educatorId)) return true;
+      return false;
+    });
+  }, [educatorId]);
+
+  return useCachedData(CACHE_KEYS.SSJ_FORMS, fetchFunction, options);
+};
+
+export const useCachedMontessoriCerts = (educatorId) => {
+  const options = { educatorId };
+  
+  const fetchFunction = useCallback(async () => {
+    if (!educatorId) return [];
+    
+    // Fetch all Montessori Certs and filter by educator ID
+    const allCerts = await airtableService.fetchRecords(TABLES.MONTESSORI_CERTS, { maxRecords: 10000 });
+    return allCerts.filter(cert => {
+      // Check various possible field names for educator ID
+      if (cert.educator_id === educatorId) return true;
+      if (cert.Educator === educatorId) return true;
+      if (Array.isArray(cert.Educator) && cert.Educator.includes(educatorId)) return true;
+      if (Array.isArray(cert.educator_ids) && cert.educator_ids.includes(educatorId)) return true;
+      return false;
+    });
+  }, [educatorId]);
+
+  return useCachedData(CACHE_KEYS.MONTESSORI_CERTS, fetchFunction, options);
+};
+
+export const useCachedEducatorNotes = (educatorId) => {
+  const options = { educatorId };
+  
+  const fetchFunction = useCallback(async () => {
+    if (!educatorId) return [];
+    
+    // Fetch all Educator Notes and filter by educator ID
+    const allNotes = await airtableService.fetchRecords(TABLES.EDUCATOR_NOTES, { maxRecords: 10000 });
+    return allNotes.filter(note => {
+      // Check various possible field names for educator ID
+      if (note.educator_id === educatorId) return true;
+      if (note.Educator === educatorId) return true;
+      if (Array.isArray(note.Educator) && note.Educator.includes(educatorId)) return true;
+      if (Array.isArray(note.educator_ids) && note.educator_ids.includes(educatorId)) return true;
+      return false;
+    });
+  }, [educatorId]);
+
+  return useCachedData(CACHE_KEYS.EDUCATOR_NOTES, fetchFunction, options);
+};
+
+export const useCachedEventAttendance = (educatorId) => {
+  const options = { educatorId };
+  
+  const fetchFunction = useCallback(async () => {
+    if (!educatorId) return [];
+    
+    // Fetch all Event Attendance and filter by educator ID
+    const allEvents = await airtableService.fetchRecords(TABLES.EVENT_ATTENDANCE, { maxRecords: 10000 });
+    return allEvents.filter(event => {
+      // Check various possible field names for educator ID
+      if (event.educator_id === educatorId) return true;
+      if (event.Educator === educatorId) return true;
+      if (Array.isArray(event.Educator) && event.Educator.includes(educatorId)) return true;
+      if (Array.isArray(event.educator_ids) && event.educator_ids.includes(educatorId)) return true;
+      return false;
+    });
+  }, [educatorId]);
+
+  return useCachedData(CACHE_KEYS.EVENT_ATTENDANCE, fetchFunction, options);
 };
 
 // Mutation hook that invalidates relevant cache entries

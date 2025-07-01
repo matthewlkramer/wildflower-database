@@ -137,5 +137,10 @@ export const CACHE_KEYS = {
   GUIDE_ASSIGNMENTS: 'guideAssignments',
   GRANTS: 'grants',
   LOANS: 'loans',
-  MEMBERSHIP_FEES: 'membershipFees'
+  MEMBERSHIP_FEES: 'membershipFees',
+  EMAIL_ADDRESSES: 'emailAddresses',
+  SSJ_FORMS: 'ssjForms',
+  MONTESSORI_CERTS: 'montessoriCerts',
+  EDUCATOR_NOTES: 'educatorNotes',
+  EVENT_ATTENDANCE: 'eventAttendance'
 };

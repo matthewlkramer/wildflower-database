@@ -37,14 +37,18 @@ const EducatorSummary = ({ educator }) => {
                 <DetailRow label="Full Name" value={educator.fullName} />
                 <DetailRow label="First Name" value={educator.firstName} />
                 <DetailRow label="Last Name" value={educator.lastName} />
+                <DetailRow label="Middle Name" value={educator.middleName} />
+                <DetailRow label="Nickname" value={educator.nickname} />
+                <DetailRow label="Pronouns" value={educator.pronouns} />
                 <DetailRow label="Email" value={educator.email} type="email" />
+                <DetailRow label="Phone" value={educator.phone} type="phone" />
                 <DetailRow label="Current School" value={educator.currentSchool} />
                 <DetailRow label="Role" value={educator.role} />
-                <DetailRow label="Discovery Status" value={<StatusBadge status={educator.discoveryStatus} />} />
                 <DetailRow label="Individual Type" value={educator.individualType} />
+                <DetailRow label="Discovery Status" value={<StatusBadge status={educator.discoveryStatus} />} />
+                <DetailRow label="Montessori Lead Guide Training" value={educator.montessoriLeadGuideTraining} />
                 <DetailRow label="Montessori Certified" value={educator.montessoriCertified} type="boolean" />
-                <DetailRow label="Pronouns" value={educator.pronouns} />
-                <DetailRow label="Phone" value={educator.phone} type="phone" />
+                <DetailRow label="Startup Stage for Active School" value={educator.startupStageForActiveSchool} />
                 <DetailRow label="Target Location" value={educator.targetGeo} />
                 <DetailRow label="Tags" value={educator.tags?.join(', ')} />
             </div>
