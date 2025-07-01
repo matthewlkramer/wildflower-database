@@ -1,4 +1,4 @@
-@import 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
+@import 'https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0/dist/tailwind.min.css';
 
 body {
   margin: 0;
@@ -7,4 +7,33 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom cyan button styles as fallback */
+.bg-cyan-600 {
+  background-color: #0891b2 !important;
+}
+
+.bg-cyan-700 {
+  background-color: #0e7490 !important;
+}
+
+.hover\:bg-cyan-700:hover {
+  background-color: #0e7490 !important;
+}
+
+.text-cyan-600 {
+  color: #0891b2 !important;
+}
+
+.bg-cyan-100 {
+  background-color: #cffafe !important;
+}
+
+.text-cyan-700 {
+  color: #0e7490 !important;
+}
+
+.border-cyan-500 {
+  border-color: #06b6d4 !important;
 }
