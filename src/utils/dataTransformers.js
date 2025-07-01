@@ -285,7 +285,7 @@ export const transformSchoolData = (airtableRecord) => {
                     airtableRecord['Logo'][0].thumbnails) ? 
                       airtableRecord['Logo'][0].thumbnails.large?.url || 
                       airtableRecord['Logo'][0].thumbnails.small?.url || 
-                      airtableRecord['Logo'][0].url : null
+                      airtableRecord['Logo'][0].url : null,
     
     // Legal entity
     legalStructure: airtableRecord['Legal structure'] || '', // Single select
