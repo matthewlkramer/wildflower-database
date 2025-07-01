@@ -30,6 +30,14 @@ export const useTableColumns = (dataType) => {
                         }
                     },
                     {
+                        key: 'stageStatus',
+                        label: 'Stage Status',
+                        defaultWidth: 120,
+                        render: (value, item) => {
+                            return item.stageStatus ? <StatusBadge status={item.stageStatus} /> : '-';
+                        }
+                    },
+                    {
                         key: 'role',
                         label: 'Role(s)',
                         defaultWidth: 150,

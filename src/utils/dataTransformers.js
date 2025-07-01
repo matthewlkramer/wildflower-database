@@ -314,6 +314,7 @@ export const transformEducatorData = (airtableRecord) => {
     email: airtableRecord['Contact Email'] || '', // Formula field for current email
     emailAddresses: airtableRecord['Email Addresses'] || [],
     currentSchool: safeExtract(airtableRecord['Currently Active School']) || '',
+    stageStatus: airtableRecord['Stage_Status'] || '',
     role: safeExtract(airtableRecord['Current Role']) || '',
     discoveryStatus: airtableRecord['Discovery status'] || '',
     individualType: airtableRecord['Individual Type'] || '',
