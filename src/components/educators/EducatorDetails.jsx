@@ -600,6 +600,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
       </div>
     </div>
   );
+  };
 
   const renderSchoolsTab = () => {
     // Filter educator's school relationships

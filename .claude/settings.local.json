@@ -9,7 +9,8 @@
       "WebFetch(domain:wildflowerschools.org)",
       "Bash(npm install)",
       "Bash(rm:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(awk:*)"
     ],
     "deny": []
   }
