@@ -10,7 +10,8 @@
       "Bash(npm install)",
       "Bash(rm:*)",
       "Bash(sed:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(touch:*)"
     ],
     "deny": []
   }
