@@ -239,7 +239,7 @@ const ResizableDataTable = ({
         placeholder={`Filter ${col.label}...`}
         value={columnFilters[col.key] || ''}
         onChange={(e) => handleColumnFilterChange(col.key, e.target.value)}
-        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
       />
     );
   }
@@ -342,7 +342,7 @@ const ResizableDataTable = ({
         {loading && (
           <div className="text-center py-12">
             <div className="inline-flex flex-col items-center">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600 mb-4"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-600 mb-4"></div>
               <p className="text-gray-600">Loading data...</p>
             </div>
           </div>
@@ -421,7 +421,7 @@ const ResizeHandle = ({ columnKey, onResize, currentWidth }) => {
   return (
     <div
       className={`absolute right-0 top-0 bottom-0 w-2 cursor-col-resize group ${
-        isDragging ? 'bg-teal-400' : ''
+        isDragging ? 'bg-cyan-400' : ''
       }`}
       onMouseDown={handleMouseDown}
       style={{ marginRight: '-4px' }} // Center the handle on the border
@@ -429,8 +429,8 @@ const ResizeHandle = ({ columnKey, onResize, currentWidth }) => {
       {/* Visual indicator */}
       <div className={`h-full w-1 ml-0.5 transition-colors ${
         isDragging 
-          ? 'bg-teal-500' 
-          : 'bg-transparent group-hover:bg-teal-300'
+          ? 'bg-cyan-500' 
+          : 'bg-transparent group-hover:bg-cyan-300'
       }`} />
     </div>
   );

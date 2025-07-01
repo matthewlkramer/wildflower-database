@@ -13,7 +13,7 @@ const SchoolSummary = ({ school }) => {
             <div className="flex justify-end">
                 <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+                    className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
                 >
                     {isEditing ? 'Save' : 'Edit'}
                 </button>

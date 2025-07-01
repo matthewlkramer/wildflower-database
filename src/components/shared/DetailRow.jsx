@@ -37,7 +37,7 @@ const DetailRow = ({ label, value, span = false, type = 'text' }) => {
                 return (
                     <a
                         href={value}
-                        className="text-teal-600 hover:text-teal-800 hover:underline flex items-center"
+                        className="text-cyan-600 hover:text-cyan-800 hover:underline flex items-center"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -50,7 +50,7 @@ const DetailRow = ({ label, value, span = false, type = 'text' }) => {
                 return (
                     <a
                         href={`mailto:${value}`}
-                        className="text-teal-600 hover:text-teal-800 hover:underline"
+                        className="text-cyan-600 hover:text-cyan-800 hover:underline"
                     >
                         {value}
                     </a>
@@ -60,7 +60,7 @@ const DetailRow = ({ label, value, span = false, type = 'text' }) => {
                 return (
                     <a
                         href={`tel:${value}`}
-                        className="text-teal-600 hover:text-teal-800 hover:underline"
+                        className="text-cyan-600 hover:text-cyan-800 hover:underline"
                     >
                         {value}
                     </a>
@@ -146,7 +146,7 @@ export const EditableDetailRow = ({
                             type="checkbox"
                             checked={value || false}
                             onChange={(e) => handleChange(e.target.checked)}
-                            className="mr-2 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                            className="mr-2 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
                         />
                         <span className="text-sm">{value ? 'Yes' : 'No'}</span>
                     </label>
@@ -157,7 +157,7 @@ export const EditableDetailRow = ({
                     <select
                         value={value || ''}
                         onChange={(e) => handleChange(e.target.value)}
-                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         required={required}
                     >
                         <option value="">Select...</option>
@@ -173,7 +173,7 @@ export const EditableDetailRow = ({
                     <textarea
                         value={value || ''}
                         onChange={(e) => handleChange(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         rows={3}
                         placeholder={placeholder}
                         required={required}
@@ -186,7 +186,7 @@ export const EditableDetailRow = ({
                         type="text"
                         value={Array.isArray(value) ? value.join(', ') : (value || '')}
                         onChange={(e) => handleChange(e.target.value.split(',').map(v => v.trim()).filter(v => v))}
-                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         placeholder={placeholder || "Separate multiple values with commas"}
                         required={required}
                     />
@@ -198,7 +198,7 @@ export const EditableDetailRow = ({
                         type="number"
                         value={value || ''}
                         onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
-                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         placeholder={placeholder}
                         required={required}
                     />
@@ -212,7 +212,7 @@ export const EditableDetailRow = ({
                             type="number"
                             value={value || ''}
                             onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
-                            className="w-full pl-8 pr-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                            className="w-full pl-8 pr-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                             placeholder={placeholder}
                             required={required}
                             min="0"
@@ -227,7 +227,7 @@ export const EditableDetailRow = ({
                         type="date"
                         value={value || ''}
                         onChange={(e) => handleChange(e.target.value)}
-                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         required={required}
                     />
                 );
@@ -238,7 +238,7 @@ export const EditableDetailRow = ({
                         type="email"
                         value={value || ''}
                         onChange={(e) => handleChange(e.target.value)}
-                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         placeholder={placeholder || "email@example.com"}
                         required={required}
                     />
@@ -250,7 +250,7 @@ export const EditableDetailRow = ({
                         type="tel"
                         value={value || ''}
                         onChange={(e) => handleChange(e.target.value)}
-                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         placeholder={placeholder || "(555) 123-4567"}
                         required={required}
                     />
@@ -262,7 +262,7 @@ export const EditableDetailRow = ({
                         type="url"
                         value={value || ''}
                         onChange={(e) => handleChange(e.target.value)}
-                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         placeholder={placeholder || "https://example.com"}
                         required={required}
                     />
@@ -275,7 +275,7 @@ export const EditableDetailRow = ({
                             type="number"
                             value={value || ''}
                             onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
-                            className="w-full pr-8 pl-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                            className="w-full pr-8 pl-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                             placeholder={placeholder}
                             required={required}
                             min="0"
@@ -293,7 +293,7 @@ export const EditableDetailRow = ({
                         type="text"
                         value={value || ''}
                         onChange={(e) => handleChange(e.target.value)}
-                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
                         placeholder={placeholder}
                         required={required}
                     />

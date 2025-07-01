@@ -37,7 +37,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
           <p className="text-gray-600 mb-4">Educator data was not provided to this component.</p>
           <button 
             onClick={onBack}
-            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
+            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700"
           >
             Go Back
           </button>
@@ -162,7 +162,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
           >
             Edit
           </button>
@@ -171,7 +171,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
             <button
               onClick={handleEditSave}
               disabled={mutationLoading}
-              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm disabled:bg-teal-300"
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm disabled:bg-cyan-300"
             >
               {mutationLoading ? 'Saving...' : 'Update'}
             </button>
@@ -342,7 +342,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold">Email Addresses</h3>
-          <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm">
+          <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
             <Plus className="w-4 h-4 mr-2" />
             Add Email
           </button>
@@ -373,7 +373,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
               {(emailAddresses || []).map(email => (
                 <tr key={email.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-teal-600 hover:underline cursor-pointer">
+                    <div className="text-sm text-cyan-600 hover:underline cursor-pointer">
                       {email.emailAddress}
                     </div>
                   </td>
@@ -391,7 +391,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
                     {email.notes || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-teal-600 hover:text-teal-900 mr-3">Edit</button>
+                    <button className="text-cyan-600 hover:text-cyan-900 mr-3">Edit</button>
                     <button className="text-red-600 hover:text-red-900">Delete</button>
                   </td>
                 </tr>
@@ -446,7 +446,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold">School Affiliations</h3>
-          <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm">
+          <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
             <Plus className="w-4 h-4 mr-2" />
             Add School Stint
           </button>
@@ -485,7 +485,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <Pills values={relationship.roles} colorScheme="teal" />
+                  <Pills values={relationship.roles} colorScheme="cyan" />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {relationship.startDate || '-'}
@@ -503,7 +503,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     onClick={() => onSchoolOpen && onSchoolOpen(relationship.schoolId)}
-                    className="bg-teal-600 text-white px-3 py-1 rounded text-xs hover:bg-teal-700 mr-2"
+                    className="bg-cyan-600 text-white px-3 py-1 rounded text-xs hover:bg-cyan-700 mr-2"
                   >
                     Open School
                   </button>
@@ -527,7 +527,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">SSJ Fillout Forms</h3>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm">
+        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
           <Plus className="w-4 h-4 mr-2" />
           Add Form
         </button>
@@ -574,13 +574,13 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {form.link ? (
-                    <a href={form.link} target="_blank" rel="noopener noreferrer" className="text-teal-600 hover:text-teal-900">
+                    <a href={form.link} target="_blank" rel="noopener noreferrer" className="text-cyan-600 hover:text-cyan-900">
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   ) : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-teal-600 hover:text-teal-900 mr-3">Edit</button>
+                  <button className="text-cyan-600 hover:text-cyan-900 mr-3">Edit</button>
                   <button className="text-red-600 hover:text-red-900">Delete</button>
                 </td>
               </tr>
@@ -614,7 +614,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">Montessori Certifications</h3>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm">
+        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
           <Plus className="w-4 h-4 mr-2" />
           Add Certification
         </button>
@@ -669,7 +669,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
                   <StatusBadge status={cert.status} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-teal-600 hover:text-teal-900 mr-3">Edit</button>
+                  <button className="text-cyan-600 hover:text-cyan-900 mr-3">Edit</button>
                   <button className="text-red-600 hover:text-red-900">Delete</button>
                 </td>
               </tr>
@@ -689,7 +689,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">Educator Notes</h3>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm">
+        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
           <Plus className="w-4 h-4 mr-2" />
           Add Note
         </button>
@@ -747,14 +747,14 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       note.priority === 'High' ? 'bg-red-100 text-red-800' :
                       note.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-teal-100 text-teal-800'
+                      'bg-cyan-100 text-cyan-800'
                     }`}>
                       {note.priority}
                     </span>
                   ) : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-teal-600 hover:text-teal-900 mr-3">Edit</button>
+                  <button className="text-cyan-600 hover:text-cyan-900 mr-3">Edit</button>
                   <button className="text-red-600 hover:text-red-900">Delete</button>
                 </td>
               </tr>
@@ -774,7 +774,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">Event Attendance</h3>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm">
+        <button className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm">
           <Plus className="w-4 h-4 mr-2" />
           Add Event
         </button>
@@ -835,7 +835,7 @@ const EducatorDetails = ({ educator, onBack, onSchoolOpen }) => {
                   {event.registrationDate || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-teal-600 hover:text-teal-900 mr-3">Edit</button>
+                  <button className="text-cyan-600 hover:text-cyan-900 mr-3">Edit</button>
                   <button className="text-red-600 hover:text-red-900">Delete</button>
                 </td>
               </tr>

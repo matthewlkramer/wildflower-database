@@ -120,14 +120,14 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoad
                 <div className="flex space-x-2">
                     <button
                         onClick={() => setShowAddStintModal(true)}
-                        className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+                        className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Add stint for educator in database
                     </button>
                     <button
                         onClick={() => setShowCreateEducatorModal(true)}
-                        className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center text-sm"
+                        className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 flex items-center text-sm"
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Create new educator in database
@@ -139,7 +139,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoad
                 {(educatorsXSchoolsLoading || allEducatorsLoading) ? (
                     <div className="text-center py-12">
                         <div className="inline-flex flex-col items-center">
-                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600 mb-4"></div>
+                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-600 mb-4"></div>
                             <p className="text-gray-600">Loading educators...</p>
                         </div>
                     </div>
@@ -207,7 +207,7 @@ const SchoolTLs = ({ school, onEducatorOpen, allEducators = [], allEducatorsLoad
                                     <div className="flex space-x-2">
                                         <button
                                             onClick={() => onEducatorOpen && onEducatorOpen(relationship.educatorId)}
-                                            className="bg-teal-600 text-white px-3 py-1 rounded text-xs hover:bg-teal-700"
+                                            className="bg-cyan-600 text-white px-3 py-1 rounded text-xs hover:bg-cyan-700"
                                         >
                                             Open
                                         </button>

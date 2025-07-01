@@ -13,12 +13,12 @@ const DebugDataDisplay = ({ data, title }) => {
   const fields = Object.keys(firstRecord).sort();
 
   return (
-    <div className="bg-teal-50 border border-teal-200 rounded p-4 my-4">
-      <h3 className="font-bold text-teal-800 mb-2">{title} - Debug Info</h3>
+    <div className="bg-cyan-50 border border-cyan-200 rounded p-4 my-4">
+      <h3 className="font-bold text-cyan-800 mb-2">{title} - Debug Info</h3>
       <div className="text-xs">
         <p className="mb-2">Total records: {data.length}</p>
         <h4 className="font-semibold mb-1">Available fields:</h4>
-        <div className="bg-white p-2 rounded border border-teal-100 mb-2">
+        <div className="bg-white p-2 rounded border border-cyan-100 mb-2">
           {fields.map(field => (
             <div key={field} className="py-0.5">
               <span className="font-mono">{field}</span>: 
