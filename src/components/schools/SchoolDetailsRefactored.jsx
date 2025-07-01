@@ -1,5 +1,5 @@
 import React from 'react';
-import UnifiedDetail from '../shared/UnifiedDetail';
+import UnifiedDetail from '../shared/unifiedDetail';
 import SchoolSummary from './SchoolSummary';
 import DetailRow, { EditableDetailRow } from '../shared/DetailRow';
 import StatusBadge from '../shared/StatusBadge';
