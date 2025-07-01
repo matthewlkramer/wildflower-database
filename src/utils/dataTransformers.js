@@ -296,6 +296,8 @@ export const transformEducatorData = (airtableRecord) => {
     fullName: airtableRecord['Full Name'] || '',
     firstName: airtableRecord['First Name'] || '',
     lastName: airtableRecord['Last Name'] || '',
+    middleName: airtableRecord['Middle Name'] || '',
+    nickname: airtableRecord['Nickname'] || '',
     email: airtableRecord['Contact Email'] || '', // Formula field for current email
     emailAddresses: airtableRecord['Email Addresses'] || [],
     currentSchool: safeExtract(airtableRecord['Currently Active School']) || '',
@@ -303,6 +305,8 @@ export const transformEducatorData = (airtableRecord) => {
     discoveryStatus: airtableRecord['Discovery status'] || '',
     individualType: airtableRecord['Individual Type'] || '',
     montessoriCertified: airtableRecord['Montessori Certified'] === true,
+    montessoriLeadGuideTraining: airtableRecord['Montessori Lead Guide Training'] || '',
+    startupStageForActiveSchool: airtableRecord['Startup Stage for Active School'] || '',
     pronouns: airtableRecord['Pronouns'] || '',
     pronounsOther: airtableRecord['Pronouns - Other'] || '',
     
@@ -313,19 +317,28 @@ export const transformEducatorData = (airtableRecord) => {
     genderOther: airtableRecord['Gender - Other'] || '',
     householdIncome: airtableRecord['Household Income'] || '',
     incomeBackground: airtableRecord['Income Background'] || '',
+    educationalAttainment: airtableRecord['Educational Attainment'] || '',
     lgbtqia: airtableRecord['LGBTQIA'] === 'TRUE',
     primaryLanguage: safeExtract(airtableRecord['Primary Language']) || '',
     otherLanguages: airtableRecord['Other languages'] || [],
+    languages: airtableRecord['Languages'] || '',
     
     // Contact Info
+    phone: airtableRecord['Primary phone'] || '',
     primaryPhone: airtableRecord['Primary phone'] || '',
     secondaryPhone: airtableRecord['Secondary phone'] || null,
     homeAddress: airtableRecord['Home Address'] || '',
+    wildflowerEmail: airtableRecord['Wildflower Email'] || '',
     
     // Target location
     targetGeo: airtableRecord['Target geo combined'] || '',
+    targetGeography: airtableRecord['Target Geography'] || '',
     targetCity: airtableRecord['Target city'] || '',
     targetState: airtableRecord['Target state'] || '',
+    targetStartDate: airtableRecord['Target Start Date'] || '',
+    
+    // Tags
+    tags: airtableRecord['Tags'] || [],
     
     createdTime: airtableRecord.createdTime
   };

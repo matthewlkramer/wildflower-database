@@ -347,12 +347,8 @@ export const useCachedEmailAddresses = (educatorId) => {
     // Fetch all email addresses and filter by educator ID
     const allEmailAddresses = await airtableService.fetchRecords(TABLES.EMAIL_ADDRESSES, { maxRecords: 10000 });
     return allEmailAddresses.filter(email => {
-      // Check various possible field names for educator ID
-      if (email.educator_id === educatorId) return true;
-      if (email.Educator === educatorId) return true;
-      if (Array.isArray(email.Educator) && email.Educator.includes(educatorId)) return true;
-      if (Array.isArray(email.educator_ids) && email.educator_ids.includes(educatorId)) return true;
-      return false;
+      // Use the formula field educator_id for matching
+      return email.educator_id === educatorId;
     });
   }, [educatorId]);
 
@@ -368,12 +364,8 @@ export const useCachedSSJForms = (educatorId) => {
     // Fetch all SSJ Fillout Forms and filter by educator ID
     const allForms = await airtableService.fetchRecords(TABLES.SSJ_FILLOUT_FORMS, { maxRecords: 10000 });
     return allForms.filter(form => {
-      // Check various possible field names for educator ID
-      if (form.educator_id === educatorId) return true;
-      if (form.Educator === educatorId) return true;
-      if (Array.isArray(form.Educator) && form.Educator.includes(educatorId)) return true;
-      if (Array.isArray(form.educator_ids) && form.educator_ids.includes(educatorId)) return true;
-      return false;
+      // Use the formula field educator_id for matching
+      return form.educator_id === educatorId;
     });
   }, [educatorId]);
 
@@ -389,12 +381,8 @@ export const useCachedMontessoriCerts = (educatorId) => {
     // Fetch all Montessori Certs and filter by educator ID
     const allCerts = await airtableService.fetchRecords(TABLES.MONTESSORI_CERTS, { maxRecords: 10000 });
     return allCerts.filter(cert => {
-      // Check various possible field names for educator ID
-      if (cert.educator_id === educatorId) return true;
-      if (cert.Educator === educatorId) return true;
-      if (Array.isArray(cert.Educator) && cert.Educator.includes(educatorId)) return true;
-      if (Array.isArray(cert.educator_ids) && cert.educator_ids.includes(educatorId)) return true;
-      return false;
+      // Use the formula field educator_id for matching
+      return cert.educator_id === educatorId;
     });
   }, [educatorId]);
 
@@ -410,12 +398,8 @@ export const useCachedEducatorNotes = (educatorId) => {
     // Fetch all Educator Notes and filter by educator ID
     const allNotes = await airtableService.fetchRecords(TABLES.EDUCATOR_NOTES, { maxRecords: 10000 });
     return allNotes.filter(note => {
-      // Check various possible field names for educator ID
-      if (note.educator_id === educatorId) return true;
-      if (note.Educator === educatorId) return true;
-      if (Array.isArray(note.Educator) && note.Educator.includes(educatorId)) return true;
-      if (Array.isArray(note.educator_ids) && note.educator_ids.includes(educatorId)) return true;
-      return false;
+      // Use the formula field educator_id for matching
+      return note.educator_id === educatorId;
     });
   }, [educatorId]);
 
@@ -431,12 +415,8 @@ export const useCachedEventAttendance = (educatorId) => {
     // Fetch all Event Attendance and filter by educator ID
     const allEvents = await airtableService.fetchRecords(TABLES.EVENT_ATTENDANCE, { maxRecords: 10000 });
     return allEvents.filter(event => {
-      // Check various possible field names for educator ID
-      if (event.educator_id === educatorId) return true;
-      if (event.Educator === educatorId) return true;
-      if (Array.isArray(event.Educator) && event.Educator.includes(educatorId)) return true;
-      if (Array.isArray(event.educator_ids) && event.educator_ids.includes(educatorId)) return true;
-      return false;
+      // Use the formula field educator_id for matching
+      return event.educator_id === educatorId;
     });
   }, [educatorId]);
 
