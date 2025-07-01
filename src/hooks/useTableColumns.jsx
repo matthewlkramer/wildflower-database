@@ -34,13 +34,9 @@ export const useTableColumns = (dataType) => {
                         label: 'Stage Status',
                         defaultWidth: 120,
                         render: (value, item) => {
-                            // Debug: log available fields for first item
-                            if (Math.random() < 0.05) {
-                                console.log('Educator fields:', Object.keys(item).filter(k => k.toLowerCase().includes('stage')));
-                                console.log('All fields:', Object.keys(item));
-                            }
                             return item.stageStatus ? <StatusBadge status={item.stageStatus} /> : '-';
-                        }
+                        },
+                        filterType: 'multiselect'
                     },
                     {
                         key: 'role',
@@ -81,6 +77,24 @@ export const useTableColumns = (dataType) => {
                             const shortValues = values.map(v => shortLabels[v] || v);
                             
                             return <Pills values={shortValues} colorScheme="purple" />;
+                        },
+                        filterType: 'multiselect',
+                        // Custom filter options getter
+                        getFilterValue: (item) => {
+                            const values = Array.isArray(item.raceEthnicity) ? item.raceEthnicity : [];
+                            const shortLabels = {
+                                'African-American, Afro-Caribbean or Black': 'Black',
+                                'White': 'White',
+                                'Asian-American': 'Asian-Am',
+                                'Hispanic, Latino, or Spanish Origin': 'Latino',
+                                'Native American or Alaska Native': 'Native',
+                                'Middle Eastern or North African': 'MENA',
+                                'Native Hawaiian or Other Pacific Islander': 'Pac. Isl.',
+                                'A not-listed or more specific ethnicity or origin': 'Other',
+                                'Other': 'Other'
+                            };
+                            // Return shortened values for filtering
+                            return values.map(v => shortLabels[v] || v);
                         }
                     },
                     {

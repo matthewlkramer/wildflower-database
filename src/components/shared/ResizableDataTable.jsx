@@ -110,28 +110,34 @@ const ResizableDataTable = ({
     handleColumnResize(columnKey, Math.min(optimalWidth, 300));
   };
 
-  const getUniqueValues = (columnKey) => { // DOES THIS DO ANYTHING OTHER THAN SEED THE MULTI-SELECT FILTERS? INSTEAD, CAN WE GET THE ITEMS FOR THOSE FILTERS FROM THE AIRTABLECONFIG.JS FILE?
+  const getUniqueValues = (columnKey) => {
     const values = new Set();
     let hasEmpty = false;
+    
+    // Find the column configuration
+    const column = columns.find(col => col.key === columnKey);
+    const hasCustomFilter = column && column.getFilterValue;
 
     data.forEach(item => {
-        const value = item[columnKey];
+        // Use custom filter value getter if available
+        const value = hasCustomFilter ? column.getFilterValue(item) : item[columnKey];
+        
         if (Array.isArray(value)) {
-        if (value.length === 0) {
-            hasEmpty = true;
-        } else {
-            value.forEach(v => {
-            if (v && v !== '') {
-                values.add(v);
-            } else {
+            if (value.length === 0) {
                 hasEmpty = true;
+            } else {
+                value.forEach(v => {
+                    if (v && v !== '') {
+                        values.add(v);
+                    } else {
+                        hasEmpty = true;
+                    }
+                });
             }
-            });
-        }
         } else if (value && value !== '') {
-        values.add(value);
+            values.add(value);
         } else {
-        hasEmpty = true;
+            hasEmpty = true;
         }
     });
 
@@ -171,7 +177,10 @@ const ResizableDataTable = ({
         if (multiSelectColumns[columnKey] && Array.isArray(filterValue) && filterValue.length > 0) {
             // Enhanced multi-select filter logic with empty support
             result = result.filter(item => {
-            const itemValue = item[columnKey];
+            // Find column configuration for custom filter
+            const column = columns.find(col => col.key === columnKey);
+            const itemValue = column && column.getFilterValue ? 
+                column.getFilterValue(item) : item[columnKey];
             
             // Check for empty values
             if (filterValue.includes('(empty)')) {
